@@ -1,0 +1,104 @@
+.footer {
+    background-color: #1a237e;
+    color: #fff;
+    padding: 40px 0 0;
+  }
+  
+  .container {
+    max-width: auto;
+    margin: 0 auto;
+    padding: 0 15px;
+  }
+  
+  .footer-sections {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 30px;
+    margin-bottom: 30px;
+  }
+  
+  .footer-section h3 {
+    font-size: 16px;
+    font-weight: bold;
+    margin-bottom: 20px;
+    color: #fff;
+  }
+  
+  .footer-section ul {
+    list-style: none;
+    padding: 0;
+  }
+  
+  .footer-section ul li {
+    margin-bottom: 10px;
+  }
+  
+  .footer-section ul li a {
+    color: #fff;
+    text-decoration: none;
+    font-size: 14px;
+    transition: color 0.3s;
+  }
+  
+  .footer-section ul li a:hover {
+    color: #ffd700;
+  }
+  
+  .footer-payment,
+  .footer-shipping {
+    margin-bottom: 30px;
+  }
+  
+  .footer-payment h3,
+  .footer-shipping h3 {
+    font-size: 16px;
+    font-weight: bold;
+    margin-bottom: 20px;
+    color: #fff;
+  }
+  
+  .payment-methods,
+  .shipping-methods {
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+  }
+  
+  .payment-methods img,
+  .shipping-methods img {
+    height: 30px;
+    object-fit: contain;
+    background-color: #fff;
+    padding: 5px;
+    border-radius: 4px;
+  }
+  
+  .footer-bottom {
+    background-color: #0d1757;
+    padding: 15px 0;
+    text-align: center;
+    margin-top: 20px;
+  }
+  
+  .footer-bottom p {
+    font-size: 14px;
+    color: #fff;
+    margin: 0;
+  }
+  
+  @media (max-width: 992px) {
+    .footer-sections {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+  
+  @media (max-width: 576px) {
+    .footer-sections {
+      grid-template-columns: 1fr;
+    }
+    
+    .payment-methods,
+    .shipping-methods {
+      justify-content: center;
+    }
+  }

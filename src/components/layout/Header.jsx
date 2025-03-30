@@ -7,54 +7,54 @@ const Header = ({ searchTerm, setSearchTerm }) => {
 
   return (
     <header className="header">
-      <div className="top-bar">
-        <div className="container top-bar-content">
-          <div className="contact-info">
-            <span>0128 922 0142</span>
-            <span>HỆ THỐNG SIÊU THỊ</span>
+      <nav className="navbar navbar-expand-lg w-100">
+        <div className="container-fluid">
+          <a className="navbar-brand text-white" href="#">
+            <img src={logo} alt="Logo" className="logo-img" />
+          </a>
+          
+          <div className="search-box mx-auto">
+            <form className="d-flex position-relative" onSubmit={(e) => { e.preventDefault(); console.log('Searching for:', searchTerm); }}>
+              <input 
+                className="form-control search-input" 
+                type="search" 
+                value={searchTerm} 
+                onChange={(e) => setSearchTerm(e.target.value)}
+                placeholder="Bạn cần tìm gì?"
+              />
+              <button className="btn search-btn" type="submit">
+                <i className="bi bi-search"></i>
+              </button>
+            </form>
           </div>
-          <div className="user-actions">
-            <a href="#" className="link">TÌM KIẾM</a>
-            <a href="#" className="link">GIỎ HÀNG ({cartItems})</a>
-            <a href="#" className="link">ĐĂNG NHẬP</a>
-            <a href="#" className="link">TIN TỨC</a>
-            <a href="#" className="link">LIÊN HỆ</a>
-          </div>
-        </div>
-      </div>
 
-      <div className="main-header">
-        <div className="container main-header-content">
-          <div className="logo">
-            <a href="#">
-              <img src={logo} alt="E-Shop Logo" />
+          <div className="nav-actions">
+            <a href="tel:1800-2097" className="action-item">
+              <i className="bi bi-telephone"></i>
+              <div className="action-text">
+                <small>Gọi mua hàng:</small>
+                <strong>1800.2097</strong>
+              </div>
             </a>
-          </div>
-          <div className="search-bar">
-            <input
-              type="text"
-              placeholder="Tìm kiếm sản phẩm..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
-            <button className="btn btn-primary">
-              <i className="fas fa-search"></i>
-            </button>
-          </div>
-        </div>
-      </div>
 
-      <div className="category-nav">
-        <div className="container">
-          <ul className="category-menu">
-            <li className="active"><a href="#">DANH MỤC SẢN PHẨM</a></li>
-            <li><a href="#">KHUYẾN MÃI</a></li>
-            <li><a href="#">THƯƠNG HIỆU</a></li>
-            <li><a href="#">BÁN CHẠY</a></li>
-            <li><a href="#">SẢN PHẨM MỚI</a></li>
-          </ul>
+            <button className="action-item cart-btn" onClick={() => console.log('Toggle cart')}>
+              <i className="bi bi-bag"></i>
+              <div className="action-text">
+                <span>Giỏ hàng</span>
+              </div>
+            </button>
+
+            <div className="auth-buttons">
+              <button className="btn-login" onClick={() => console.log('Login clicked')} style={{ width: '100px' }}>
+                <span>Đăng nhập</span>
+              </button>
+              <button className="btn-register" onClick={() => console.log('Register clicked')} style={{ width: '100px' }}>
+                <span>Đăng ký</span>
+              </button>
+            </div>
+          </div>
         </div>
-      </div>
+      </nav>
     </header>
   )
 }

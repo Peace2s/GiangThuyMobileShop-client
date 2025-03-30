@@ -18,9 +18,9 @@ const ProductCard = ({ product }) => {
           <a href="#">{product.name}</a>
         </h3>
         <div className="product-price">
-          <span className="price">{formatPrice(product.price)}</span>
-          {product.originalPrice && (
-            <span className="original-price">{formatPrice(product.originalPrice)}</span>
+          <span className="price">{formatPrice(product.price - product.discount * product.price / 100)}</span>
+          {product.price && (
+            <span className="original-price">{formatPrice(product.price)}</span>
           )}
         </div>
         <button className="btn btn-add-cart">Thêm vào giỏ</button>

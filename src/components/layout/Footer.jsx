@@ -48,25 +48,6 @@ const Footer = () => {
               </ul>
             </div>
           </div>
-  
-          <div className="footer-payment">
-            <h3>HỖ TRỢ THANH TOÁN</h3>
-            <div className="payment-methods">
-              <img src="/images/payment/visa.png" alt="Visa" />
-              <img src="/images/payment/mastercard.png" alt="Mastercard" />
-              <img src="/images/payment/jcb.png" alt="JCB" />
-              <img src="/images/payment/agribank.png" alt="Agribank" />
-              <img src="/images/payment/vietcombank.png" alt="Vietcombank" />
-              <img src="/images/payment/techcombank.png" alt="Techcombank" />
-            </div>
-          </div>
-  
-          <div className="footer-shipping">
-            <h3>DỊCH VỤ GIAO HÀNG</h3>
-            <div className="shipping-methods">
-              <img src="/images/shipping/shipping.png" alt="Shipping Service" />
-            </div>
-          </div>
         </div>
   
         <div className="footer-bottom">

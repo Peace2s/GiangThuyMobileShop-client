@@ -1,56 +1,72 @@
-.navbar {
+.header {
   background-color: #1a4da2;
-  padding: 10px 0;
-  display: flex;
-  justify-content: space-between; /* Giãn đều các phần tử */
-  align-items: center;
+  padding: 0;
+  height: auto;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 }
 
 .container-fluid {
-  display: flex;
-  justify-content: space-between; /* Giãn đều các phần tử ra hai lề */
-  align-items: center;
   width: 80%;
-  max-width: 100%; /* Đảm bảo chiếm toàn bộ chiều rộng */
+  max-width: 1200px;
   margin: 0 auto;
-  padding: 0 24px; /* Khoảng cách padding cho hai bên */
+  padding: 12px 24px;
+}
+
+.logo-container {
+  display: flex;
+  align-items: center;
+  transition: transform 0.3s ease;
+}
+
+.logo-container:hover {
+  transform: scale(1.05);
 }
 
 .logo-img {
   height: 40px;
+  filter: brightness(0) invert(1);
 }
 
 .search-box {
-  flex-grow: 1;
-  max-width: 320px;
   margin: 0 40px;
+  max-width: 500px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .search-input {
   width: 100%;
-  padding: 10px;
-  border-radius: 4px;
+}
+
+.search-input .ant-input {
+  border-radius: 20px;
+  background-color: rgba(255, 255, 255, 0.9);
+  border: none;
+  padding: 10px 15px;
+  font-size: 14px;
+  transition: all 0.3s ease;
+}
+
+.search-input .ant-input:focus {
   background-color: #fff;
-  border: none;
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.2);
 }
 
-.search-btn {
-  position: absolute;
-  right: 10px;
-  top: 50%;
-  transform: translateY(-50%);
-  background: none;
+.search-input .ant-input-search-button {
+  border-radius: 0 20px 20px 0;
+  background: #1890ff;
   border: none;
-  color: #666;
+  color: white;
+  transition: all 0.3s ease;
 }
 
-.search-btn:hover {
-  color: #1a4da2;
+.search-input .ant-input-search-button:hover {
+  background: #40a9ff;
 }
 
 .nav-actions {
   display: flex;
-  gap: 20px;
   align-items: center;
 }
 
@@ -63,49 +79,172 @@
   cursor: pointer;
   border: none;
   background: none;
+  padding: 8px 12px;
+  border-radius: 8px;
+  transition: all 0.3s ease;
 }
 
-.action-item i {
-  font-size: 24px;
+.action-item:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.action-icon {
+  font-size: 20px;
+  color: white;
 }
 
 .action-text {
   display: flex;
   flex-direction: column;
-  font-size: 13px;
   text-align: left;
+  color: white;
 }
 
-.auth-buttons {
-  display: flex;
-  align-items: center;
-  gap: 20px;
+.action-text .ant-typography {
+  color: white !important;
+  font-size: 12px;
+}
+
+.action-text .ant-typography-secondary {
+  color: rgba(255, 255, 255, 0.8) !important;
 }
 
 .btn-login {
   background: transparent;
   border: 1px solid white;
   color: white;
-  padding: 6px 12px;
-  border-radius: 4px;
+  padding: 5px 15px;
+  border-radius: 20px;
   font-size: 14px;
   transition: all 0.3s ease;
+  height: auto;
+  display: flex;
+  align-items: center;
+  gap: 4px;
 }
 
 .btn-login:hover {
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(0, 102, 204, 0.1);
+  color: #0052a3;
+  border-color: #0052a3;
 }
 
 .btn-register {
-  background: white;
+  background: #0066cc;
   border: none;
-  color: #1a4da2;
-  padding: 6px 12px;
-  border-radius: 4px;
+  color: white;
+  padding: 6px 16px;
+  border-radius: 20px;
   font-size: 14px;
   transition: all 0.3s ease;
+  height: auto;
 }
 
 .btn-register:hover {
-  background: #f8f9fa;
+  background: #0052a3;
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.brands-filter {
+  background-color: white;
+  padding: 0;
+  border: none;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  position: relative;
+}
+
+.brands-list {
+  background: transparent;
+  border-bottom: none;
+  display: flex;
+  justify-content: center;
+  line-height: 46px;
+  min-height: 46px;
+}
+
+.brands-list .ant-menu-item {
+  padding: 0 20px;
+  margin: 0 10px !important;
+  font-size: 14px;
+  color: #666;
+  line-height: 46px;
+  height: 46px;
+  background: transparent !important;
+  transition: all 0.3s ease;
+}
+
+.brands-list .ant-menu-item:hover {
+  color: #1890ff;
+}
+
+.brands-list .ant-menu-item-selected {
+  color: #1890ff !important;
+  font-weight: 500;
+  border-bottom: 2px solid #1890ff !important;
+}
+
+.brands-list .ant-menu-item::after {
+  display: none !important;
+}
+
+/* Override Ant Design default styles */
+.ant-menu-horizontal {
+  border-bottom: none;
+  line-height: 46px;
+}
+
+.ant-menu-horizontal > .ant-menu-item::after {
+  display: none !important;
+}
+
+.ant-menu-item {
+  margin: 0 5px !important;
+  background: transparent !important;
+}
+
+.ant-menu-item a {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.ant-menu-item-selected {
+  background-color: rgba(255, 255, 255, 0.15) !important;
+}
+
+.ant-menu-item-selected a {
+  color: white !important;
+}
+
+/* Badge styles */
+.ant-badge-count {
+  background: #ff4d4f;
+  box-shadow: 0 0 0 1px #1a4da2;
+}
+
+/* Tooltip styles */
+.ant-tooltip-inner {
+  background-color: rgba(0, 0, 0, 0.75);
+  border-radius: 8px;
+  padding: 6px 12px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 992px) {
+  .container-fluid {
+    width: 95%;
+    padding: 8px 12px;
+  }
+  
+  .search-box {
+    margin: 0 20px;
+  }
+  
+  .action-text {
+    display: none;
+  }
+  
+  .action-item {
+    padding: 8px;
+  }
 }

@@ -1,5 +1,5 @@
 .sidebar {
-    width: 220px;
+    width: 300px;
     margin-right: 20px;
     padding-top: 20px;
   }
@@ -72,4 +72,175 @@
   .brand-item:hover {
     background-color: var(--primary-color);
     color: white;
+  }
+
+  .filter-section {
+    padding: 15px;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  }
+
+  .filter-section h3 {
+    font-size: 16px;
+    margin-bottom: 15px;
+    color: var(--primary-color);
+  }
+
+  .price-ranges {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .price-range-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .price-range-item input[type="radio"] {
+    cursor: pointer;
+  }
+
+  .price-range-item label {
+    cursor: pointer;
+    margin: 0;
+  }
+
+  .custom-price-range {
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid #eee;
+  }
+
+  .custom-price-range p {
+    font-size: 14px;
+    margin-bottom: 10px;
+  }
+
+  .price-inputs {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 15px;
+  }
+
+  .price-inputs input {
+    width: 120px;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+  }
+
+  .btn-apply {
+    width: 100%;
+    padding: 8px;
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+
+  .btn-apply:hover {
+    background-color: darken(var(--primary-color), 10%);
+  }
+
+  .filter-section {
+    border-radius: 8px;
+  }
+
+  .filter-section .ant-card-body {
+    padding: 20px;
+  }
+
+  .filter-section .ant-typography {
+    margin-bottom: 16px !important;
+    color: var(--primary-color);
+    font-weight: 500;
+  }
+
+  .price-ranges {
+    width: 100%;
+  }
+
+  .price-ranges .ant-radio-wrapper {
+    margin: 8px 0;
+    font-size: 14px;
+  }
+
+  .price-ranges .ant-space {
+    width: 100%;
+  }
+
+  .custom-price-range {
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid #f0f0f0;
+  }
+
+  .custom-price-range .ant-typography {
+    display: block;
+    margin-bottom: 12px;
+    font-size: 14px;
+    color: rgba(0, 0, 0, 0.85);
+  }
+
+  .price-inputs {
+    width: 100%;
+    margin-bottom: 16px;
+  }
+
+  .price-inputs .ant-input {
+    width: 120px;
+    text-align: center;
+  }
+
+  .price-inputs .ant-typography {
+    margin: 0 8px !important;
+    color: rgba(0, 0, 0, 0.45);
+  }
+
+  .btn-apply {
+    width: 100%;
+    height: 36px;
+    font-size: 14px;
+    border-radius: 4px;
+  }
+
+  /* Override Ant Design Radio styles */
+  .ant-radio-wrapper:hover .ant-radio-inner {
+    border-color: var(--primary-color);
+  }
+
+  .ant-radio-checked .ant-radio-inner {
+    border-color: var(--primary-color);
+    background-color: var(--primary-color);
+  }
+
+  .ant-radio-wrapper-checked {
+    color: var(--primary-color);
+  }
+
+  /* Override Ant Design Input styles */
+  .ant-input:hover,
+  .ant-input:focus {
+    border-color: var(--primary-color);
+  }
+
+  .ant-input:focus {
+    box-shadow: 0 0 0 2px rgba(26, 77, 162, 0.2);
+  }
+
+  /* Override Ant Design Button styles */
+  .ant-btn-primary {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+  }
+
+  .ant-btn-primary:hover,
+  .ant-btn-primary:focus {
+    background-color: #4070b5;
+    border-color: #4070b5;
   }

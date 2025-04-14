@@ -8,9 +8,9 @@
 }
 
 * {
-  box-sizing: border-box;
   margin: 0;
   padding: 0;
+  box-sizing: border-box;
 }
 
 body {
@@ -18,13 +18,18 @@ body {
   line-height: 1.6;
   color: var(--text-color);
   background-color: #f4f4f4;
-  display: flex;
-  justify-content: center;
+  width: 100%;
+  min-width: 100%;
+}
+
+#root {
+  width: 100%;
+  min-width: 100%;
 }
 
 .app {
   width: 100%;
-  margin: 0 auto;
+  min-width: 100%;
   background-color: var(--background-color);
   box-shadow: 0 0 10px rgba(0,0,0,0.1);
   display: flex;
@@ -32,11 +37,20 @@ body {
   min-height: 100vh;
 }
 
+.container-fluid {
+  width: 100%;
+  padding-right: 40px;
+  padding-left: 40px;
+  margin-right: auto;
+  margin-left: auto;
+}
+
 .main-container {
   display: flex;
   flex: 1;
-  padding: 0 15px;
   width: 100%;
+  min-width: 100%;
+  padding: 0 40px;
 }
 
 .container {
@@ -84,4 +98,79 @@ body {
   text-decoration: line-through;
   color: #999;
   font-size: 0.9em;
+}
+
+input {
+  background-color: #fff !important;
+  color: #333 !important;
+  border: 1px solid #ddd;
+}
+
+input:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  background-color: #fff !important;
+}
+
+input[type="radio"],
+input[type="checkbox"] {
+  accent-color: var(--primary-color);
+  cursor: pointer;
+}
+
+input[type="text"],
+input[type="number"],
+input[type="email"],
+input[type="password"],
+input[type="search"] {
+  padding: 8px;
+  border-radius: 4px;
+  transition: border-color 0.3s ease;
+}
+
+input::placeholder {
+  color: #999;
+}
+
+input:disabled {
+  background-color: #f5f5f5 !important;
+  cursor: not-allowed;
+}
+
+input:read-only {
+  background-color: #f8f9fa !important;
+}
+
+input.error {
+  border-color: #dc3545;
+}
+
+input.valid {
+  border-color: #28a745;
+}
+
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Cho Firefox */
+input[type="number"] {
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+
+/* Style chung cho input type number */
+input[type="number"] {
+  background-color: #fff !important;
+  color: #333 !important;
+  border: 1px solid #ddd;
+  padding: 8px;
+  border-radius: 4px;
+}
+
+input[type="number"]:focus {
+  outline: none;
+  border-color: var(--primary-color);
 }

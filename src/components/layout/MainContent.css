@@ -1,4 +1,89 @@
 .main-content {
     flex: 1;
-    padding: 20px 0;
+    padding: 20px;
+    background-color: #f5f5f5;
   }
+
+.product-section {
+  background: white;
+  padding: 24px;
+  border-radius: 8px;
+  margin-bottom: 24px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.section-header h4 {
+  margin: 0;
+  color: #333;
+}
+
+.view-all-btn {
+  font-size: 14px;
+  padding: 0;
+  height: auto;
+  color: #0066cc;
+}
+
+.view-all-btn:hover {
+  color: #0052a3;
+}
+
+.product-card {
+  height: 100%;
+  transition: all 0.3s ease;
+}
+
+.product-card:hover {
+  transform: translateY(-4px);
+}
+
+.product-card .ant-card-cover {
+  padding: 20px;
+  background: #f8f8f8;
+}
+
+.product-card .ant-card-cover img {
+  height: 200px;
+  object-fit: contain;
+}
+
+.product-card .ant-card-meta-title {
+  font-size: 14px;
+  margin-bottom: 8px;
+  white-space: normal;
+  line-height: 1.4;
+  height: 40px;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+}
+
+.product-price {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+.discounted-price {
+  color: #ee4d2d;
+  font-size: 16px;
+}
+
+.original-price {
+  font-size: 14px;
+}
+
+.discount-tag {
+  font-size: 12px;
+  background: #ffeee8;
+  padding: 2px 4px;
+  border-radius: 2px;
+}

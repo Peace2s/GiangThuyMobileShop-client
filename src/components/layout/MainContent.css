@@ -67,23 +67,35 @@
 
 .product-price {
   display: flex;
-  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-top: 8px;
+}
+
+.price-main {
+  display: flex;
+  flex-direction: column;
   gap: 8px;
-  align-items: center;
 }
 
 .discounted-price {
-  color: #ee4d2d;
-  font-size: 16px;
+  color: #ff4d4f;
+  font-size: 18px;
+  line-height: 1;
+  font-weight: 600;
 }
 
 .original-price {
   font-size: 14px;
+  line-height: 1;
+  color: #999;
 }
 
 .discount-tag {
-  font-size: 12px;
-  background: #ffeee8;
-  padding: 2px 4px;
-  border-radius: 2px;
+  font-size: 13px;
+  background: #fff1f0;
+  padding: 4px 8px;
+  border-radius: 4px;
+  color: #ff4d4f;
+  font-weight: 500;
 }

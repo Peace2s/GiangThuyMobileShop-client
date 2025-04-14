@@ -1,7 +1,7 @@
-import { Typography, Button, Row, Col, Card } from 'antd'
+import { Typography, Button, Row, Col, Card, Tag } from 'antd'
 import { RightOutlined } from '@ant-design/icons'
-import { useNavigate } from 'react-router-dom'
-import { getFeaturedProducts, getNewProducts } from '../../data/mockData'
+import { useNavigate, useLocation } from 'react-router-dom'
+import { getFeaturedProducts, getNewProducts, products } from '../../data/mockData'
 import './MainContent.css'
 import Banner from './Banner'
 
@@ -9,9 +9,23 @@ const { Title, Text } = Typography
 
 const MainContent = () => {
   const navigate = useNavigate()
+  const location = useLocation()
+  const branch = new URLSearchParams(location.search).get('branch')
 
-  const featuredProducts = getFeaturedProducts()
-  const newProducts = getNewProducts()
+  const branchNames = {
+    'all': 'Tất cả sản phẩm',
+    'apple': 'Apple',
+    'samsung': 'Samsung',
+    'oppo': 'Oppo',
+    'xiaomi': 'Xiaomi',
+    'oneplus': 'OnePlus'
+  }
+
+  const filteredProducts = branch === 'all' 
+    ? products 
+    : branch 
+    ? products.filter(product => product.branch === branch)
+    : products;
 
   const handleProductClick = (product) => {
     navigate(`/product/${product.id}`, { state: { product } })
@@ -21,7 +35,7 @@ const MainContent = () => {
     const discountedPrice = product.price * (1 - product.discount / 100)
     
     return (
-      <Col xs={24} sm={12} md={8} key={product.id}>
+      <Col xs={24} sm={12} md={8} lg={8} key={product.id}>
         <Card 
           hoverable 
           cover={<img alt={product.name} src={product.image} />}
@@ -50,12 +64,14 @@ const MainContent = () => {
             }
             description={
               <div className="product-price">
-                <Text strong className="discounted-price">
-                  {discountedPrice.toLocaleString()}đ
-                </Text>
-                <Text delete type="secondary" className="original-price">
-                  {product.price.toLocaleString()}đ
-                </Text>
+                <div className="price-main">
+                  <Text strong className="discounted-price">
+                    {discountedPrice.toLocaleString()}đ
+                  </Text>
+                  <Text delete type="secondary" className="original-price">
+                    {product.price.toLocaleString()}đ
+                  </Text>
+                </div>
                 <Text type="danger" className="discount-tag">
                   -{product.discount}%
                 </Text>
@@ -71,7 +87,11 @@ const MainContent = () => {
     <div className="product-section">
       <div className="section-header">
         <Title level={4}>{title}</Title>
-        <Button type="link" className="view-all-btn">
+        <Button 
+          type="link" 
+          className="view-all-btn"
+          onClick={() => navigate(`/?branch=all`)}
+        >
           Xem tất cả <RightOutlined />
         </Button>
       </div>
@@ -81,11 +101,28 @@ const MainContent = () => {
     </div>
   )
 
+  const renderFilteredProducts = () => (
+    <div className="filtered-products">
+      <div className="section-header">
+        <Title level={3}>{branchNames[branch] || 'Tất cả sản phẩm'}</Title>
+      </div>
+      <Row gutter={[24, 24]}>
+        {filteredProducts.map(renderProductCard)}
+      </Row>
+    </div>
+  )
+
   return (
     <div className="main-content">
       <Banner />
-      {renderProductSection('SẢN PHẨM NỔI BẬT', featuredProducts)}
-      {renderProductSection('SẢN PHẨM MỚI', newProducts)}
+      {branch ? (
+        renderFilteredProducts()
+      ) : (
+        <>
+          {renderProductSection('SẢN PHẨM NỔI BẬT', getFeaturedProducts())}
+          {renderProductSection('SẢN PHẨM MỚI', getNewProducts())}
+        </>
+      )}
     </div>
   )
 }

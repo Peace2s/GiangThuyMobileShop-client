@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useLocation, Link } from 'react-router-dom'
 import { Layout, Input, Button, Menu, Space, Typography, Row, Col, Badge, Avatar, Tooltip } from 'antd'
 import { SearchOutlined, PhoneOutlined, ShoppingCartOutlined, UserOutlined, HeartOutlined } from '@ant-design/icons'
 import './Header.css'
@@ -10,26 +10,36 @@ const { Search } = Input
 
 const Header = ({ searchTerm, setSearchTerm }) => {
   const [cartItems, setCartItems] = useState(0)
-  const [activeBrand, setActiveBrand] = useState('all')
   const navigate = useNavigate()
+  const location = useLocation()
+  const currentBranch = new URLSearchParams(location.search).get('branch') || 'all'
 
   const brands = [
     { id: 'all', name: 'Tất cả' },
-    { id: 1, name: 'Apple' },
-    { id: 2, name: 'Samsung' },
-    { id: 3, name: 'Nokia' },
-    { id: 4, name: 'Oppo' },
-    { id: 5, name: 'Xiaomi' },
-    { id: 6, name: 'Vivo' }
+    { id: 'apple', name: 'Apple' },
+    { id: 'samsung', name: 'Samsung' },
+    { id: 'oppo', name: 'Oppo' },
+    { id: 'xiaomi', name: 'Xiaomi' },
+    { id: 'oneplus', name: 'OnePlus' }
   ]
+
+  const handleBrandClick = (brandId) => {
+    const searchParams = new URLSearchParams(location.search)
+    if (brandId === 'all') {
+      searchParams.delete('branch')
+    } else {
+      searchParams.set('branch', brandId)
+    }
+    navigate(`${location.pathname}?${searchParams.toString()}`)
+  }
 
   return (
     <AntHeader className="header">
       <Row className="container-fluid" align="middle" justify="space-between">
         <Col>
-          <a href="/" className="logo-container">
+          <Link to="/" className="logo-container">
             <img src={logo} alt="Logo" className="logo-img" />
-          </a>
+          </Link>
         </Col>
         
         <Col flex="auto" className="search-box">
@@ -98,8 +108,8 @@ const Header = ({ searchTerm, setSearchTerm }) => {
             <Menu 
               mode="horizontal" 
               className="brands-list" 
-              selectedKeys={[activeBrand]}
-              onClick={({ key }) => setActiveBrand(key)}
+              selectedKeys={[currentBranch]}
+              onClick={({ key }) => handleBrandClick(key)}
             >
               {brands.map(brand => (
                 <Menu.Item key={brand.id} className="brand-item">

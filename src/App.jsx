@@ -13,7 +13,7 @@ const AppLayout = () => {
   const [searchTerm, setSearchTerm] = useState('')
   const location = useLocation()
   const isLoginPage = location.pathname === '/login'
-  const isProductDetail = location.pathname.startsWith('/product/')
+  const isProductDetail = location.pathname.startsWith('/product/') && location.pathname !== '/product'
 
   return (
     <div className="app">
@@ -23,6 +23,18 @@ const AppLayout = () => {
         <Route path="/product/:id" element={
           <div className="container-fluid">
             <ProductDetail />
+          </div>
+        } />
+        <Route path="/product" element={
+          <div className="main-container">
+            <Sidebar />
+            <MainContent showAllProducts={true} />
+          </div>
+        } />
+        <Route path="/products" element={
+          <div className="main-container">
+            <Sidebar />
+            <MainContent />
           </div>
         } />
         <Route path="/" element={

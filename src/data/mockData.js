@@ -6,8 +6,7 @@ const products = [
     price: 32990000,
     image: 'https://via.placeholder.com/200x200',
     discount: 15,
-    isNew: true,
-    category: 'featured',
+    branch: 'apple',
     specifications: {
       screen: '6.7 inches OLED',
       processor: 'A17 Pro',
@@ -28,8 +27,8 @@ const products = [
       'https://via.placeholder.com/500x500',
       'https://via.placeholder.com/500x500'
     ],
-    createdAt: '2024-03-10T10:00:00Z',
-    updatedAt: '2024-03-10T10:00:00Z'
+    createdAt: '2024-03-15T10:00:00Z',
+    updatedAt: '2024-03-15T10:00:00Z',
   },
   {
     id: 2,
@@ -37,8 +36,7 @@ const products = [
     price: 29990000,
     image: 'https://via.placeholder.com/200x200',
     discount: 12,
-    isNew: true,
-    category: 'featured',
+    branch: 'samsung',
     specifications: {
       screen: '6.8 inches Dynamic AMOLED 2X',
       processor: 'Snapdragon 8 Gen 3',
@@ -60,7 +58,7 @@ const products = [
       'https://via.placeholder.com/500x500'
     ],
     createdAt: '2024-03-14T15:30:00Z',
-    updatedAt: '2024-03-14T15:30:00Z'
+    updatedAt: '2024-03-14T15:30:00Z',
   },
   {
     id: 3,
@@ -68,8 +66,7 @@ const products = [
     price: 25990000,
     image: 'https://via.placeholder.com/200x200',
     discount: 10,
-    isNew: true,
-    category: 'featured',
+    branch: 'oppo',
     specifications: {
       screen: '6.82 inches AMOLED',
       processor: 'Dimensity 9300',
@@ -89,7 +86,7 @@ const products = [
       'https://via.placeholder.com/500x500'
     ],
     createdAt: '2024-03-13T09:15:00Z',
-    updatedAt: '2024-03-13T09:15:00Z'
+    updatedAt: '2024-03-13T09:15:00Z',
   },
   {
     id: 4,
@@ -97,8 +94,7 @@ const products = [
     price: 23990000,
     image: 'https://via.placeholder.com/200x200',
     discount: 8,
-    isNew: true,
-    category: 'new',
+    branch: 'xiaomi',
     specifications: {
       screen: '6.73 inches LTPO AMOLED',
       processor: 'Snapdragon 8 Gen 3',
@@ -119,7 +115,7 @@ const products = [
       'https://via.placeholder.com/500x500'
     ],
     createdAt: '2024-03-12T14:20:00Z',
-    updatedAt: '2024-03-12T14:20:00Z'
+    updatedAt: '2024-03-12T14:20:00Z',
   },
   {
     id: 5,
@@ -127,8 +123,7 @@ const products = [
     price: 19990000,
     image: 'https://via.placeholder.com/200x200',
     discount: 5,
-    isNew: true,
-    category: 'new',
+    branch: 'oneplus',
     specifications: {
       screen: '6.82 inches LTPO AMOLED',
       processor: 'Snapdragon 8 Gen 3',
@@ -148,15 +143,16 @@ const products = [
       'https://via.placeholder.com/500x500'
     ],
     createdAt: '2024-03-11T11:45:00Z',
-    updatedAt: '2024-03-11T11:45:00Z'
+    updatedAt: '2024-03-11T11:45:00Z',
   }
 ];
 
 // Helper functions to filter products
-const getFeaturedProducts = () => products.filter(product => product.category === 'featured');
+const getFeaturedProducts = () => products.filter(product => product);
+
 const getNewProducts = () => products
-  .filter(product => product.isNew)
   .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
 const getProductById = (id) => products.find(product => product.id === parseInt(id));
 
 export {

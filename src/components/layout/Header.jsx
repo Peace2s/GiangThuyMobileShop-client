@@ -1,18 +1,25 @@
+import React from 'react'
 import { useState } from 'react'
 import { useNavigate, useLocation, Link } from 'react-router-dom'
 import { Layout, Input, Button, Menu, Space, Typography, Row, Col, Badge, Avatar, Tooltip } from 'antd'
-import { SearchOutlined, PhoneOutlined, ShoppingCartOutlined, UserOutlined, HeartOutlined } from '@ant-design/icons'
+import { SearchOutlined, PhoneOutlined, ShoppingCartOutlined, UserOutlined, HeartOutlined, MenuOutlined } from '@ant-design/icons'
 import './Header.css'
 import logo from '../../assets/images/logo.png'
+import { useCart } from '../../contexts/CartContext'
 
 const { Header: AntHeader } = Layout
 const { Search } = Input
+const { Text } = Typography
 
 const Header = ({ searchTerm, setSearchTerm }) => {
+  const { getCartItemsCount } = useCart()
   const [cartItems, setCartItems] = useState(0)
   const navigate = useNavigate()
   const location = useLocation()
-  const currentBranch = new URLSearchParams(location.search).get('branch') || 'all'
+  const searchParams = new URLSearchParams(location.search)
+  const currentBranch = searchParams.get('branch') || ''
+  const isHomePage = location.pathname === '/'
+  const isProductDetailPage = location.pathname.startsWith('/product/')
 
   const brands = [
     { id: 'all', name: 'Tất cả' },
@@ -24,13 +31,50 @@ const Header = ({ searchTerm, setSearchTerm }) => {
   ]
 
   const handleBrandClick = (brandId) => {
-    const searchParams = new URLSearchParams(location.search)
-    if (brandId === 'all') {
-      searchParams.delete('branch')
-    } else {
-      searchParams.set('branch', brandId)
+    if (isProductDetailPage) {
+      if (brandId === 'all') {
+        navigate('/')
+      } else {
+        navigate(`/?branch=${brandId}`)
+      }
+      return
     }
-    navigate(`${location.pathname}?${searchParams.toString()}`)
+
+    if (isHomePage && brandId === 'all') {
+      navigate('/?branch=all')
+      return
+    }
+
+    // Otherwise, just update the branch parameter
+    const newSearchParams = new URLSearchParams(location.search)
+    if (brandId === 'all') {
+      newSearchParams.set('branch', 'all')
+    } else {
+      newSearchParams.set('branch', brandId)
+    }
+    navigate(`${location.pathname}?${newSearchParams.toString()}`)
+  }
+
+  // Determine which brand should be highlighted
+  const getSelectedKey = () => {
+    if (isHomePage && !currentBranch) {
+      return ''; // No highlight on home page
+    }
+    return currentBranch || 'all';
+  }
+
+  const handleCartClick = () => {
+    navigate('/cart')
+  }
+
+  const handleBranchClick = (branch) => {
+    // Nếu đang ở trang giỏ hàng, chuyển về trang chủ với branch tương ứng
+    if (location.pathname === '/cart') {
+      navigate(`/?branch=${branch}`)
+    } else {
+      // Nếu đang ở trang khác, giữ nguyên behavior cũ
+      navigate(`/?branch=${branch}`)
+    }
   }
 
   return (
@@ -67,12 +111,12 @@ const Header = ({ searchTerm, setSearchTerm }) => {
             </Tooltip>
 
             <Tooltip title="Giỏ hàng">
-              <Badge count={cartItems} size="small">
+              <Badge count={getCartItemsCount()} size="small">
                 <Button 
                   type="text" 
                   className="action-item cart-btn" 
                   icon={<ShoppingCartOutlined className="action-icon" />}
-                  onClick={() => console.log('Toggle cart')}
+                  onClick={handleCartClick}
                 >
                   <div className="action-text">
                     <Typography.Text style={{ fontSize: '13px' }}>Giỏ hàng</Typography.Text>
@@ -108,8 +152,8 @@ const Header = ({ searchTerm, setSearchTerm }) => {
             <Menu 
               mode="horizontal" 
               className="brands-list" 
-              selectedKeys={[currentBranch]}
-              onClick={({ key }) => handleBrandClick(key)}
+              selectedKeys={[getSelectedKey()]}
+              onClick={({ key }) => handleBranchClick(key)}
             >
               {brands.map(brand => (
                 <Menu.Item key={brand.id} className="brand-item">

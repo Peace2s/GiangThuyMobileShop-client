@@ -189,4 +189,12 @@
     width: 60px;
     height: 60px;
   }
+}
+
+.back-button {
+  margin-bottom: 24px;
+}
+
+.back-button:hover {
+  color: #1890ff;
 } 

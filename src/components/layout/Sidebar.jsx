@@ -1,15 +1,48 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Radio, Input, Button, Space, Typography, Form, Card } from 'antd'
+import { useNavigate, useLocation } from 'react-router-dom'
 import './Sidebar.css'
 
 const { Title } = Typography
 
 const Sidebar = () => {
+  const navigate = useNavigate()
+  const location = useLocation()
   const [selectedPriceRange, setSelectedPriceRange] = useState(null)
   const [form] = Form.useForm()
+  
+  // Lấy tham số từ URL
+  const searchParams = new URLSearchParams(location.search)
+  const branch = searchParams.get('branch') || 'all'
+  const minPrice = searchParams.get('minPrice')
+  const maxPrice = searchParams.get('maxPrice')
+
+  // Khởi tạo giá trị form từ URL
+  useEffect(() => {
+    if (minPrice || maxPrice) {
+      form.setFieldsValue({
+        minPrice: minPrice || '',
+        maxPrice: maxPrice || ''
+      })
+      
+      // Tìm và đặt radio button tương ứng
+      const matchingRange = priceRanges.find(range => 
+        (range.min === (minPrice ? parseInt(minPrice) : 0)) && 
+        (range.max === (maxPrice ? parseInt(maxPrice) : null))
+      )
+      
+      if (matchingRange) {
+        setSelectedPriceRange(matchingRange)
+      } else {
+        setSelectedPriceRange(null) // Tùy chỉnh
+      }
+    } else {
+      setSelectedPriceRange(priceRanges[0]) // Mặc định là "Tất cả"
+    }
+  }, [minPrice, maxPrice])
 
   const priceRanges = [
-    { id: 1, label: 'Tất cả', value: null },
+    { id: 1, label: 'Tất cả', value: null, min: null, max: null },
     { id: 2, label: 'Dưới 2 triệu', min: 0, max: 2000000 },
     { id: 3, label: 'Từ 2 - 4 triệu', min: 2000000, max: 4000000 },
     { id: 4, label: 'Từ 4 - 7 triệu', min: 4000000, max: 7000000 },
@@ -21,14 +54,48 @@ const Sidebar = () => {
   const handlePriceRangeChange = (e) => {
     const selectedRange = priceRanges.find(range => range.id === e.target.value)
     setSelectedPriceRange(selectedRange)
+    
+    // Cập nhật form
     form.setFieldsValue({
       minPrice: selectedRange?.min || '',
       maxPrice: selectedRange?.max || ''
     })
+    
+    // Cập nhật URL
+    updateUrlWithPriceFilter(selectedRange?.min, selectedRange?.max)
   }
 
   const handleCustomPriceSubmit = (values) => {
-    console.log('Custom price range:', values)
+    const { minPrice, maxPrice } = values
+    updateUrlWithPriceFilter(minPrice, maxPrice)
+  }
+  
+  const updateUrlWithPriceFilter = (minPrice, maxPrice) => {
+    const newSearchParams = new URLSearchParams(location.search)
+    
+    // Giữ lại tham số branch nếu có
+    if (branch && branch !== 'all') {
+      newSearchParams.set('branch', branch)
+    } else {
+      // Nếu không có branch, chuyển về trang tất cả sản phẩm
+      newSearchParams.set('branch', 'all')
+    }
+    
+    // Thêm tham số giá
+    if (minPrice) {
+      newSearchParams.set('minPrice', minPrice)
+    } else {
+      newSearchParams.delete('minPrice')
+    }
+    
+    if (maxPrice) {
+      newSearchParams.set('maxPrice', maxPrice)
+    } else {
+      newSearchParams.delete('maxPrice')
+    }
+    
+    // Cập nhật URL
+    navigate(`${location.pathname}?${newSearchParams.toString()}`)
   }
 
   return (

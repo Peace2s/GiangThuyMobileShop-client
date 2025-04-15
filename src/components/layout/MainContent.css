@@ -99,3 +99,26 @@
   color: #ff4d4f;
   font-weight: 500;
 }
+
+.product-specs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 8px;
+  font-size: 12px;
+}
+
+.spec-item {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 6px;
+  padding-top: 10px;
+  background-color: #f5f5f5;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.spec-item:hover {
+  background-color: #e6f7ff;
+}

@@ -64,4 +64,21 @@ export const authService = {
   },
 };
 
+// Service cho giỏ hàng
+export const cartService = {
+  getCart: () => api.get('/cart'),
+  addToCart: (productData) => api.post('/cart/add', productData),
+  updateCartItem: (cartItemId, quantity) => api.put(`/cart/items/${cartItemId}`, { quantity }),
+  removeFromCart: (cartItemId) => api.delete(`/cart/items/${cartItemId}`),
+  clearCart: () => api.delete('/cart/clear'),
+};
+
+// Service cho đơn hàng
+export const orderService = {
+  createOrder: (orderData) => api.post('/orders', orderData),
+  getUserOrders: () => api.get('/orders'),
+  getOrderDetails: (orderId) => api.get(`/orders/${orderId}`),
+  cancelOrder: (orderId) => api.put(`/orders/${orderId}/cancel`),
+};
+
 export default api; 

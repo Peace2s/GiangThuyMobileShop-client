@@ -2,29 +2,41 @@ import React from 'react';
 import { Table, Button, InputNumber, Typography, Empty, Space, Divider } from 'antd';
 import { DeleteOutlined, ShoppingOutlined } from '@ant-design/icons';
 import { useCart } from '../../contexts/CartContext';
+import { useAuth } from '../../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
+import { formatPrice } from '../../utils/format';
 import './Cart.css';
 
 const { Title, Text } = Typography;
 
 const Cart = () => {
-  const { cartItems, removeFromCart, updateQuantity, getCartTotal } = useCart();
+  const { cartItems, updateQuantity, getCartTotal, loading, removeFromCart } = useCart();
+  const { user } = useAuth();
   const navigate = useNavigate();
+
+  const handleQuantityChange = async (productId, selectedColor, quantity) => {
+    if (quantity < 1) return;
+    await updateQuantity(productId, selectedColor, quantity);
+  };
+
+  const handleRemoveItem = async (productId, selectedColor) => {
+    await removeFromCart(productId, selectedColor);
+  };
 
   const columns = [
     {
       title: 'Sản phẩm',
       dataIndex: 'name',
       key: 'name',
-      render: (text, record) => (
+      render: (name, record) => (
         <div className="cart-product">
           <img 
             src={record.image || 'https://via.placeholder.com/100x100?text=No+Image'} 
-            alt={text} 
+            alt={name} 
             className="cart-product-image"
           />
           <div className="cart-product-info">
-            <Text strong>{text}</Text>
+            <Text strong>{name}</Text>
             {record.selectedColor && (
               <Text type="secondary">Màu: {record.selectedColor}</Text>
             )}
@@ -36,17 +48,10 @@ const Cart = () => {
       title: 'Đơn giá',
       dataIndex: 'price',
       key: 'price',
-      render: (price, record) => (
-        <div className="cart-price">
-          <Text strong className="current-price">
-            {(record.discount_price || price).toLocaleString()}đ
-          </Text>
-          {record.discount_price && (
-            <Text delete type="secondary" className="original-price">
-              {price.toLocaleString()}đ
-            </Text>
-          )}
-        </div>
+      render: (price) => (
+        <Text strong className="current-price">
+          {formatPrice(price)}đ
+        </Text>
       ),
     },
     {
@@ -58,7 +63,7 @@ const Cart = () => {
           min={1}
           max={record.stock_quantity}
           value={quantity}
-          onChange={(value) => updateQuantity(record.id, record.selectedColor, value)}
+          onChange={(value) => handleQuantityChange(record.id, record.selectedColor, value)}
         />
       ),
     },
@@ -67,7 +72,7 @@ const Cart = () => {
       key: 'total',
       render: (_, record) => (
         <Text strong className="cart-item-total">
-          {((record.discount_price || record.price) * record.quantity).toLocaleString()}đ
+          {formatPrice(record.price * record.quantity)}đ
         </Text>
       ),
     },
@@ -79,13 +84,17 @@ const Cart = () => {
           type="text"
           danger
           icon={<DeleteOutlined />}
-          onClick={() => removeFromCart(record.id, record.selectedColor)}
+          onClick={() => handleRemoveItem(record.id, record.selectedColor)}
         />
       ),
     },
   ];
 
-  if (cartItems.length === 0) {
+  if (loading) {
+    return <div>Đang tải...</div>;
+  }
+
+  if (!Array.isArray(cartItems) || cartItems.length === 0) {
     return (
       <div className="cart-empty">
         <Empty
@@ -116,14 +125,24 @@ const Cart = () => {
           <div className="cart-total">
             <Text strong>Tổng tiền:</Text>
             <Text strong className="total-amount">
-              {getCartTotal().toLocaleString()}đ
+              {formatPrice(getCartTotal())}đ
             </Text>
           </div>
           <div className="cart-actions">
             <Button onClick={() => navigate('/')}>
               Tiếp tục mua sắm
             </Button>
-            <Button type="primary" size="large">
+            <Button 
+              type="primary" 
+              size="large" 
+              onClick={() => {
+                if (!user) {
+                  navigate('/login', { state: { from: '/cart' } });
+                } else {
+                  navigate('/checkout');
+                }
+              }}
+            >
               Thanh toán
             </Button>
           </div>

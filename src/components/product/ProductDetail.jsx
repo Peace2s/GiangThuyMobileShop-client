@@ -9,11 +9,15 @@ import './ProductDetail.css'
 const { Title, Text } = Typography
 const { TabPane } = Tabs
 
+// Hàm định dạng số với dấu chấm phân cách hàng nghìn
+const formatPrice = (price) => {
+  return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+}
+
 const ProductDetail = () => {
   const { id } = useParams()
   const location = useLocation()
   const navigate = useNavigate()
-  const [selectedColor, setSelectedColor] = useState('')
   const [quantity, setQuantity] = useState(1)
   const [product, setProduct] = useState(null)
   const [loading, setLoading] = useState(true)
@@ -37,13 +41,11 @@ const ProductDetail = () => {
         const productFromState = location.state?.product
         if (productFromState) {
           setProduct(productFromState)
-          setSelectedColor(productFromState.colors?.[0]?.code || '')
         } else {
           // If not available in state, fetch from API
           const response = await productService.getProductById(id)
           if (response.data) {
             setProduct(response.data)
-            setSelectedColor(response.data.colors?.[0]?.code || '')
           }
         }
       } catch (error) {
@@ -72,12 +74,8 @@ const ProductDetail = () => {
       return;
     }
 
-    if (product.colors && product.colors.length > 0 && !selectedColor) {
-      message.warning('Vui lòng chọn màu sắc');
-      return;
-    }
 
-    addToCart(product, quantity, selectedColor);
+    addToCart(product, quantity);
   }
 
   return (
@@ -111,11 +109,11 @@ const ProductDetail = () => {
 
             <div className="price-section">
               <Title level={2} className="discounted-price">
-                {discountedPrice.toLocaleString()}đ
+                {formatPrice(discountedPrice)}đ
               </Title>
               {product.discount_price && (
                 <Text delete type="secondary" className="original-price">
-                  {product.price.toLocaleString()}đ
+                  {formatPrice(product.price)}đ
                 </Text>
               )}
               {product.discount_price && (
@@ -153,6 +151,9 @@ const ProductDetail = () => {
                 value={quantity}
                 onChange={setQuantity}
               />
+              <Text type="secondary" style={{ marginLeft: 10 }}>
+                Còn lại: {product.stock_quantity || 0} sản phẩm
+              </Text>
             </div>
 
             <div className="action-section">

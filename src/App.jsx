@@ -8,9 +8,14 @@ import Login from './components/auth/Login'
 import Register from './components/auth/Register'
 import ProductDetail from './components/product/ProductDetail'
 import Cart from './components/cart/Cart'
+import Checkout from './components/checkout/Checkout'
+import BranchMenu from './components/layout/BranchMenu'
 import { CartProvider } from './contexts/CartContext'
+import { AuthProvider } from './contexts/AuthContext'
+import { ToastContainer } from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css'
 import './App.css'
-
+  
 // Wrapper component to handle layout
 const AppLayout = () => {
   const [searchTerm, setSearchTerm] = useState('')
@@ -19,14 +24,18 @@ const AppLayout = () => {
   const isRegisterPage = location.pathname === '/register'
   const isProductDetail = location.pathname.startsWith('/product/') && location.pathname !== '/product'
   const isCartPage = location.pathname === '/cart'
+  const isCheckoutPage = location.pathname === '/checkout'
+  const isHomePage = location.pathname === '/'
 
   return (
     <div className="app">
       {!isLoginPage && !isRegisterPage && <Header searchTerm={searchTerm} setSearchTerm={setSearchTerm} />}
+      {isHomePage && <BranchMenu />}
       <Routes>
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/cart" element={<Cart />} />
+        <Route path="/checkout" element={<Checkout />} />
         <Route path="/product/:id" element={
           <div className="container-fluid">
             <ProductDetail />
@@ -51,18 +60,21 @@ const AppLayout = () => {
           </div>
         } />
       </Routes>
-      {!isLoginPage && !isRegisterPage && !isProductDetail && !isCartPage && <Footer />}
+      {!isLoginPage && !isRegisterPage && !isProductDetail && !isCartPage && !isCheckoutPage && <Footer />}
     </div>
   )
 }
 
 function App() {
   return (
-    <CartProvider>
-      <Router>
-        <AppLayout />
-      </Router>
-    </CartProvider>
+    <AuthProvider>
+      <CartProvider>
+        <Router>
+          <AppLayout />
+          <ToastContainer />
+        </Router>
+      </CartProvider>
+    </AuthProvider>
   )
 }
 

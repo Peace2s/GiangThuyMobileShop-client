@@ -1,81 +1,49 @@
 import React from 'react'
 import { useState } from 'react'
 import { useNavigate, useLocation, Link } from 'react-router-dom'
-import { Layout, Input, Button, Menu, Space, Typography, Row, Col, Badge, Avatar, Tooltip } from 'antd'
-import { SearchOutlined, PhoneOutlined, ShoppingCartOutlined, UserOutlined, HeartOutlined, MenuOutlined } from '@ant-design/icons'
+import { Layout, Input, Button, Menu, Space, Typography, Row, Col, Badge, Avatar, Tooltip, Dropdown } from 'antd'
+import { SearchOutlined, PhoneOutlined, ShoppingCartOutlined, UserOutlined, HeartOutlined, MenuOutlined, LogoutOutlined } from '@ant-design/icons'
 import './Header.css'
 import logo from '../../assets/images/logo.png'
 import { useCart } from '../../contexts/CartContext'
+import { useAuth } from '../../contexts/AuthContext'
 
 const { Header: AntHeader } = Layout
 const { Search } = Input
 const { Text } = Typography
 
 const Header = ({ searchTerm, setSearchTerm }) => {
-  const { getCartItemsCount } = useCart()
+  const { getCartCount } = useCart()
+  const { user, logout, isAuthenticated } = useAuth()
   const [cartItems, setCartItems] = useState(0)
   const navigate = useNavigate()
   const location = useLocation()
-  const searchParams = new URLSearchParams(location.search)
-  const currentBranch = searchParams.get('branch') || ''
   const isHomePage = location.pathname === '/'
   const isProductDetailPage = location.pathname.startsWith('/product/')
-
-  const brands = [
-    { id: 'all', name: 'Tất cả' },
-    { id: 'apple', name: 'Apple' },
-    { id: 'samsung', name: 'Samsung' },
-    { id: 'oppo', name: 'Oppo' },
-    { id: 'xiaomi', name: 'Xiaomi' },
-    { id: 'oneplus', name: 'OnePlus' }
-  ]
-
-  const handleBrandClick = (brandId) => {
-    if (isProductDetailPage) {
-      if (brandId === 'all') {
-        navigate('/')
-      } else {
-        navigate(`/?branch=${brandId}`)
-      }
-      return
-    }
-
-    if (isHomePage && brandId === 'all') {
-      navigate('/?branch=all')
-      return
-    }
-
-    // Otherwise, just update the branch parameter
-    const newSearchParams = new URLSearchParams(location.search)
-    if (brandId === 'all') {
-      newSearchParams.set('branch', 'all')
-    } else {
-      newSearchParams.set('branch', brandId)
-    }
-    navigate(`${location.pathname}?${newSearchParams.toString()}`)
-  }
-
-  // Determine which brand should be highlighted
-  const getSelectedKey = () => {
-    if (isHomePage && !currentBranch) {
-      return ''; // No highlight on home page
-    }
-    return currentBranch || 'all';
-  }
 
   const handleCartClick = () => {
     navigate('/cart')
   }
 
-  const handleBranchClick = (branch) => {
-    // Nếu đang ở trang giỏ hàng, chuyển về trang chủ với branch tương ứng
-    if (location.pathname === '/cart') {
-      navigate(`/?branch=${branch}`)
-    } else {
-      // Nếu đang ở trang khác, giữ nguyên behavior cũ
-      navigate(`/?branch=${branch}`)
-    }
+  const handleLogout = () => {
+    logout();
+    navigate('/');
   }
+
+  const userMenu = (
+    <Menu>
+      <Menu.Item key="profile" icon={<UserOutlined />}>
+        <Link to="/profile">Tài khoản của tôi</Link>
+      </Menu.Item>
+      <Menu.Item key="orders" icon={<ShoppingCartOutlined />}>
+        <Link to="/orders">Đơn hàng của tôi</Link>
+      </Menu.Item>
+      <Menu.Divider />
+      <Menu.Item key="logout" icon={<LogoutOutlined />} onClick={handleLogout}>
+        Đăng xuất
+      </Menu.Item>
+    </Menu>
+  );
 
   return (
     <AntHeader className="header">
@@ -100,18 +68,8 @@ const Header = ({ searchTerm, setSearchTerm }) => {
 
         <Col className="nav-actions">
           <Space size="large">
-            <Tooltip title="Gọi mua hàng: 1800.2097">
-              <a href="tel:1800-2097" className="action-item">
-                <PhoneOutlined className="action-icon" />
-                <div className="action-text">
-                  <Typography.Text type="secondary" style={{ fontSize: '12px' }}>Gọi mua hàng:</Typography.Text>
-                  <Typography.Text strong style={{ fontSize: '13px' }}>1800.2097</Typography.Text>
-                </div>
-              </a>
-            </Tooltip>
-
             <Tooltip title="Giỏ hàng">
-              <Badge count={getCartItemsCount()} size="small">
+              <Badge count={getCartCount()} size="small">
                 <Button 
                   type="text" 
                   className="action-item cart-btn" 
@@ -125,45 +83,35 @@ const Header = ({ searchTerm, setSearchTerm }) => {
               </Badge>
             </Tooltip>
 
-            <Space>
-              <Button 
-                type="default" 
-                className="btn-login" 
-                icon={<UserOutlined />}
-                onClick={() => navigate('/login')}
-              >
-                Đăng nhập
-              </Button>
-              <Button 
-                type="primary" 
-                className="btn-register" 
-                onClick={() => console.log('Register clicked')}
-              >
-                Đăng ký
-              </Button>
-            </Space>
+            {isAuthenticated ? (
+              <Dropdown overlay={userMenu} trigger={['click']} placement="bottomRight">
+                <div className="user-menu-trigger">
+                  <Avatar icon={<UserOutlined />} />
+                  <span className="user-name">Xin chào, {user.fullName}</span>
+                </div>
+              </Dropdown>
+            ) : (
+              <Space>
+                <Button 
+                  type="default" 
+                  className="btn-login" 
+                  icon={<UserOutlined />}
+                  onClick={() => navigate('/login')}
+                >
+                  Đăng nhập
+                </Button>
+                <Button 
+                  type="primary" 
+                  className="btn-register" 
+                  onClick={() => navigate('/register')}
+                >
+                  Đăng ký
+                </Button>
+              </Space>
+            )}
           </Space>
         </Col>
       </Row>
-
-      <div className="brands-filter">
-        <Row justify="center">
-          <Col>
-            <Menu 
-              mode="horizontal" 
-              className="brands-list" 
-              selectedKeys={[getSelectedKey()]}
-              onClick={({ key }) => handleBranchClick(key)}
-            >
-              {brands.map(brand => (
-                <Menu.Item key={brand.id} className="brand-item">
-                  {brand.name}
-                </Menu.Item>
-              ))}
-            </Menu>
-          </Col>
-        </Row>
-      </div>
     </AntHeader>
   )
 }

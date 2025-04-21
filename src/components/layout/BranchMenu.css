@@ -1,0 +1,68 @@
+.brands-filter {
+  background-color: white;
+  padding: 0;
+  border: none;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  position: relative;
+}
+
+.brands-list {
+  background: transparent;
+  border-bottom: none;
+  display: flex;
+  justify-content: center;
+  line-height: 46px;
+  min-height: 46px;
+}
+
+.brands-list .ant-menu-item {
+  padding: 0 20px;
+  margin: 0 10px !important;
+  font-size: 14px;
+  color: #666;
+  line-height: 46px;
+  height: 46px;
+  background: transparent !important;
+  transition: all 0.3s ease;
+}
+
+.brands-list .ant-menu-item:hover {
+  color: #1890ff;
+}
+
+.brands-list .ant-menu-item-selected {
+  color: #1890ff !important;
+  font-weight: 500;
+  border-bottom: 2px solid #1890ff !important;
+}
+
+.brands-list .ant-menu-item::after {
+  display: none !important;
+}
+
+/* Override Ant Design default styles */
+.ant-menu-horizontal {
+  border-bottom: none;
+  line-height: 46px;
+}
+
+.ant-menu-horizontal > .ant-menu-item::after {
+  display: none !important;
+}
+
+.ant-menu-item {
+  margin: 0 5px !important;
+  background: transparent !important;
+}
+
+.ant-menu-item a {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.ant-menu-item-selected {
+  background-color: rgba(255, 255, 255, 0.15) !important;
+}
+
+.ant-menu-item-selected a {
+  color: white !important;
+} 

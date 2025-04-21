@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { Form, Input, Button, Card, Typography, message, Divider } from 'antd';
 import { UserOutlined, LockOutlined } from '@ant-design/icons';
-import { Link, useNavigate } from 'react-router-dom';
-import { authService } from '../../services/api';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { useAuth } from '../../contexts/AuthContext';
+import { useCart } from '../../contexts/CartContext';
 import './Login.css';
 
 const { Title, Text } = Typography;
@@ -10,23 +11,35 @@ const { Title, Text } = Typography;
 const Login = () => {
   const [form] = Form.useForm();
   const navigate = useNavigate();
+  const location = useLocation();
   const [loading, setLoading] = useState(false);
+  const { login } = useAuth();
+  const { mergeCartWithServer } = useCart();
 
   const onFinish = async (values) => {
     try {
       setLoading(true);
-      const response = await authService.login(values);
+      const result = await login(values);
       
-      if (response.data) {
-        // Lưu token vào localStorage
-        localStorage.setItem('token', response.data.token);
-        localStorage.setItem('user', JSON.stringify(response.data.user));
-        
-        message.success('Đăng nhập thành công!');
-        navigate('/');
+      if (result.success) {
+        // Đợi merge giỏ hàng hoàn tất trước khi chuyển trang
+        try {
+          await mergeCartWithServer();
+          message.success('Đăng nhập thành công!');
+          const from = location.state?.from || '/';
+          navigate(from);
+        } catch (mergeError) {
+          console.error('Error merging cart:', mergeError);
+          // Vẫn chuyển trang ngay cả khi merge thất bại
+          message.success('Đăng nhập thành công!');
+          const from = location.state?.from || '/';
+          navigate(from);
+        }
+      } else {
+        message.error(result.message);
       }
     } catch (error) {
-      message.error(error.response?.data?.message || 'Đăng nhập thất bại. Vui lòng thử lại.');
+      message.error('Đăng nhập thất bại. Vui lòng thử lại.');
     } finally {
       setLoading(false);
     }

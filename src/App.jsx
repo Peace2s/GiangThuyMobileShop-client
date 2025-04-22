@@ -10,6 +10,7 @@ import ProductDetail from './components/product/ProductDetail'
 import Cart from './components/cart/Cart'
 import Checkout from './components/checkout/Checkout'
 import BranchMenu from './components/layout/BranchMenu'
+import Orders from './components/orders/Orders'
 import { CartProvider } from './contexts/CartContext'
 import { AuthProvider } from './contexts/AuthContext'
 import { ToastContainer } from 'react-toastify'
@@ -25,6 +26,7 @@ const AppLayout = () => {
   const isProductDetail = location.pathname.startsWith('/product/') && location.pathname !== '/product'
   const isCartPage = location.pathname === '/cart'
   const isCheckoutPage = location.pathname === '/checkout'
+  const isOrdersPage = location.pathname === '/orders'
   const isHomePage = location.pathname === '/'
 
   return (
@@ -36,6 +38,7 @@ const AppLayout = () => {
         <Route path="/register" element={<Register />} />
         <Route path="/cart" element={<Cart />} />
         <Route path="/checkout" element={<Checkout />} />
+        <Route path="/orders" element={<Orders />} />
         <Route path="/product/:id" element={
           <div className="container-fluid">
             <ProductDetail />
@@ -60,7 +63,7 @@ const AppLayout = () => {
           </div>
         } />
       </Routes>
-      {!isLoginPage && !isRegisterPage && !isProductDetail && !isCartPage && !isCheckoutPage && <Footer />}
+      {!isLoginPage && !isRegisterPage && !isProductDetail && !isCartPage && !isCheckoutPage && !isOrdersPage && <Footer />}
     </div>
   )
 }

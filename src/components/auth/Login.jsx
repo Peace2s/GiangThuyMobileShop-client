@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Form, Input, Button, Card, Typography, message, Divider } from 'antd';
-import { UserOutlined, LockOutlined } from '@ant-design/icons';
+import { UserOutlined, LockOutlined, HomeOutlined } from '@ant-design/icons';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { useCart } from '../../contexts/CartContext';
@@ -45,12 +45,26 @@ const Login = () => {
     }
   };
 
+  const goToHome = () => {
+    navigate('/');
+  };
+
   return (
     <div className="login-container">
+      <Button 
+        icon={<HomeOutlined />} 
+        onClick={goToHome}
+        type="dashed"
+        className="home-button"
+      >
+        Trang chủ
+      </Button>
+
       <Card className="login-card">
         <Title level={2} className="login-title">
           Đăng nhập
         </Title>
+        
         <Form
           form={form}
           name="login"
@@ -84,6 +98,10 @@ const Login = () => {
               {
                 required: true,
                 message: 'Vui lòng nhập mật khẩu!',
+              },
+              {
+                min: 6,
+                message: 'Mật khẩu phải có ít nhất 6 ký tự!',
               },
             ]}
           >

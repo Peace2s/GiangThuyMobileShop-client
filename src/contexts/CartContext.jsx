@@ -44,6 +44,8 @@ export const CartProvider = ({ children }) => {
       if (savedCart) {
         const parsedCart = JSON.parse(savedCart);
         setCartItems(Array.isArray(parsedCart) ? parsedCart : []);
+      } else {
+        setCartItems([]); // Reset cart items nếu không có dữ liệu trong localStorage
       }
       setLoading(false);
     } catch (error) {
@@ -107,7 +109,7 @@ export const CartProvider = ({ children }) => {
 
           return [...prevItems, { 
             ...product, 
-            productId: product.id, // Lưu cả productId
+            productId: product.id,
             quantity, 
             selectedColor 
           }];
@@ -174,6 +176,7 @@ export const CartProvider = ({ children }) => {
       } else {
         // Nếu chưa đăng nhập, chỉ cập nhật localStorage
         setCartItems([]);
+        localStorage.removeItem(CART_STORAGE_KEY); // Xóa giỏ hàng khỏi localStorage
       }
       toast.success('Đã xóa giỏ hàng');
     } catch (error) {
@@ -202,10 +205,27 @@ export const CartProvider = ({ children }) => {
           });
         }
         
-        // Xóa giỏ hàng local
+        // Xóa giỏ hàng local và cập nhật state
         localStorage.removeItem(CART_STORAGE_KEY);
+        setCartItems([]); // Reset cart items state
         
         // Cập nhật lại state từ server
+        const response = await cartService.getCart();
+        if (response.data && response.data.CartItems) {
+          const cartData = response.data.CartItems.map(item => ({
+            id: item.id,
+            productId: item.productId,
+            name: item.product?.name || '',
+            image: item.product?.image || '',
+            price: item.price,
+            quantity: item.quantity,
+            selectedColor: item.selectedColor,
+            stock_quantity: item.product?.stock_quantity || 0
+          }));
+          setCartItems(cartData);
+        }
+      } else {
+        // Nếu không có giỏ hàng local, vẫn cập nhật từ server
         const response = await cartService.getCart();
         if (response.data && response.data.CartItems) {
           const cartData = response.data.CartItems.map(item => ({

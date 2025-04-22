@@ -30,20 +30,28 @@ const Header = ({ searchTerm, setSearchTerm }) => {
     navigate('/');
   }
 
-  const userMenu = (
-    <Menu>
-      <Menu.Item key="profile" icon={<UserOutlined />}>
-        <Link to="/profile">Tài khoản của tôi</Link>
-      </Menu.Item>
-      <Menu.Item key="orders" icon={<ShoppingCartOutlined />}>
-        <Link to="/orders">Đơn hàng của tôi</Link>
-      </Menu.Item>
-      <Menu.Divider />
-      <Menu.Item key="logout" icon={<LogoutOutlined />} onClick={handleLogout}>
-        Đăng xuất
-      </Menu.Item>
-    </Menu>
-  );
+  const userMenu = {
+    items: [
+      {
+        key: 'profile',
+        icon: <UserOutlined />,
+        label: 'Thông tin cá nhân',
+        onClick: () => navigate('/profile')
+      },
+      {
+        key: 'orders',
+        icon: <ShoppingCartOutlined />,
+        label: 'Đơn hàng',
+        onClick: () => navigate('/orders')
+      },
+      {
+        key: 'logout',
+        icon: <LogoutOutlined />,
+        label: 'Đăng xuất',
+        onClick: handleLogout
+      }
+    ]
+  };
 
   return (
     <AntHeader className="header">
@@ -84,11 +92,11 @@ const Header = ({ searchTerm, setSearchTerm }) => {
             </Tooltip>
 
             {isAuthenticated ? (
-              <Dropdown overlay={userMenu} trigger={['click']} placement="bottomRight">
-                <div className="user-menu-trigger">
+              <Dropdown menu={userMenu} placement="bottomRight">
+                <Button type="text" className="user-button">
                   <Avatar icon={<UserOutlined />} />
                   <span className="user-name">Xin chào, {user.fullName}</span>
-                </div>
+                </Button>
               </Dropdown>
             ) : (
               <Space>

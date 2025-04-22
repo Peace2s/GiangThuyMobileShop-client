@@ -3,21 +3,46 @@
   justify-content: center;
   align-items: center;
   min-height: 100vh;
-  background-color: #f5f5f5;
+  background-color: #f0f2f5;
   padding: 20px;
+  position: relative;
 }
 
 .register-card {
   width: 100%;
-  max-width: 500px;
+  max-width: 420px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   border-radius: 8px;
 }
 
-.register-title {
-  text-align: center;
-  margin-bottom: 24px;
+.register-card .ant-card-body {
+  padding: 40px;
+}
+
+.home-button {
+  position: fixed !important;
+  top: 20px;
+  left: 20px;
+  z-index: 1000;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
   color: #1890ff;
+}
+
+.home-button:hover {
+  color: #40a9ff;
+}
+
+.home-button .anticon {
+  font-size: 18px;
+}
+
+.register-title {
+  margin-bottom: 24px !important;
+  color: #1890ff;
+  text-align: center;
 }
 
 .register-footer {
@@ -25,12 +50,45 @@
   justify-content: center;
   align-items: center;
   gap: 8px;
-  margin-top: 16px;
 }
 
-/* Responsive styles */
-@media (max-width: 576px) {
+/* Override Ant Design styles */
+.register-card .ant-form-item-label > label {
+  font-weight: 500;
+  color: #333;
+}
+
+.register-card .ant-input-affix-wrapper {
+  padding: 8px 11px;
+  height: auto;
+}
+
+.register-card .ant-input-affix-wrapper > input.ant-input {
+  font-size: 16px;
+}
+
+.register-card .ant-btn {
+  height: 45px;
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.register-card .ant-form-item {
+  margin-bottom: 24px;
+}
+
+.register-card .ant-form-item:last-child {
+  margin-bottom: 0;
+}
+
+/* Responsive adjustments */
+@media (max-width: 480px) {
   .register-card {
-    box-shadow: none;
+    margin: 0 16px;
+  }
+  
+  .home-button {
+    top: 10px;
+    left: 10px;
   }
 } 

@@ -1,5 +1,6 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
 import { authService } from '../services/api';
+import Cookies from 'js-cookie';
 
 const AuthContext = createContext();
 
@@ -14,7 +15,7 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     // Kiểm tra xem người dùng đã đăng nhập chưa khi tải trang
     const checkAuth = () => {
-      const storedUser = localStorage.getItem('user');
+      const storedUser = Cookies.get('user');
       if (storedUser) {
         setUser(JSON.parse(storedUser));
       }
@@ -28,9 +29,17 @@ export const AuthProvider = ({ children }) => {
     try {
       const response = await authService.login(credentials);
       if (response.data) {
-        // Lưu token và thông tin người dùng vào localStorage
-        localStorage.setItem('token', response.data.token);
-        localStorage.setItem('user', JSON.stringify(response.data.user));
+        // Lưu token và thông tin người dùng vào cookies
+        Cookies.set('token', response.data.token, { 
+          expires: 1, // 1 ngày
+          secure: process.env.NODE_ENV === 'production',
+          sameSite: 'strict'
+        });
+        Cookies.set('user', JSON.stringify(response.data.user), { 
+          expires: 1, // 1 ngày
+          secure: process.env.NODE_ENV === 'production',
+          sameSite: 'strict'
+        });
         
         // Cập nhật state
         setUser(response.data.user);
@@ -63,9 +72,9 @@ export const AuthProvider = ({ children }) => {
   };
 
   const logout = () => {
-    // Xóa token và thông tin người dùng khỏi localStorage
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
+    // Xóa token và thông tin người dùng khỏi cookies
+    Cookies.remove('token');
+    Cookies.remove('user');
     
     // Cập nhật state
     setUser(null);

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Form, Input, Button, Card, Typography, message, Divider } from 'antd';
-import { UserOutlined, LockOutlined, MailOutlined, PhoneOutlined } from '@ant-design/icons';
+import { UserOutlined, LockOutlined, MailOutlined, PhoneOutlined, HomeOutlined } from '@ant-design/icons';
 import { Link, useNavigate } from 'react-router-dom';
 import { authService } from '../../services/api';
 import './Register.css';
@@ -28,8 +28,21 @@ const Register = () => {
     }
   };
 
+  const goToHome = () => {
+    navigate('/');
+  };
+
   return (
     <div className="register-container">
+      <Button 
+        icon={<HomeOutlined />} 
+        onClick={goToHome}
+        type="dashed"
+        className="home-button"
+      >
+        Trang chủ
+      </Button>
+
       <Card className="register-card">
         <Title level={2} className="register-title">
           Đăng ký tài khoản

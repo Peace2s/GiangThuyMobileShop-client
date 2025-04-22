@@ -18,6 +18,7 @@ const ProductDetail = () => {
   const { id } = useParams()
   const location = useLocation()
   const navigate = useNavigate()
+  const [selectedColor, setSelectedColor] = useState('')
   const [quantity, setQuantity] = useState(1)
   const [product, setProduct] = useState(null)
   const [loading, setLoading] = useState(true)
@@ -41,11 +42,13 @@ const ProductDetail = () => {
         const productFromState = location.state?.product
         if (productFromState) {
           setProduct(productFromState)
+          setSelectedColor(productFromState.colors?.[0]?.code || '')
         } else {
           // If not available in state, fetch from API
           const response = await productService.getProductById(id)
           if (response.data) {
             setProduct(response.data)
+            setSelectedColor(response.data.colors?.[0]?.code || '')
           }
         }
       } catch (error) {
@@ -74,8 +77,12 @@ const ProductDetail = () => {
       return;
     }
 
+    if (product.colors && product.colors.length > 0 && !selectedColor) {
+      message.warning('Vui lòng chọn màu sắc');
+      return;
+    }
 
-    addToCart(product, quantity);
+    addToCart(product, quantity, selectedColor);
   }
 
   return (

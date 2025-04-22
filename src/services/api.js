@@ -1,4 +1,5 @@
 import axios from 'axios';
+import Cookies from 'js-cookie';
 
 const API_URL = 'http://localhost:3000/api';
 
@@ -13,7 +14,7 @@ const api = axios.create({
 // Thêm interceptor để tự động gắn token vào header
 api.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem('token');
+    const token = Cookies.get('token');
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -30,8 +31,8 @@ api.interceptors.response.use(
   (error) => {
     if (error.response && error.response.status === 401) {
       // Xóa token và thông tin user khi token hết hạn
-      localStorage.removeItem('token');
-      localStorage.removeItem('user');
+      Cookies.remove('token');
+      Cookies.remove('user');
       window.location.href = '/login';
     }
     return Promise.reject(error);
@@ -52,15 +53,15 @@ export const authService = {
   login: (credentials) => api.post('/auth/login', credentials),
   register: (userData) => api.post('/auth/register', userData),
   logout: () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
+    Cookies.remove('token');
+    Cookies.remove('user');
   },
   getCurrentUser: () => {
-    const user = localStorage.getItem('user');
+    const user = Cookies.get('user');
     return user ? JSON.parse(user) : null;
   },
   isAuthenticated: () => {
-    return !!localStorage.getItem('token');
+    return !!Cookies.get('token');
   },
 };
 

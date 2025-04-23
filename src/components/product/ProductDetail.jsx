@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { useParams, useLocation, useNavigate } from 'react-router-dom'
 import { Row, Col, Typography, Button, Space, Rate, Tag, Radio, InputNumber, Tabs, Image, message } from 'antd'
 import { ShoppingCartOutlined, HeartOutlined, ArrowLeftOutlined } from '@ant-design/icons'
-import { productService } from '../../services/api'
+import { productService } from '../../services/home.service'
 import { useCart } from '../../contexts/CartContext'
 import './ProductDetail.css'
 

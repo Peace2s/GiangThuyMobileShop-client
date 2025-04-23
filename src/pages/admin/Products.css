@@ -1,0 +1,113 @@
+.products-container {
+  padding: 24px;
+}
+
+.products-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.products-header h1 {
+  margin: 0;
+  color: #1890ff;
+}
+
+.ant-table {
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.ant-table-thead > tr > th {
+  background: #fafafa;
+  font-weight: 500;
+}
+
+.ant-table-tbody > tr:hover > td {
+  background: #f5f5f5;
+}
+
+.ant-upload.ant-upload-select-picture-card {
+  width: 100%;
+  height: 200px;
+  margin: 0;
+}
+
+.ant-upload.ant-upload-select-picture-card > .ant-upload {
+  padding: 0;
+}
+
+.ant-upload.ant-upload-select-picture-card img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Form styles */
+.ant-form-item {
+  margin-bottom: 16px;
+}
+
+.ant-form-item-label {
+  font-weight: 500;
+}
+
+.ant-input-number {
+  width: 100%;
+}
+
+.ant-select {
+  width: 100%;
+}
+
+/* Responsive styles */
+@media (max-width: 576px) {
+  .products-container {
+    padding: 16px;
+  }
+
+  .products-header {
+    flex-direction: column;
+    gap: 16px;
+    align-items: flex-start;
+  }
+
+  .ant-table {
+    font-size: 14px;
+  }
+
+  .ant-upload.ant-upload-select-picture-card {
+    height: 150px;
+  }
+
+  .ant-modal {
+    width: 95% !important;
+    max-width: 95%;
+  }
+}
+
+/* Custom styles for form layout */
+.ant-form {
+  max-height: 70vh;
+  overflow-y: auto;
+  padding-right: 8px;
+}
+
+.ant-form::-webkit-scrollbar {
+  width: 6px;
+}
+
+.ant-form::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+.ant-form::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 3px;
+}
+
+.ant-form::-webkit-scrollbar-thumb:hover {
+  background: #555;
+} 

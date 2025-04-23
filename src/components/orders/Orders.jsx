@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Table, Tag, Button, Space, Typography, Card, message, Image, Modal, Descriptions, Divider } from 'antd';
-import { orderService } from '../../services/api';
+import { orderService } from '../../services/home.service';
 import { formatCurrency } from '../../utils/format';
 import './Orders.css';
 

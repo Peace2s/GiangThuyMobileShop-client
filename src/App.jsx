@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom'
+import { BrowserRouter as Router, Routes, Route, useLocation, Navigate } from 'react-router-dom'
 import Header from './components/layout/Header'
 import Sidebar from './components/layout/Sidebar'
 import MainContent from './components/layout/MainContent'
@@ -16,7 +16,15 @@ import { AuthProvider } from './contexts/AuthContext'
 import { ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 import './App.css'
-  
+import { ConfigProvider } from 'antd'
+import viVN from 'antd/locale/vi_VN'
+import AdminLayout from './layouts/AdminLayout'
+import AdminLogin from './pages/admin/Login'
+import Dashboard from './pages/admin/Dashboard'
+import Products from './pages/admin/Products'
+import AdminOrders from './pages/admin/Orders'
+import Users from './pages/admin/Users'
+
 // Wrapper component to handle layout
 const AppLayout = () => {
   const [searchTerm, setSearchTerm] = useState('')
@@ -33,51 +41,81 @@ const AppLayout = () => {
     <div className="app">
       {!isLoginPage && !isRegisterPage && <Header searchTerm={searchTerm} setSearchTerm={setSearchTerm} />}
       {isHomePage && <BranchMenu />}
-      <Routes>
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/cart" element={<Cart />} />
-        <Route path="/checkout" element={<Checkout />} />
-        <Route path="/orders" element={<Orders />} />
-        <Route path="/product/:id" element={
-          <div className="container-fluid">
-            <ProductDetail />
-          </div>
-        } />
-        <Route path="/product" element={
-          <div className="main-container">
-            <Sidebar />
-            <MainContent showAllProducts={true} />
-          </div>
-        } />
-        <Route path="/products" element={
-          <div className="main-container">
-            <Sidebar />
-            <MainContent />
-          </div>
-        } />
-        <Route path="/" element={
-          <div className="main-container">
-            <Sidebar />
-            <MainContent />
-          </div>
-        } />
-      </Routes>
+      <div className="main-content">
+        <Routes>
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/cart" element={<Cart />} />
+          <Route path="/checkout" element={<Checkout />} />
+          <Route path="/orders" element={<Orders />} />
+          <Route path="/product/:id" element={
+            <div className="container-fluid">
+              <ProductDetail />
+            </div>
+          } />
+          <Route path="/product" element={
+            <div className="main-container">
+              <Sidebar />
+              <MainContent showAllProducts={true} />
+            </div>
+          } />
+          <Route path="/products" element={
+            <div className="main-container">
+              <Sidebar />
+              <MainContent />
+            </div>
+          } />
+          <Route path="/" element={
+            <div className="main-container">
+              <Sidebar />
+              <MainContent />
+            </div>
+          } />
+        </Routes>
+      </div>
       {!isLoginPage && !isRegisterPage && !isProductDetail && !isCartPage && !isCheckoutPage && !isOrdersPage && <Footer />}
     </div>
   )
 }
 
-function App() {
+// Protected Route component
+const ProtectedRoute = ({ children }) => {
+  const isAuthenticated = localStorage.getItem('adminToken')
+  return isAuthenticated ? children : <Navigate to="/admin/login" />
+}
+
+const App = () => {
   return (
-    <AuthProvider>
-      <CartProvider>
-        <Router>
-          <AppLayout />
-          <ToastContainer />
-        </Router>
-      </CartProvider>
-    </AuthProvider>
+    <ConfigProvider locale={viVN}>
+      <AuthProvider>
+        <CartProvider>
+          <Router>
+            <Routes>
+              {/* Admin Routes */}
+              <Route path="/admin/login" element={<AdminLogin />} />
+              <Route
+                path="/admin"
+                element={
+                  <ProtectedRoute>
+                    <AdminLayout />
+                  </ProtectedRoute>
+                }
+              >
+                <Route index element={<Navigate to="/admin/dashboard" />} />
+                <Route path="dashboard" element={<Dashboard />} />
+                <Route path="products" element={<Products />} />
+                <Route path="orders" element={<AdminOrders />} />
+                <Route path="users" element={<Users />} />
+              </Route>
+
+              {/* Client Routes */}
+              <Route path="/*" element={<AppLayout />} />
+            </Routes>
+            <ToastContainer />
+          </Router>
+        </CartProvider>
+      </AuthProvider>
+    </ConfigProvider>
   )
 }
 

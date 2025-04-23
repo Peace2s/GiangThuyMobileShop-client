@@ -3,7 +3,6 @@ import Cookies from 'js-cookie';
 
 const API_URL = 'http://localhost:3000/api';
 
-// Tạo instance axios với cấu hình mặc định
 const api = axios.create({
   baseURL: API_URL,
   headers: {
@@ -11,7 +10,6 @@ const api = axios.create({
   },
 });
 
-// Thêm interceptor để tự động gắn token vào header
 api.interceptors.request.use(
   (config) => {
     const token = Cookies.get('token');

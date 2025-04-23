@@ -1,7 +1,7 @@
 import { Typography, Button, Row, Col, Card, Tag, Tooltip } from 'antd'
 import { RightOutlined, MobileOutlined, CameraOutlined, ThunderboltOutlined, DesktopOutlined, FireOutlined, ShoppingCartOutlined } from '@ant-design/icons'
 import { useNavigate, useLocation } from 'react-router-dom'
-import { productService } from '../../services/api'
+import { productService } from '../../services/home.service'
 import { useCart } from '../../contexts/CartContext'
 import './MainContent.css'
 import Banner from './Banner'

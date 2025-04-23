@@ -67,8 +67,8 @@ export const CartProvider = ({ children }) => {
           image: item.product?.image || '',
           price: item.price,
           quantity: item.quantity,
-          selectedColor: item.selectedColor,
-          stock_quantity: item.product?.stock_quantity || 0
+          stock_quantity: item.product?.stock_quantity || 0,
+          totalPrice: item.totalPrice
         }));
         setCartItems(cartData);
       } else {
@@ -82,26 +82,25 @@ export const CartProvider = ({ children }) => {
     }
   };
 
-  const addToCart = async (product, quantity = 1, selectedColor = null) => {
+  const addToCart = async (product, quantity = 1) => {
     try {
       if (user) {
         // Nếu đã đăng nhập, gọi API
         await cartService.addToCart({
           productId: product.id,
-          quantity,
-          selectedColor
+          quantity
         });
         await fetchCartFromServer(); // Refresh cart from server
       } else {
         // Nếu chưa đăng nhập, chỉ cập nhật localStorage
         setCartItems(prevItems => {
           const existingItem = prevItems.find(
-            item => item.productId === product.id && item.selectedColor === selectedColor
+            item => item.productId === product.id
           );
 
           if (existingItem) {
             return prevItems.map(item =>
-              item.productId === product.id && item.selectedColor === selectedColor
+              item.productId === product.id
                 ? { ...item, quantity: item.quantity + quantity }
                 : item
             );
@@ -110,8 +109,7 @@ export const CartProvider = ({ children }) => {
           return [...prevItems, { 
             ...product, 
             productId: product.id,
-            quantity, 
-            selectedColor 
+            quantity
           }];
         });
       }
@@ -122,7 +120,7 @@ export const CartProvider = ({ children }) => {
     }
   };
 
-  const removeFromCart = async (productId, selectedColor = null) => {
+  const removeFromCart = async (productId) => {
     try {
       if (user) {
         // Nếu đã đăng nhập, gọi API
@@ -131,9 +129,7 @@ export const CartProvider = ({ children }) => {
       } else {
         // Nếu chưa đăng nhập, chỉ cập nhật localStorage
         setCartItems(prevItems =>
-          prevItems.filter(
-            item => !(item.id === productId && item.selectedColor === selectedColor)
-          )
+          prevItems.filter(item => item.id !== productId)
         );
       }
       toast.success('Đã xóa sản phẩm khỏi giỏ hàng');
@@ -143,19 +139,22 @@ export const CartProvider = ({ children }) => {
     }
   };
 
-  const updateQuantity = async (productId, selectedColor, quantity) => {
+  const updateQuantity = async (id, quantity) => {
     if (quantity < 1) return;
 
     try {
       if (user) {
         // Nếu đã đăng nhập, gọi API
-        await cartService.updateCartItem(productId, quantity);
-        await fetchCartFromServer(); // Refresh cart from server
+        const cartItem = cartItems.find(item => item.id === id);
+        if (cartItem) {
+          await cartService.updateCartItem(id, quantity);
+          await fetchCartFromServer(); // Refresh cart from server
+        }
       } else {
         // Nếu chưa đăng nhập, chỉ cập nhật localStorage
         setCartItems(prevItems =>
           prevItems.map(item =>
-            item.id === productId && item.selectedColor === selectedColor
+            item.id === id
               ? { ...item, quantity }
               : item
           )
@@ -200,8 +199,7 @@ export const CartProvider = ({ children }) => {
         for (const item of localCart) {
           await cartService.addToCart({
             productId: item.productId || item.id,
-            quantity: item.quantity,
-            selectedColor: item.selectedColor
+            quantity: item.quantity
           });
         }
         
@@ -219,7 +217,6 @@ export const CartProvider = ({ children }) => {
             image: item.product?.image || '',
             price: item.price,
             quantity: item.quantity,
-            selectedColor: item.selectedColor,
             stock_quantity: item.product?.stock_quantity || 0
           }));
           setCartItems(cartData);
@@ -235,7 +232,6 @@ export const CartProvider = ({ children }) => {
             image: item.product?.image || '',
             price: item.price,
             quantity: item.quantity,
-            selectedColor: item.selectedColor,
             stock_quantity: item.product?.stock_quantity || 0
           }));
           setCartItems(cartData);

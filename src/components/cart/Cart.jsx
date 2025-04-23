@@ -14,13 +14,13 @@ const Cart = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
 
-  const handleQuantityChange = async (productId, selectedColor, quantity) => {
+  const handleQuantityChange = async (id, quantity) => {
     if (quantity < 1) return;
-    await updateQuantity(productId, selectedColor, quantity);
+    await updateQuantity(id, quantity);
   };
 
-  const handleRemoveItem = async (productId, selectedColor) => {
-    await removeFromCart(productId, selectedColor);
+  const handleRemoveItem = async (id) => {
+    await removeFromCart(id);
   };
 
   const columns = [
@@ -37,9 +37,6 @@ const Cart = () => {
           />
           <div className="cart-product-info">
             <Text strong>{name}</Text>
-            {record.selectedColor && (
-              <Text type="secondary">Màu: {record.selectedColor}</Text>
-            )}
           </div>
         </div>
       ),
@@ -61,9 +58,9 @@ const Cart = () => {
       render: (quantity, record) => (
         <InputNumber
           min={1}
-          max={record.stock_quantity}
+          max={record.stock_quantity || 999}
           value={quantity}
-          onChange={(value) => handleQuantityChange(record.id, record.selectedColor, value)}
+          onChange={(value) => handleQuantityChange(record.id, value)}
         />
       ),
     },
@@ -84,7 +81,7 @@ const Cart = () => {
           type="text"
           danger
           icon={<DeleteOutlined />}
-          onClick={() => handleRemoveItem(record.id, record.selectedColor)}
+          onClick={() => handleRemoveItem(record.id)}
         />
       ),
     },

@@ -60,17 +60,7 @@ export const CartProvider = ({ children }) => {
       setLoading(true);
       const response = await cartService.getCart();
       if (response.data && response.data.CartItems) {
-        const cartData = response.data.CartItems.map(item => ({
-          id: item.id,
-          productId: item.productId,
-          name: item.product?.name || '',
-          image: item.product?.image || '',
-          price: item.price,
-          quantity: item.quantity,
-          stock_quantity: item.product?.stock_quantity || 0,
-          totalPrice: item.totalPrice
-        }));
-        setCartItems(cartData);
+        setCartItems(response.data.CartItems);
       } else {
         setCartItems([]);
       }
@@ -82,34 +72,35 @@ export const CartProvider = ({ children }) => {
     }
   };
 
-  const addToCart = async (product, quantity = 1) => {
+  const addToCart = async (productData) => {
     try {
       if (user) {
         // Nếu đã đăng nhập, gọi API
         await cartService.addToCart({
-          productId: product.id,
-          quantity
+          productId: productData.productId,
+          variantId: productData.variantId,
+          quantity: productData.quantity
         });
         await fetchCartFromServer(); // Refresh cart from server
       } else {
         // Nếu chưa đăng nhập, chỉ cập nhật localStorage
         setCartItems(prevItems => {
           const existingItem = prevItems.find(
-            item => item.productId === product.id
+            item => item.productId === productData.productId && item.variantId === productData.variantId
           );
 
           if (existingItem) {
             return prevItems.map(item =>
-              item.productId === product.id
-                ? { ...item, quantity: item.quantity + quantity }
+              item.productId === productData.productId && item.variantId === productData.variantId
+                ? { ...item, quantity: item.quantity + productData.quantity }
                 : item
             );
           }
 
           return [...prevItems, { 
-            ...product, 
-            productId: product.id,
-            quantity
+            productId: productData.productId,
+            variantId: productData.variantId,
+            quantity: productData.quantity
           }];
         });
       }

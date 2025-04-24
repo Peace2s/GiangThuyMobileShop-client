@@ -60,4 +60,8 @@ export const adminService = {
   getStatistics: () => adminApi.get('/statistics'),
   getRevenueByMonth: (year) => adminApi.get(`/statistics/revenue/${year}`),
   getTopProducts: (limit) => adminApi.get(`/statistics/top-products/${limit}`),
+
+  createProductVariant: (data) => adminApi.post('/variants', data),
+  updateProductVariant: (id, data) => adminApi.put(`/variants/${id}`, data),
+  deleteProductVariant: (id) => adminApi.delete(`/variants/${id}`),
 }; 

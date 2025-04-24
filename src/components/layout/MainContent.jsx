@@ -1,4 +1,4 @@
-import { Typography, Button, Row, Col, Card, Tag, Tooltip } from 'antd'
+import { Typography, Button, Row, Col, Card, Tag, Tooltip, message } from 'antd'
 import { RightOutlined, MobileOutlined, CameraOutlined, ThunderboltOutlined, DesktopOutlined, FireOutlined, ShoppingCartOutlined } from '@ant-design/icons'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { productService } from '../../services/home.service'
@@ -33,9 +33,16 @@ const MainContent = () => {
         setLoading(true)
         let response;
         
+        // Xử lý giá trị null cho minPrice và maxPrice
+        const minPriceValue = minPrice === null ? 0 : minPrice;
+        const maxPriceValue = maxPrice === null ? Number.MAX_SAFE_INTEGER : maxPrice;
+        
         if (branch && branch !== 'all') {
-          // Fetch products by brand
-          response = await productService.getProductsByBrand(branch)
+          // Fetch products by brand and price range
+          response = await productService.getProductsByBrandAndPrice(branch, minPriceValue, maxPriceValue)
+        } else if (minPrice !== null || maxPrice !== null) {
+          // Fetch products by price range
+          response = await productService.getProductsByPrice(minPriceValue, maxPriceValue)
         } else if (branch === 'all') {
           // Fetch all products
           response = await productService.getAllProducts()
@@ -51,18 +58,7 @@ const MainContent = () => {
           return;
         }
         
-        // Lọc sản phẩm theo khoảng giá nếu có
-        let filteredProducts = response.data;
-        if (minPrice !== null || maxPrice !== null) {
-          filteredProducts = response.data.filter(product => {
-            const price = product.discount_price || product.price;
-            const meetsMinPrice = minPrice === null || price >= minPrice;
-            const meetsMaxPrice = maxPrice === null || price <= maxPrice;
-            return meetsMinPrice && meetsMaxPrice;
-          });
-        }
-        
-        setProducts(filteredProducts);
+        setProducts(response.data);
       } catch (error) {
         console.error('Error fetching products:', error)
       } finally {
@@ -83,12 +79,35 @@ const MainContent = () => {
   }
 
   const handleProductClick = (product) => {
-    navigate(`/product/${product.id}`, { state: { product } })
-  }
+    // Tìm biến thể phù hợp với khoảng giá đã lọc
+    const matchingVariant = product.productVariants?.find(variant => {
+      const price = variant.discount_price || variant.price;
+      return (!minPrice || price >= minPrice) && (!maxPrice || price <= maxPrice);
+    });
+
+    navigate(`/product/${product.id}`, { 
+      state: { 
+        product,
+        selectedVariant: matchingVariant,
+        fromBranch: branch
+      } 
+    });
+  };
 
   const handleAddToCart = (e, product) => {
     e.stopPropagation();
-    addToCart(product, 1);
+    // Lấy biến thể đầu tiên của sản phẩm
+    const firstVariant = product.productVariants?.[0];
+    if (!firstVariant) {
+      message.error('Sản phẩm chưa có biến thể');
+      return;
+    }
+    
+    addToCart({
+      productId: product.id,
+      variantId: firstVariant.id,
+      quantity: 1
+    });
   };
 
   const renderProductSpecs = (product) => {
@@ -134,13 +153,16 @@ const MainContent = () => {
   }
 
   const renderProductCard = (product) => {
-    const discountedPrice = product.discount_price || product.price
+    // Lấy biến thể đầu tiên của sản phẩm
+    const firstVariant = product.productVariants?.[0];
+    const discountedPrice = firstVariant?.discount_price || firstVariant?.price;
+    const originalPrice = firstVariant?.price;
     
     return (
       <Col xs={24} sm={12} md={8} lg={8} key={product.id}>
         <Card 
           hoverable 
-          cover={<img alt={product.name} src={product.image || 'https://via.placeholder.com/300x300?text=No+Image'} width="100%" height="100%" />}
+          cover={<img alt={product.name} src={firstVariant?.image || product.image || 'https://via.placeholder.com/300x300?text=No+Image'} width="100%" height="100%" />}
           className="product-card"
           onClick={() => handleProductClick(product)}
           actions={[
@@ -150,10 +172,10 @@ const MainContent = () => {
               className="add-to-cart-btn"
               style={{ width: '90%' }}
               onClick={(e) => handleAddToCart(e, product)}
-              disabled={product.status === 'out_of_stock'}
+              disabled={firstVariant?.status === 'out_of_stock'}
               block
             >
-              {product.status === 'out_of_stock' ? 'Hết hàng' : 'Thêm vào giỏ'}
+              {firstVariant?.status === 'out_of_stock' ? 'Hết hàng' : 'Thêm vào giỏ'}
             </Button>
           ]}
         >
@@ -170,15 +192,15 @@ const MainContent = () => {
                     <Text strong className="discounted-price">
                       {formatPrice(discountedPrice)}đ
                     </Text>
-                    {product.discount_price && (
+                    {firstVariant?.discount_price && (
                       <Text delete type="secondary" className="original-price">
-                        {formatPrice(product.price)}đ
+                        {formatPrice(originalPrice)}đ
                       </Text>
                     )}
                   </div>
-                  {product.discount_price && (
+                  {firstVariant?.discount_price && (
                     <Text type="danger" className="discount-tag">
-                      -{Math.round((1 - product.discount_price/product.price) * 100)}%
+                      -{Math.round((1 - firstVariant.discount_price/firstVariant.price) * 100)}%
                     </Text>
                   )}
                 </div>

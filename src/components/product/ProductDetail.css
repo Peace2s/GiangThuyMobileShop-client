@@ -197,4 +197,38 @@
 
 .back-button:hover {
   color: #1890ff;
+}
+
+.storage-card,
+.ram-card {
+  cursor: pointer;
+  text-align: center;
+  min-width: 80px;
+  transition: all 0.3s;
+  border: 1px solid #d9d9d9;
+}
+
+.storage-card:hover,
+.ram-card:hover {
+  border-color: #1890ff;
+}
+
+.storage-card.selected,
+.ram-card.selected {
+  border-color: #1890ff;
+  background-color: #e6f7ff;
+}
+
+.variant-group {
+  margin-bottom: 20px;
+}
+
+.variant-group .ant-radio-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.variant-group .ant-radio-button-wrapper {
+  margin-right: 0;
 } 

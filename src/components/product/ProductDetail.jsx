@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { useParams, useLocation, useNavigate } from 'react-router-dom'
-import { Row, Col, Typography, Button, Space, Rate, Tag, Radio, InputNumber, Tabs, Image, message } from 'antd'
-import { ShoppingCartOutlined, HeartOutlined, ArrowLeftOutlined } from '@ant-design/icons'
+import { Row, Col, Typography, Button, Space, Tag, Select, InputNumber, Tabs, Image, message, Radio, Card } from 'antd'
+import { ShoppingCartOutlined, ArrowLeftOutlined } from '@ant-design/icons'
 import { productService } from '../../services/home.service'
 import { useCart } from '../../contexts/CartContext'
 import './ProductDetail.css'
@@ -19,12 +19,79 @@ const ProductDetail = () => {
   const location = useLocation()
   const navigate = useNavigate()
   const [selectedColor, setSelectedColor] = useState('')
+  const [selectedStorage, setSelectedStorage] = useState('')
   const [quantity, setQuantity] = useState(1)
   const [product, setProduct] = useState(null)
   const [loading, setLoading] = useState(true)
   const { addToCart } = useCart()
 
   const fromBranch = location.state?.fromBranch
+
+  // Lấy danh sách các tùy chọn từ productVariants
+  const getUniqueOptions = (variants, key) => {
+    return [...new Set(variants.map(v => v[key]))];
+  };
+
+  // Lấy danh sách các màu sắc tương ứng với dung lượng đã chọn
+  const getColorsByStorage = (storage) => {
+    if (!product?.productVariants) return [];
+    return [...new Set(product.productVariants
+      .filter(v => v.storage === storage)
+      .map(v => v.color)
+    )];
+  };
+
+  // Tìm biến thể phù hợp nhất với các lựa chọn hiện tại
+  const findBestMatchingVariant = (newValue, key) => {
+    if (!product?.productVariants) return null;
+
+    // Tạo object chứa các lựa chọn hiện tại
+    const currentSelections = {
+      color: selectedColor,
+      storage: selectedStorage,
+      [key]: newValue
+    };
+
+    // Tìm biến thể khớp hoàn toàn
+    let matchingVariant = product.productVariants.find(v => 
+      v.color === currentSelections.color && 
+      v.storage === currentSelections.storage
+    );
+
+    // Nếu không tìm thấy, lấy biến thể đầu tiên có giá trị mới
+    if (!matchingVariant) {
+      matchingVariant = product.productVariants.find(v => v[key] === newValue);
+    }
+
+    return matchingVariant;
+  };
+
+  // Xử lý khi thay đổi dung lượng
+  const handleStorageChange = (storage) => {
+    setSelectedStorage(storage);
+    // Lấy danh sách màu sắc tương ứng với dung lượng mới
+    const availableColors = getColorsByStorage(storage);
+    // Nếu màu hiện tại không có trong danh sách màu mới, chọn màu đầu tiên
+    if (!availableColors.includes(selectedColor)) {
+      setSelectedColor(availableColors[0] || '');
+    }
+  };
+
+  // Xử lý khi thay đổi màu sắc
+  const handleColorChange = (color) => {
+    setSelectedColor(color);
+  };
+
+  // Tìm biến thể phù hợp với các lựa chọn
+  const findMatchingVariant = () => {
+    if (!product?.productVariants) return null;
+    return product.productVariants.find(v => 
+      v.color === selectedColor && 
+      v.storage === selectedStorage
+    );
+  };
+
+  const selectedVariant = findMatchingVariant();
 
   const handleBack = () => {
     if (fromBranch) {
@@ -38,21 +105,25 @@ const ProductDetail = () => {
     const fetchProduct = async () => {
       try {
         setLoading(true)
-        // Try to get product from location state first (when navigating from MainContent)
-        const productFromState = location.state?.product
-        if (productFromState) {
-          setProduct(productFromState)
-          setSelectedColor(productFromState.colors?.[0]?.code || '')
-        } else {
-          // If not available in state, fetch from API
-          const response = await productService.getProductById(id)
-          if (response.data) {
-            setProduct(response.data)
-            setSelectedColor(response.data.colors?.[0]?.code || '')
+        const response = await productService.getProductById(id)
+        if (response.data) {
+          setProduct(response.data)
+          
+          // Kiểm tra xem có biến thể đã được lọc từ trang trước không
+          const selectedVariantFromState = location.state?.selectedVariant
+          if (selectedVariantFromState) {
+            setSelectedColor(selectedVariantFromState.color)
+            setSelectedStorage(selectedVariantFromState.storage)
+          } else if (response.data.productVariants?.length > 0) {
+            // Nếu không có biến thể đã lọc, chọn biến thể đầu tiên
+            const firstVariant = response.data.productVariants[0]
+            setSelectedColor(firstVariant.color)
+            setSelectedStorage(firstVariant.storage)
           }
         }
       } catch (error) {
         console.error('Error fetching product:', error)
+        message.error('Không thể tải thông tin sản phẩm')
       } finally {
         setLoading(false)
       }
@@ -69,20 +140,28 @@ const ProductDetail = () => {
     return <div>Product not found</div>
   }
 
-  const discountedPrice = product.discount_price || product.price
-
   const handleAddToCart = () => {
-    if (product.status === 'out_of_stock') {
+    if (!selectedVariant) {
+      message.warning('Vui lòng chọn biến thể sản phẩm');
+      return;
+    }
+
+    if (selectedVariant.status === 'out_of_stock') {
       message.error('Sản phẩm đã hết hàng');
       return;
     }
 
-    if (product.colors && product.colors.length > 0 && !selectedColor) {
-      message.warning('Vui lòng chọn màu sắc');
+    if (quantity > selectedVariant.stock_quantity) {
+      message.error(`Số lượng vượt quá số lượng còn lại (${selectedVariant.stock_quantity})`);
       return;
     }
 
-    addToCart(product, quantity, selectedColor);
+    addToCart({
+      productId: product.id,
+      variantId: selectedVariant.id,
+      quantity: quantity
+    });
+    message.success('Đã thêm vào giỏ hàng');
   }
 
   return (
@@ -100,7 +179,7 @@ const ProductDetail = () => {
           <div className="product-gallery">
             <div className="main-image">
               <Image
-                src={product.image || 'https://via.placeholder.com/500x500?text=No+Image'}
+                src={selectedVariant?.image || product.image || 'https://via.placeholder.com/500x500?text=No+Image'}
                 alt={product.name}
                 preview={false}
                 width="100%"
@@ -116,37 +195,62 @@ const ProductDetail = () => {
 
             <div className="price-section">
               <Title level={2} className="discounted-price">
-                {formatPrice(discountedPrice)}đ
+                {selectedVariant && formatPrice(selectedVariant.discount_price || selectedVariant.price)}đ
               </Title>
-              {product.discount_price && (
+              {selectedVariant?.discount_price && (
                 <Text delete type="secondary" className="original-price">
-                  {formatPrice(product.price)}đ
+                  {formatPrice(selectedVariant.price)}đ
                 </Text>
               )}
-              {product.discount_price && (
+              {selectedVariant?.discount_price && (
                 <Tag color="#ff4d4f">
-                  -{Math.round((1 - product.discount_price/product.price) * 100)}%
+                  -{Math.round((1 - selectedVariant.discount_price/selectedVariant.price) * 100)}%
                 </Tag>
               )}
             </div>
 
-            {product.colors && product.colors.length > 0 && (
-              <div className="color-section">
-                <Title level={5}>Màu sắc</Title>
-                <Radio.Group value={selectedColor} onChange={e => setSelectedColor(e.target.value)}>
+            {product?.productVariants && product.productVariants.length > 0 && (
+              <div className="variant-section">
+                <div className="variant-group">
+                  <Title level={5}>Dung lượng</Title>
                   <Space wrap>
-                    {product.colors.map(color => (
-                      <Radio.Button
-                        key={color.code}
-                        value={color.code}
-                        className="color-option"
-                        style={{ '--color': color.code }}
+                    {getUniqueOptions(product.productVariants, 'storage').map(storage => (
+                      <Card
+                        key={storage}
+                        size="small"
+                        className={`storage-card ${selectedStorage === storage ? 'selected' : ''}`}
+                        onClick={() => handleStorageChange(storage)}
                       >
-                        {color.name}
-                      </Radio.Button>
+                        {storage}
+                      </Card>
                     ))}
                   </Space>
-                </Radio.Group>
+                </div>
+
+                <div className="variant-group">
+                  <Title level={5}>Màu sắc</Title>
+                  <Radio.Group
+                    value={selectedColor}
+                    onChange={(e) => handleColorChange(e.target.value)}
+                    optionType="button"
+                    buttonStyle="solid"
+                  >
+                    {getColorsByStorage(selectedStorage).map(color => (
+                      <Radio.Button key={color} value={color}>
+                        {color}
+                      </Radio.Button>
+                    ))}
+                  </Radio.Group>
+                </div>
+
+                {selectedVariant && (
+                  <div className="variant-details">
+                    <Space direction="vertical">
+                      <Text>Số lượng còn lại: {selectedVariant.stock_quantity}</Text>
+                      <Text>Trạng thái: {selectedVariant.status === 'in_stock' ? 'Còn hàng' : 'Hết hàng'}</Text>
+                    </Space>
+                  </div>
+                )}
               </div>
             )}
 
@@ -154,13 +258,10 @@ const ProductDetail = () => {
               <Title level={5}>Số lượng</Title>
               <InputNumber
                 min={1}
-                max={product.stock_quantity || 10}
+                max={selectedVariant?.stock_quantity || 1}
                 value={quantity}
                 onChange={setQuantity}
               />
-              <Text type="secondary" style={{ marginLeft: 10 }}>
-                Còn lại: {product.stock_quantity || 0} sản phẩm
-              </Text>
             </div>
 
             <div className="action-section">
@@ -169,9 +270,9 @@ const ProductDetail = () => {
                 size="large"
                 icon={<ShoppingCartOutlined />}
                 onClick={handleAddToCart}
-                disabled={product.status === 'out_of_stock'}
+                disabled={!selectedVariant || selectedVariant.status === 'out_of_stock'}
               >
-                {product.status === 'out_of_stock' ? 'Hết hàng' : 'Thêm vào giỏ hàng'}
+                {selectedVariant?.status === 'out_of_stock' ? 'Hết hàng' : 'Thêm vào giỏ hàng'}
               </Button>
             </div>
           </div>
@@ -198,12 +299,6 @@ const ProductDetail = () => {
                 <div className="spec-item">
                   <Text strong>RAM:</Text>
                   <Text>{product.ram}</Text>
-                </div>
-              )}
-              {product.storage && (
-                <div className="spec-item">
-                  <Text strong>Bộ nhớ:</Text>
-                  <Text>{product.storage}</Text>
                 </div>
               )}
               {product.camera && (

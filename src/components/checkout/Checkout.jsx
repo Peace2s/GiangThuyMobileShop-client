@@ -37,9 +37,9 @@ const Checkout = () => {
         note: values.note || '',
         items: cartItems.map(item => ({
           productId: item.productId,
+          variantId: item.productVariant?.id,
           quantity: item.quantity,
-          price: item.price,
-          selectedColor: item.selectedColor
+          price: item.price
         })),
         totalAmount: getCartTotal()
       };

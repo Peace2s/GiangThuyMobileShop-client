@@ -14,6 +14,8 @@ const Cart = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
 
+  console.log('Cart Items:', cartItems);
+
   const handleQuantityChange = async (id, quantity) => {
     if (quantity < 1) return;
     await updateQuantity(id, quantity);
@@ -28,17 +30,29 @@ const Cart = () => {
       title: 'Sản phẩm',
       dataIndex: 'name',
       key: 'name',
-      render: (name, record) => (
-        <div className="cart-product">
-          <img 
-            src={record.image || 'https://via.placeholder.com/100x100?text=No+Image'} 
-            alt={name} 
-            className="cart-product-image"
-          />
-          <div className="cart-product-info">
-            <Text strong>{name}</Text>
+      render: (name, record) => {
+        console.log('Record:', record);
+        return (
+          <div className="cart-product">
+            <img 
+              src={record.product?.image || 'https://via.placeholder.com/100x100?text=No+Image'} 
+              alt={name} 
+              className="cart-product-image"
+            />
+            <div className="cart-product-info">
+              <Text strong>{record.product?.name}</Text>
+              <Text type="secondary">Màu: {record.productVariant?.color}</Text>
+            </div>
           </div>
-        </div>
+        );
+      },
+    },
+    {
+      title: 'Dung lượng',
+      dataIndex: 'storage',
+      key: 'storage',
+      render: (_, record) => (
+        <Text>{record.productVariant?.storage}</Text>
       ),
     },
     {
@@ -55,12 +69,14 @@ const Cart = () => {
       title: 'Số lượng',
       dataIndex: 'quantity',
       key: 'quantity',
+      width: 100,
       render: (quantity, record) => (
         <InputNumber
           min={1}
           max={record.stock_quantity || 999}
           value={quantity}
           onChange={(value) => handleQuantityChange(record.id, value)}
+          style={{ width: '80px' }}
         />
       ),
     },

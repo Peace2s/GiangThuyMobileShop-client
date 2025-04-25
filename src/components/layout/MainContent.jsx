@@ -1,4 +1,4 @@
-import { Typography, Button, Row, Col, Card, Tag, Tooltip } from 'antd'
+import { Typography, Button, Row, Col, Card, Tag, Tooltip, message, Space, Select, InputNumber } from 'antd'
 import { RightOutlined, MobileOutlined, CameraOutlined, ThunderboltOutlined, DesktopOutlined, FireOutlined, ShoppingCartOutlined } from '@ant-design/icons'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { productService } from '../../services/home.service'
@@ -8,9 +8,11 @@ import Banner from './Banner'
 import { useState, useEffect } from 'react'
 
 const { Title, Text } = Typography
+const { Option } = Select
 
 const formatPrice = (price) => {
-  return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".")
+  if (!price && price !== 0) return '0';
+  return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
 }
 
 const MainContent = () => {
@@ -20,58 +22,102 @@ const MainContent = () => {
   const branch = searchParams.get('branch')
   const minPrice = searchParams.get('minPrice') ? parseInt(searchParams.get('minPrice')) : null
   const maxPrice = searchParams.get('maxPrice') ? parseInt(searchParams.get('maxPrice')) : null
+  const searchQuery = searchParams.get('q')
   
   const [products, setProducts] = useState([])
   const [featuredProducts, setFeaturedProducts] = useState([])
   const [newProducts, setNewProducts] = useState([])
   const [loading, setLoading] = useState(true)
-  const { addToCart } = useCart();
+  const [filters, setFilters] = useState({
+    minPrice: null,
+    maxPrice: null,
+    brand: null
+  })
+  const { addToCart } = useCart()
 
   useEffect(() => {
     const fetchProducts = async () => {
       try {
         setLoading(true)
         let response;
-        
-        if (branch && branch !== 'all') {
-          // Fetch products by brand
-          response = await productService.getProductsByBrand(branch)
+
+        if (searchQuery) {
+          // Nếu có từ khóa tìm kiếm, kết hợp với các bộ lọc hiện tại
+          response = await productService.searchProducts({
+            q: searchQuery,
+            brand: branch !== 'all' ? branch : undefined,
+            minPrice,
+            maxPrice
+          });
+          if (response.data.success) {
+            // Lọc bỏ sản phẩm không có biến thể hoặc không có giá
+            const validProducts = response.data.data.filter(product => 
+              product.productVariants?.length > 0 && 
+              product.productVariants.some(variant => variant.price)
+            );
+            setProducts(validProducts);
+          }
+        } else if (branch && branch !== 'all') {
+          // Fetch products by brand and price range
+          const minPriceValue = minPrice === null ? 0 : minPrice;
+          const maxPriceValue = maxPrice === null ? Number.MAX_SAFE_INTEGER : maxPrice;
+          response = await productService.getProductsByBrandAndPrice(branch, minPriceValue, maxPriceValue)
+          const validProducts = response.data.filter(product => 
+            product.productVariants?.length > 0 && 
+            product.productVariants.some(variant => variant.price)
+          );
+          setProducts(validProducts)
+        } else if (minPrice !== null || maxPrice !== null) {
+          // Fetch products by price range
+          response = await productService.getProductsByPrice(minPrice, maxPrice)
+          const validProducts = response.data.filter(product => 
+            product.productVariants?.length > 0 && 
+            product.productVariants.some(variant => variant.price)
+          );
+          setProducts(validProducts)
         } else if (branch === 'all') {
           // Fetch all products
           response = await productService.getAllProducts()
+          const validProducts = response.data.filter(product => 
+            product.productVariants?.length > 0 && 
+            product.productVariants.some(variant => variant.price)
+          );
+          setProducts(validProducts)
         } else {
           // Fetch featured and new products for homepage
           const [featuredRes, newRes] = await Promise.all([
             productService.getFeaturedProducts(),
             productService.getNewProducts()
           ])
-          setFeaturedProducts(featuredRes.data)
-          setNewProducts(newRes.data)
-          setLoading(false)
-          return;
+          // Lọc sản phẩm có biến thể và có giá
+          const validFeatured = featuredRes.data.filter(product => 
+            product.productVariants?.length > 0 && 
+            product.productVariants.some(variant => variant.price)
+          );
+          const validNew = newRes.data.filter(product => 
+            product.productVariants?.length > 0 && 
+            product.productVariants.some(variant => variant.price)
+          );
+          setFeaturedProducts(validFeatured)
+          setNewProducts(validNew)
         }
-        
-        // Lọc sản phẩm theo khoảng giá nếu có
-        let filteredProducts = response.data;
-        if (minPrice !== null || maxPrice !== null) {
-          filteredProducts = response.data.filter(product => {
-            const price = product.discount_price || product.price;
-            const meetsMinPrice = minPrice === null || price >= minPrice;
-            const meetsMaxPrice = maxPrice === null || price <= maxPrice;
-            return meetsMinPrice && meetsMaxPrice;
-          });
-        }
-        
-        setProducts(filteredProducts);
       } catch (error) {
         console.error('Error fetching products:', error)
+        message.error('Không thể tải sản phẩm')
       } finally {
         setLoading(false)
       }
     }
 
     fetchProducts()
-  }, [branch, minPrice, maxPrice])
+  }, [branch, minPrice, maxPrice, searchQuery])
+
+  const handleFilterChange = (type, value) => {
+    setFilters(prev => ({
+      ...prev,
+      [type]: value
+    }));
+  };
 
   const branchNames = {
     'all': 'Tất cả sản phẩm',
@@ -83,12 +129,35 @@ const MainContent = () => {
   }
 
   const handleProductClick = (product) => {
-    navigate(`/product/${product.id}`, { state: { product } })
-  }
+    // Tìm biến thể phù hợp với khoảng giá đã lọc
+    const matchingVariant = product.productVariants?.find(variant => {
+      const price = variant.discount_price || variant.price;
+      return (!minPrice || price >= minPrice) && (!maxPrice || price <= maxPrice);
+    });
+
+    navigate(`/product/${product.id}`, { 
+      state: { 
+        product,
+        selectedVariant: matchingVariant,
+        fromBranch: branch
+      } 
+    });
+  };
 
   const handleAddToCart = (e, product) => {
     e.stopPropagation();
-    addToCart(product, 1);
+    // Lấy biến thể đầu tiên của sản phẩm
+    const firstVariant = product.productVariants?.[0];
+    if (!firstVariant) {
+      message.error('Sản phẩm chưa có biến thể');
+      return;
+    }
+    
+    addToCart({
+      productId: product.id,
+      variantId: firstVariant.id,
+      quantity: 1
+    });
   };
 
   const renderProductSpecs = (product) => {
@@ -134,13 +203,18 @@ const MainContent = () => {
   }
 
   const renderProductCard = (product) => {
-    const discountedPrice = product.discount_price || product.price
+    // Lấy biến thể đầu tiên có giá
+    const firstVariant = product.productVariants?.find(variant => variant.price);
+    if (!firstVariant) return null;
+
+    const discountedPrice = firstVariant.discount_price || firstVariant.price;
+    const originalPrice = firstVariant.price;
     
     return (
       <Col xs={24} sm={12} md={8} lg={8} key={product.id}>
         <Card 
           hoverable 
-          cover={<img alt={product.name} src={product.image || 'https://via.placeholder.com/300x300?text=No+Image'} width="100%" height="100%" />}
+          cover={<img alt={product.name} src={firstVariant.image || product.image || 'https://via.placeholder.com/300x300?text=No+Image'} width="100%" height="100%" />}
           className="product-card"
           onClick={() => handleProductClick(product)}
           actions={[
@@ -150,10 +224,10 @@ const MainContent = () => {
               className="add-to-cart-btn"
               style={{ width: '90%' }}
               onClick={(e) => handleAddToCart(e, product)}
-              disabled={product.status === 'out_of_stock'}
+              disabled={firstVariant.status === 'out_of_stock'}
               block
             >
-              {product.status === 'out_of_stock' ? 'Hết hàng' : 'Thêm vào giỏ'}
+              {firstVariant.status === 'out_of_stock' ? 'Hết hàng' : 'Thêm vào giỏ'}
             </Button>
           ]}
         >
@@ -170,15 +244,15 @@ const MainContent = () => {
                     <Text strong className="discounted-price">
                       {formatPrice(discountedPrice)}đ
                     </Text>
-                    {product.discount_price && (
+                    {firstVariant.discount_price && (
                       <Text delete type="secondary" className="original-price">
-                        {formatPrice(product.price)}đ
+                        {formatPrice(originalPrice)}đ
                       </Text>
                     )}
                   </div>
-                  {product.discount_price && (
+                  {firstVariant.discount_price && (
                     <Text type="danger" className="discount-tag">
-                      -{Math.round((1 - product.discount_price/product.price) * 100)}%
+                      -{Math.round((1 - firstVariant.discount_price/firstVariant.price) * 100)}%
                     </Text>
                   )}
                 </div>
@@ -237,12 +311,45 @@ const MainContent = () => {
     </div>
   )
 
+  const renderSearchResults = () => (
+    <div className="search-results">
+      <div className="section-header">
+        <Title level={3}>Kết quả tìm kiếm cho "{searchQuery}"</Title>
+        {products && products.length > 0 ? (
+          <Text className="search-count">Tìm thấy {products.length} sản phẩm</Text>
+        ) : null}
+        {(branch !== 'all' || minPrice || maxPrice) && (
+          <div className="applied-filters">
+            <Text type="secondary">
+              {branch !== 'all' && `Thương hiệu: ${branchNames[branch]} | `}
+              {(minPrice || maxPrice) && `Giá: ${minPrice ? formatPrice(minPrice) : '0'}đ - ${maxPrice ? formatPrice(maxPrice) : 'không giới hạn'}`}
+            </Text>
+          </div>
+        )}
+      </div>
+
+      <Row gutter={[24, 24]}>
+        {products && products.length > 0 ? (
+          products.map(renderProductCard)
+        ) : (
+          <Col span={24}>
+            <div className="no-products">
+              <Text>Không tìm thấy sản phẩm phù hợp</Text>
+            </div>
+          </Col>
+        )}
+      </Row>
+    </div>
+  )
+
   return (
     <div className="main-content">
-      <Banner />
+      {!searchQuery && <Banner />}
       {loading ? (
         <div>Loading...</div>
-      ) : branch ? (
+      ) : searchQuery ? (
+        renderSearchResults()
+      ) : branch || minPrice || maxPrice ? (
         renderFilteredProducts()
       ) : (
         <>

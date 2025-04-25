@@ -42,8 +42,23 @@ export const productService = {
   getAllProducts: () => api.get('/products'),
   getProductById: (id) => api.get(`/products/${id}`),
   getProductsByBrand: (brand) => api.get(`/products/brand/${brand}`),
+  getProductsByBrandAndPrice: (brand, minPrice, maxPrice) => 
+    api.get(`/products/brand/${brand}?minPrice=${minPrice}&maxPrice=${maxPrice}`),
   getFeaturedProducts: () => api.get('/products/featured'),
   getNewProducts: () => api.get('/products/new'),
+  getProductsByPrice: (minPrice, maxPrice) => api.get(`/products?minPrice=${minPrice}&maxPrice=${maxPrice}`),
+  searchProducts: (params) => {
+    const { q, minPrice, maxPrice, brand } = params;
+    let url = '/products/search?';
+    const queryParams = new URLSearchParams();
+    
+    if (minPrice) queryParams.append('minPrice', minPrice);
+    if (maxPrice) queryParams.append('maxPrice', maxPrice);
+    if (brand) queryParams.append('brand', brand);
+    if (q) queryParams.append('q', q);
+    
+    return api.get(`/products/search?${queryParams.toString()}`);
+  },
 };
 
 // Service cho xác thực
@@ -61,6 +76,10 @@ export const authService = {
   isAuthenticated: () => {
     return !!Cookies.get('token');
   },
+  forgotPassword: (email) => api.post('/auth/forgot-password', { email }),
+  resetPassword: (token, newPassword) => api.post('/auth/reset-password', { token, newPassword }),
+  updateProfile: (data) => api.put('/auth/profile', data),
+  changePassword: (data) => api.put('/auth/change-password', data),
 };
 
 // Service cho giỏ hàng

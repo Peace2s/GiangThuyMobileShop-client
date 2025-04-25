@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Table, Tag, Button, Modal, Descriptions, Select, message, Popconfirm } from 'antd';
+import { Table, Tag, Button, Modal, Descriptions, Select, message, Popconfirm, Input } from 'antd';
 import { adminService } from '../../services/admin.service';
 import './Users.css';
 
@@ -10,6 +10,7 @@ const Users = () => {
   const [loading, setLoading] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
+  const [editingKey, setEditingKey] = useState('');
 
   useEffect(() => {
     fetchUsers();
@@ -19,7 +20,15 @@ const Users = () => {
     try {
       setLoading(true);
       const response = await adminService.getUsers();
-      setUsers(response.data);
+      if (response.data && response.data.users) {
+
+        const formattedUsers = response.data.users.map(user => ({
+          ...user,
+          key: user.id,
+          name: user.fullName 
+        }));
+        setUsers(formattedUsers);
+      }
     } catch (error) {
       message.error('Không thể tải danh sách người dùng');
     } finally {
@@ -63,6 +72,29 @@ const Users = () => {
     }
   };
 
+  const handleStatusChange = async (userId, status) => {
+    try {
+      await adminService.updateUser(userId, { status });
+      message.success('Cập nhật trạng thái thành công');
+      fetchUsers();
+    } catch (error) {
+      message.error('Cập nhật trạng thái thất bại');
+    }
+  };
+
+  const handleNameChange = async (userId, name) => {
+    try {
+      await adminService.updateUser(userId, { fullName: name });
+      message.success('Cập nhật tên thành công');
+      fetchUsers();
+      setEditingKey('');
+    } catch (error) {
+      message.error('Cập nhật tên thất bại');
+    }
+  };
+
+  const isEditing = (record) => record.id === editingKey;
+
   const columns = [
     {
       title: 'ID',
@@ -73,6 +105,23 @@ const Users = () => {
       title: 'Tên',
       dataIndex: 'name',
       key: 'name',
+      render: (text, record) => {
+        const editable = isEditing(record);
+        return editable ? (
+          <Input
+            defaultValue={text}
+            onPressEnter={(e) => handleNameChange(record.id, e.target.value)}
+            onBlur={(e) => handleNameChange(record.id, e.target.value)}
+          />
+        ) : (
+          <div
+            className="editable-cell"
+            onClick={() => setEditingKey(record.id)}
+          >
+            {text}
+          </div>
+        );
+      },
     },
     {
       title: 'Email',
@@ -83,14 +132,29 @@ const Users = () => {
       title: 'Vai trò',
       dataIndex: 'role',
       key: 'role',
-      render: (role) => (
+      render: (role, record) => (
         <Select
-          defaultValue={role}
+          value={role}
           style={{ width: 120 }}
-          onChange={(value) => handleRoleChange(selectedUser.id, value)}
+          onChange={(value) => handleRoleChange(record.id, value)}
         >
           <Option value="admin">Admin</Option>
           <Option value="user">User</Option>
+        </Select>
+      ),
+    },
+    {
+      title: 'Trạng thái',
+      dataIndex: 'status',
+      key: 'status',
+      render: (status, record) => (
+        <Select
+          value={status}
+          style={{ width: 120 }}
+          onChange={(value) => handleStatusChange(record.id, value)}
+        >
+          <Option value="active">Hoạt động</Option>
+          <Option value="inactive">Đã khóa</Option>
         </Select>
       ),
     },
@@ -99,19 +163,29 @@ const Users = () => {
       key: 'action',
       render: (_, record) => (
         <div className="user-actions">
-          <Button type="link" onClick={() => showUserDetails(record)}>
+          <Button 
+            type="link" 
+            onClick={() => showUserDetails(record)}
+            style={{ padding: '4px 15px' }}
+          >
             Chi tiết
           </Button>
-          <Popconfirm
-            title="Bạn có chắc chắn muốn xóa người dùng này?"
-            onConfirm={() => handleDeleteUser(record.id)}
-            okText="Có"
-            cancelText="Không"
-          >
-            <Button type="link" danger>
-              Xóa
-            </Button>
-          </Popconfirm>
+          {record.role !== 'admin' && (
+            <Popconfirm
+              title="Bạn có chắc chắn muốn xóa người dùng này?"
+              onConfirm={() => handleDeleteUser(record.id)}
+              okText="Có"
+              cancelText="Không"
+            >
+              <Button 
+                type="link" 
+                danger
+                style={{ padding: '4px 15px' }}
+              >
+                Xóa
+              </Button>
+            </Popconfirm>
+          )}
         </div>
       ),
     },
@@ -148,14 +222,11 @@ const Users = () => {
                 {selectedUser.role}
               </Tag>
             </Descriptions.Item>
-            <Descriptions.Item label="Ngày tạo">
-              {new Date(selectedUser.createdAt).toLocaleString()}
-            </Descriptions.Item>
-            <Descriptions.Item label="Địa chỉ">
-              {selectedUser.address || 'Chưa cập nhật'}
-            </Descriptions.Item>
             <Descriptions.Item label="Số điện thoại">
               {selectedUser.phone || 'Chưa cập nhật'}
+            </Descriptions.Item>
+            <Descriptions.Item label="Ngày tạo">
+              {new Date(selectedUser.createdAt).toLocaleString()}
             </Descriptions.Item>
           </Descriptions>
         )}

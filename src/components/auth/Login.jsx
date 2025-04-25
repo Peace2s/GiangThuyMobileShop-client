@@ -22,7 +22,6 @@ const Login = () => {
       const result = await login(values);
       
       if (result.success) {
-        // Đợi merge giỏ hàng hoàn tất trước khi chuyển trang
         try {
           await mergeCartWithServer();
           message.success('Đăng nhập thành công!');
@@ -30,16 +29,18 @@ const Login = () => {
           navigate(from);
         } catch (mergeError) {
           console.error('Error merging cart:', mergeError);
-          // Vẫn chuyển trang ngay cả khi merge thất bại
           message.success('Đăng nhập thành công!');
           const from = location.state?.from || '/';
           navigate(from);
         }
       } else {
         message.error(result.message);
+        return;
       }
     } catch (error) {
-      message.error('Đăng nhập thất bại. Vui lòng thử lại.');
+      console.error('Login error:', error);
+      message.error(error.response?.data?.message || 'Đăng nhập thất bại. Vui lòng thử lại.');
+      return;
     } finally {
       setLoading(false);
     }

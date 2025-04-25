@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useCart } from '../../contexts/CartContext';
 import { useAuth } from '../../contexts/AuthContext';
 import { orderService } from '../../services/home.service';
-import { toast } from 'react-toastify';
+import { message } from 'antd';
 import { Form, Input, Select, Button, Card, Typography, Divider, Space } from 'antd';
 import { ShoppingOutlined } from '@ant-design/icons';
 import './Checkout.css';
@@ -37,23 +37,23 @@ const Checkout = () => {
         note: values.note || '',
         items: cartItems.map(item => ({
           productId: item.productId,
+          variantId: item.productVariant?.id,
           quantity: item.quantity,
-          price: item.price,
-          selectedColor: item.selectedColor
+          price: item.price
         })),
         totalAmount: getCartTotal()
       };
 
       await orderService.createOrder(orderData);
       await clearCart();
-      toast.success('Đặt hàng thành công!');
+      message.success('Đặt hàng thành công!');
       navigate('/orders');
     } catch (error) {
       console.error('Error creating order:', error);
       if (error.response?.data?.message) {
-        toast.error(error.response.data.message);
+        message.error(error.response.data.message);
       } else {
-        toast.error('Không thể đặt hàng. Vui lòng thử lại.');
+        message.error('Không thể đặt hàng. Vui lòng thử lại.');
       }
     } finally {
       setLoading(false);

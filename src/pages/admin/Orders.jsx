@@ -264,18 +264,18 @@ const Orders = () => {
       >
         {selectedOrder && (
           <Descriptions bordered column={2}>
-            <Descriptions.Item label="Mã đơn hàng">{selectedOrder.id}</Descriptions.Item>
-            <Descriptions.Item label="Ngày đặt">
+            <Descriptions.Item label="Mã đơn hàng" span={1}>{selectedOrder.id}</Descriptions.Item>
+            <Descriptions.Item label="Ngày đặt" span={1}>
               {new Date(selectedOrder.createdAt).toLocaleString()}
             </Descriptions.Item>
-            <Descriptions.Item label="Khách hàng">{selectedOrder.user?.full_name}</Descriptions.Item>
-            <Descriptions.Item label="Email">{selectedOrder.user?.email}</Descriptions.Item>
-            <Descriptions.Item label="Số điện thoại">{selectedOrder.user?.phone}</Descriptions.Item>
-            <Descriptions.Item label="Địa chỉ">{selectedOrder.shippingAddress}</Descriptions.Item>
-            <Descriptions.Item label="Phương thức thanh toán">
+            <Descriptions.Item label="Khách hàng" span={1}>{selectedOrder.user?.full_name}</Descriptions.Item>
+            <Descriptions.Item label="Email" span={1}>{selectedOrder.user?.email}</Descriptions.Item>
+            <Descriptions.Item label="Số điện thoại" span={1}>{selectedOrder.user?.phone}</Descriptions.Item>
+            <Descriptions.Item label="Địa chỉ" span={1}>{selectedOrder.shippingAddress}</Descriptions.Item>
+            <Descriptions.Item label="Phương thức thanh toán" span={1}>
               {selectedOrder.paymentMethod === 'cod' ? 'Thanh toán khi nhận hàng' : 'Chuyển khoản'}
             </Descriptions.Item>
-            <Descriptions.Item label="Trạng thái">
+            <Descriptions.Item label="Trạng thái" span={1}>
               <Tag color={getStatusColor(selectedOrder.status)}>
                 {selectedOrder.status === 'pending' && 'Chờ xử lý'}
                 {selectedOrder.status === 'processing' && 'Đang xử lý'}
@@ -284,18 +284,43 @@ const Orders = () => {
                 {selectedOrder.status === 'cancelled' && 'Đã hủy'}
               </Tag>
             </Descriptions.Item>
-            <Descriptions.Item label="Tổng tiền">
-              {parseInt(selectedOrder.totalAmount).toLocaleString()} VNĐ
-            </Descriptions.Item>
             <Descriptions.Item label="Sản phẩm" span={2}>
-              <ul style={{ listStyle: 'none', padding: 0 }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                 {selectedOrder.OrderItems?.map((item) => (
-                  <li key={item.id} style={{ marginBottom: '8px' }}>
-                    {item.product?.name} x {item.quantity} - {parseInt(item.price).toLocaleString()} VNĐ
-                    {item.selectedColor && ` (Màu: ${item.selectedColor})`}
-                  </li>
+                  <div key={item.id} style={{ 
+                    padding: '12px', 
+                    border: '1px solid #f0f0f0', 
+                    borderRadius: '4px',
+                    backgroundColor: '#fafafa'
+                  }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
+                      <div>
+                        <div style={{ fontWeight: 500 }}>{item.product?.name}</div>
+                        <div style={{ color: '#666', marginTop: '4px' }}>
+                          {item.productVariant?.color && `Màu: ${item.productVariant.color}`}
+                          {item.productVariant?.storage && ` - Dung lượng: ${item.productVariant.storage}`}
+                        </div>
+                      </div>
+                      <div style={{ textAlign: 'right' }}>
+                        <div>{parseInt(item.price).toLocaleString()} VNĐ</div>
+                        <div style={{ color: '#666' }}>x {item.quantity}</div>
+                      </div>
+                    </div>
+                    <div style={{ 
+                      textAlign: 'right', 
+                      fontWeight: 500, 
+                      color: '#1890ff',
+                      borderTop: '1px solid #f0f0f0',
+                      paddingTop: '8px'
+                    }}>
+                      Thành tiền: {(parseInt(item.price) * item.quantity).toLocaleString()} VNĐ
+                    </div>
+                  </div>
                 ))}
-              </ul>
+              </div>
+            </Descriptions.Item>
+            <Descriptions.Item label="Tổng tiền" span={2}>
+              {parseInt(selectedOrder.totalAmount).toLocaleString()} VNĐ
             </Descriptions.Item>
           </Descriptions>
         )}

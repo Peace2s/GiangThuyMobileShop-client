@@ -115,6 +115,124 @@ const Orders = () => {
     );
   };
 
+  const renderOrderDetails = (order) => {
+    if (!order) return null;
+
+    const productColumns = [
+      {
+        title: 'Sản phẩm',
+        dataIndex: 'product',
+        key: 'product',
+        render: (_, record) => (
+          <div className="product-info">
+            <Image 
+              src={record.product.image} 
+              alt={record.product.name}
+              width={50}
+              height={50}
+              className="product-image"
+            />
+            <Text strong>{record.product.name}</Text>
+          </div>
+        ),
+      },
+      {
+        title: 'Dung lượng',
+        dataIndex: 'storage',
+        key: 'storage',
+        width: 120,
+        align: 'center',
+        render: (_, record) => (
+          record.productVariant ? (
+            <Text>{record.productVariant.storage}</Text>
+          ) : null
+        ),
+      },
+      {
+        title: 'Màu sắc',
+        dataIndex: 'color',
+        key: 'color',
+        width: 120,
+        align: 'center',
+        render: (_, record) => (
+          record.productVariant ? (
+            <Text>{record.productVariant.color}</Text>
+          ) : null
+        ),
+      },
+      {
+        title: 'Số lượng',
+        dataIndex: 'quantity',
+        key: 'quantity',
+        width: 100,
+        align: 'center',
+      },
+      {
+        title: 'Đơn giá',
+        dataIndex: 'price',
+        key: 'price',
+        width: 150,
+        align: 'right',
+        render: (price) => formatCurrency(price),
+      },
+      {
+        title: 'Thành tiền',
+        dataIndex: 'totalPrice',
+        key: 'totalPrice',
+        width: 150,
+        align: 'right',
+        render: (price) => formatCurrency(price),
+      },
+    ];
+
+    return (
+      <div className="order-details">
+        <Descriptions bordered column={1}>
+          <Descriptions.Item label="Mã đơn hàng">
+            #{order.id}
+          </Descriptions.Item>
+          <Descriptions.Item label="Ngày đặt">
+            {new Date(order.createdAt).toLocaleString('vi-VN')}
+          </Descriptions.Item>
+          <Descriptions.Item label="Trạng thái">
+            <Tag color={getStatusColor(order.status)}>
+              {getStatusText(order.status)}
+            </Tag>
+          </Descriptions.Item>
+          <Descriptions.Item label="Phương thức thanh toán">
+            {getPaymentMethodText(order.paymentMethod)}
+          </Descriptions.Item>
+          <Descriptions.Item label="Trạng thái thanh toán">
+            <Tag color={order.paymentStatus === 'paid' ? 'green' : 'gold'}>
+              {order.paymentStatus === 'paid' ? 'Đã thanh toán' : 'Chưa thanh toán'}
+            </Tag>
+          </Descriptions.Item>
+          <Descriptions.Item label="Địa chỉ giao hàng">
+            {order.shippingAddress}
+          </Descriptions.Item>
+          {order.note && (
+            <Descriptions.Item label="Ghi chú">
+              {order.note}
+            </Descriptions.Item>
+          )}
+        </Descriptions>
+
+        <Divider orientation="left">Sản phẩm</Divider>
+        <Table
+          columns={productColumns}
+          dataSource={order.OrderItems}
+          rowKey="id"
+          pagination={false}
+        />
+
+        <Divider />
+        <div className="order-total" style={{ textAlign: 'right' }}>
+          <Text strong>Tổng cộng: {formatCurrency(order.totalAmount)}</Text>
+        </div>
+      </div>
+    );
+  };
+
   const columns = [
     {
       title: 'Mã đơn hàng',
@@ -211,67 +329,7 @@ const Orders = () => {
         footer={null}
         width={800}
       >
-        {selectedOrder && (
-          <div className="order-details">
-            <Descriptions bordered column={1}>
-              <Descriptions.Item label="Mã đơn hàng">
-                #{selectedOrder.id}
-              </Descriptions.Item>
-              <Descriptions.Item label="Ngày đặt">
-                {new Date(selectedOrder.createdAt).toLocaleString('vi-VN')}
-              </Descriptions.Item>
-              <Descriptions.Item label="Trạng thái">
-                <Tag color={getStatusColor(selectedOrder.status)}>
-                  {getStatusText(selectedOrder.status)}
-                </Tag>
-              </Descriptions.Item>
-              <Descriptions.Item label="Phương thức thanh toán">
-                {getPaymentMethodText(selectedOrder.paymentMethod)}
-              </Descriptions.Item>
-              <Descriptions.Item label="Trạng thái thanh toán">
-                <Tag color={selectedOrder.paymentStatus === 'paid' ? 'green' : 'gold'}>
-                  {selectedOrder.paymentStatus === 'paid' ? 'Đã thanh toán' : 'Chưa thanh toán'}
-                </Tag>
-              </Descriptions.Item>
-              <Descriptions.Item label="Địa chỉ giao hàng">
-                {selectedOrder.shippingAddress}
-              </Descriptions.Item>
-              {selectedOrder.note && (
-                <Descriptions.Item label="Ghi chú">
-                  {selectedOrder.note}
-                </Descriptions.Item>
-              )}
-            </Descriptions>
-
-            <Divider orientation="left">Sản phẩm</Divider>
-            <div className="order-items-details">
-              {selectedOrder.OrderItems.map((item, index) => (
-                <div key={index} className="order-item-detail">
-                  <Image 
-                    src={item.product.image} 
-                    alt={item.product.name}
-                    width={80}
-                    height={80}
-                    className="product-image"
-                  />
-                  <div className="product-info">
-                    <Text strong>{item.product.name}</Text>
-                    <div className="product-details">
-                      <span>Số lượng: {item.quantity}</span>
-                      <span>Đơn giá: {formatCurrency(item.price)}</span>
-                      <span>Thành tiền: {formatCurrency(item.totalPrice)}</span>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            <Divider />
-            <div className="order-total">
-              <Text strong>Tổng cộng: {formatCurrency(selectedOrder.totalAmount)}</Text>
-            </div>
-          </div>
-        )}
+        {renderOrderDetails(selectedOrder)}
       </Modal>
     </div>
   );

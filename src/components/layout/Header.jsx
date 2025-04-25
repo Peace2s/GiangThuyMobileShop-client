@@ -1,18 +1,19 @@
 import React from 'react'
 import { useState } from 'react'
 import { useNavigate, useLocation, Link } from 'react-router-dom'
-import { Layout, Input, Button, Menu, Space, Typography, Row, Col, Badge, Avatar, Tooltip, Dropdown } from 'antd'
+import { Layout, Input, Button, Menu, Space, Typography, Row, Col, Badge, Avatar, Tooltip, Dropdown, message } from 'antd'
 import { SearchOutlined, PhoneOutlined, ShoppingCartOutlined, UserOutlined, HeartOutlined, MenuOutlined, LogoutOutlined } from '@ant-design/icons'
 import './Header.css'
 import logo from '../../assets/images/logo.png'
 import { useCart } from '../../contexts/CartContext'
 import { useAuth } from '../../contexts/AuthContext'
+import { productService } from '../../services/home.service'
 
 const { Header: AntHeader } = Layout
 const { Search } = Input
 const { Text } = Typography
 
-const Header = ({ searchTerm, setSearchTerm }) => {
+const Header = () => {
   const { getCartCount } = useCart()
   const { user, logout, isAuthenticated } = useAuth()
   const [cartItems, setCartItems] = useState(0)
@@ -29,6 +30,22 @@ const Header = ({ searchTerm, setSearchTerm }) => {
     logout();
     navigate('/');
   }
+
+  const handleSearch = (value) => {
+    if (!value.trim()) return;
+    
+    // Thêm query parameter vào URL hiện tại
+    const searchParams = new URLSearchParams(location.search);
+    searchParams.set('q', value);
+    
+    // Nếu đang ở trang chủ, chỉ cần thêm query parameter
+    if (location.pathname === '/') {
+      navigate(`/?${searchParams.toString()}`);
+    } else {
+      // Nếu đang ở trang khác, chuyển về trang chủ với query parameter
+      navigate(`/?${searchParams.toString()}`);
+    }
+  };
 
   const userMenu = {
     items: [
@@ -65,9 +82,7 @@ const Header = ({ searchTerm, setSearchTerm }) => {
         <Col flex="auto" className="search-box">
           <Search
             placeholder="Bạn cần tìm gì?"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            onSearch={(value) => console.log('Searching for:', value)}
+            onSearch={handleSearch}
             enterButton={<SearchOutlined />}
             size="large"
             className="search-input"

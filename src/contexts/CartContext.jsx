@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { toast } from 'react-toastify';
 import { cartService } from '../services/home.service';
 import { useAuth } from './AuthContext';
+import { message } from 'antd';
 
 const CartContext = createContext();
 const CART_STORAGE_KEY = 'shopping_cart';
@@ -60,63 +60,54 @@ export const CartProvider = ({ children }) => {
       setLoading(true);
       const response = await cartService.getCart();
       if (response.data && response.data.CartItems) {
-        const cartData = response.data.CartItems.map(item => ({
-          id: item.id,
-          productId: item.productId,
-          name: item.product?.name || '',
-          image: item.product?.image || '',
-          price: item.price,
-          quantity: item.quantity,
-          stock_quantity: item.product?.stock_quantity || 0,
-          totalPrice: item.totalPrice
-        }));
-        setCartItems(cartData);
+        setCartItems(response.data.CartItems);
       } else {
         setCartItems([]);
       }
     } catch (error) {
       console.error('Error fetching cart:', error);
-      toast.error('Không thể tải giỏ hàng');
+      message.error('Không thể tải giỏ hàng');
     } finally {
       setLoading(false);
     }
   };
 
-  const addToCart = async (product, quantity = 1) => {
+  const addToCart = async (productData) => {
     try {
       if (user) {
         // Nếu đã đăng nhập, gọi API
         await cartService.addToCart({
-          productId: product.id,
-          quantity
+          productId: productData.productId,
+          variantId: productData.variantId,
+          quantity: productData.quantity
         });
         await fetchCartFromServer(); // Refresh cart from server
       } else {
         // Nếu chưa đăng nhập, chỉ cập nhật localStorage
         setCartItems(prevItems => {
           const existingItem = prevItems.find(
-            item => item.productId === product.id
+            item => item.productId === productData.productId && item.variantId === productData.variantId
           );
 
           if (existingItem) {
             return prevItems.map(item =>
-              item.productId === product.id
-                ? { ...item, quantity: item.quantity + quantity }
+              item.productId === productData.productId && item.variantId === productData.variantId
+                ? { ...item, quantity: item.quantity + productData.quantity }
                 : item
             );
           }
 
           return [...prevItems, { 
-            ...product, 
-            productId: product.id,
-            quantity
+            productId: productData.productId,
+            variantId: productData.variantId,
+            quantity: productData.quantity
           }];
         });
       }
-      toast.success('Đã thêm sản phẩm vào giỏ hàng');
+      message.success('Đã thêm sản phẩm vào giỏ hàng');
     } catch (error) {
       console.error('Error adding to cart:', error);
-      toast.error('Không thể thêm sản phẩm vào giỏ hàng');
+      message.error('Không thể thêm sản phẩm vào giỏ hàng');
     }
   };
 
@@ -132,10 +123,10 @@ export const CartProvider = ({ children }) => {
           prevItems.filter(item => item.id !== productId)
         );
       }
-      toast.success('Đã xóa sản phẩm khỏi giỏ hàng');
+      message.success('Đã xóa sản phẩm khỏi giỏ hàng');
     } catch (error) {
       console.error('Error removing from cart:', error);
-      toast.error('Không thể xóa sản phẩm khỏi giỏ hàng');
+      message.error('Không thể xóa sản phẩm khỏi giỏ hàng');
     }
   };
 
@@ -162,7 +153,7 @@ export const CartProvider = ({ children }) => {
       }
     } catch (error) {
       console.error('Error updating quantity:', error);
-      toast.error('Không thể cập nhật số lượng');
+      message.error('Không thể cập nhật số lượng');
     }
   };
 
@@ -177,10 +168,10 @@ export const CartProvider = ({ children }) => {
         setCartItems([]);
         localStorage.removeItem(CART_STORAGE_KEY); // Xóa giỏ hàng khỏi localStorage
       }
-      toast.success('Đã xóa giỏ hàng');
+      message.success('Đã xóa giỏ hàng');
     } catch (error) {
       console.error('Error clearing cart:', error);
-      toast.error('Không thể xóa giỏ hàng');
+      message.error('Không thể xóa giỏ hàng');
     }
   };
 

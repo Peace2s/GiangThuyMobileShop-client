@@ -49,6 +49,10 @@ export const AuthProvider = ({ children }) => {
           user: response.data.user 
         };
       }
+      return {
+        success: false,
+        message: 'Phản hồi không hợp lệ từ máy chủ.'
+      };  
     } catch (error) {
       return { 
         success: false, 

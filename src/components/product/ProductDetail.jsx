@@ -161,7 +161,6 @@ const ProductDetail = () => {
       variantId: selectedVariant.id,
       quantity: quantity
     });
-    message.success('Đã thêm vào giỏ hàng');
   }
 
   return (

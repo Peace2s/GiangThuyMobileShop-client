@@ -6,6 +6,8 @@ import MainContent from './components/layout/MainContent'
 import Footer from './components/layout/Footer'
 import Login from './components/auth/Login'
 import Register from './components/auth/Register'
+import ForgotPassword from './pages/ForgotPassword'
+import Profile from './pages/Profile'
 import ProductDetail from './components/product/ProductDetail'
 import Cart from './components/cart/Cart'
 import Checkout from './components/checkout/Checkout'
@@ -31,6 +33,8 @@ const AppLayout = () => {
   const location = useLocation()
   const isLoginPage = location.pathname === '/login'
   const isRegisterPage = location.pathname === '/register'
+  const isForgotPasswordPage = location.pathname === '/forgot-password'
+  const isProfilePage = location.pathname === '/profile'
   const isProductDetail = location.pathname.startsWith('/product/') && location.pathname !== '/product'
   const isCartPage = location.pathname === '/cart'
   const isCheckoutPage = location.pathname === '/checkout'
@@ -39,12 +43,14 @@ const AppLayout = () => {
 
   return (
     <div className="app">
-      {!isLoginPage && !isRegisterPage && <Header searchTerm={searchTerm} setSearchTerm={setSearchTerm} />}
+      {!isLoginPage && !isRegisterPage && !isForgotPasswordPage && <Header searchTerm={searchTerm} setSearchTerm={setSearchTerm} />}
       {isHomePage && <BranchMenu />}
       <div className="main-content">
         <Routes>
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/profile" element={<Profile />} />
           <Route path="/cart" element={<Cart />} />
           <Route path="/checkout" element={<Checkout />} />
           <Route path="/orders" element={<Orders />} />
@@ -73,7 +79,7 @@ const AppLayout = () => {
           } />
         </Routes>
       </div>
-      {!isLoginPage && !isRegisterPage && !isProductDetail && !isCartPage && !isCheckoutPage && !isOrdersPage && <Footer />}
+      {!isLoginPage && !isRegisterPage && !isForgotPasswordPage && !isProfilePage && !isProductDetail && !isCartPage && !isCheckoutPage && !isOrdersPage && <Footer />}
     </div>
   )
 }

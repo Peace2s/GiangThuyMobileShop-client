@@ -27,20 +27,16 @@ const Dashboard = () => {
   const fetchDashboardData = async () => {
     try {
       setLoading(true);
-      const [stats, orders, products] = await Promise.all([
-        adminService.getStatistics(),
-        adminService.getOrders({ limit: 5 }),
-        adminService.getTopProducts(5)
-      ]);
+      const response = await adminService.getStatistics();
 
       setStatistics({
-        totalProducts: stats.data.totalProducts || 0,
-        totalOrders: stats.data.totalOrders || 0,
-        totalUsers: stats.data.totalUsers || 0,
-        totalRevenue: stats.data.totalRevenue || 0
+        totalProducts: response.data.totalProducts || 0,
+        totalOrders: response.data.totalOrders || 0,
+        totalUsers: response.data.totalUsers || 0,
+        totalRevenue: response.data.totalRevenue || 0
       });
-      setRecentOrders(orders.data.orders || []);
-      setTopProducts(products.data || []);
+      setRecentOrders(response.data.recentOrders || []);
+      setTopProducts(response.data.topProducts || []);
     } catch (error) {
       console.error('Error fetching dashboard data:', error);
       message.error('Không thể tải dữ liệu dashboard');

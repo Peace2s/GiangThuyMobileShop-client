@@ -16,7 +16,7 @@ const Register = () => {
     try {
       setLoading(true);
       const response = await authService.register(values);
-      
+
       if (response.data) {
         message.success('Đăng ký thành công! Vui lòng đăng nhập.');
         navigate('/login');
@@ -34,8 +34,8 @@ const Register = () => {
 
   return (
     <div className="register-container">
-      <Button 
-        icon={<HomeOutlined />} 
+      <Button
+        icon={<HomeOutlined />}
         onClick={goToHome}
         type="dashed"
         className="home-button"
@@ -47,7 +47,7 @@ const Register = () => {
         <Title level={2} className="register-title">
           Đăng ký tài khoản
         </Title>
-        
+
         <Form
           form={form}
           name="register"
@@ -69,9 +69,9 @@ const Register = () => {
               },
             ]}
           >
-            <Input 
-              prefix={<UserOutlined />} 
-              placeholder="Họ và tên" 
+            <Input
+              prefix={<UserOutlined />}
+              placeholder="Họ và tên"
             />
           </Form.Item>
 
@@ -88,9 +88,9 @@ const Register = () => {
               },
             ]}
           >
-            <Input 
-              prefix={<MailOutlined />} 
-              placeholder="Email" 
+            <Input
+              prefix={<MailOutlined />}
+              placeholder="Email"
             />
           </Form.Item>
 
@@ -98,8 +98,7 @@ const Register = () => {
             name="phone"
             rules={[
               {
-                required: true,
-                message: 'Vui lòng nhập số điện thoại!',
+                required: false,
               },
               {
                 pattern: /^[0-9]{10}$/,
@@ -107,9 +106,23 @@ const Register = () => {
               },
             ]}
           >
-            <Input 
-              prefix={<PhoneOutlined />} 
-              placeholder="Số điện thoại" 
+            <Input
+              prefix={<PhoneOutlined />}
+              placeholder="Số điện thoại"
+            />
+          </Form.Item>
+
+          <Form.Item
+            name="address"
+            rules={[
+              {
+                required: false,
+              },
+            ]}
+          >
+            <Input
+              prefix={<HomeOutlined />}
+              placeholder="Địa chỉ"
             />
           </Form.Item>
 

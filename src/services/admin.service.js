@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = 'http://localhost:3000/api';
+const API_URL = 'https://giangthuymobile-server-production.up.railway.app/api' ;
 
 const adminApi = axios.create({
   baseURL: API_URL,
@@ -60,6 +60,7 @@ export const adminService = {
   getStatistics: () => adminApi.get('/statistics'),
   getRevenueByMonth: (year) => adminApi.get(`/statistics/revenue/${year}`),
   getTopProducts: (limit) => adminApi.get(`/statistics/top-products/${limit}`),
+  getMonthlyRevenue: () => adminApi.get('/statistics/monthly-revenue'),
 
   createProductVariant: (data) => adminApi.post('/variants', data),
   updateProductVariant: (id, data) => adminApi.put(`/variants/${id}`, data),

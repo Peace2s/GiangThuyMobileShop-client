@@ -137,7 +137,20 @@ const Products = () => {
 
   const handleSubmit = async (values) => {
     try {
-      // Chuẩn bị dữ liệu biến thể
+      if (variants.length === 0) {
+        message.error('Sản phẩm phải có ít nhất một phiên bản.');
+        return;
+      }
+
+      // Validate that all fields except image are filled
+      for (const variant of variants) {
+        if (!variant.color || !variant.storage || variant.price === undefined || variant.stock_quantity === undefined || !variant.status) {
+          message.error('Tất cả các trường của phiên bản phải được điền đầy đủ.');
+          return;
+        }
+      }
+
+      // Prepare variant data
       const formattedVariants = variants.map(variant => ({
         ...variant,
         price: Number(variant.price),
@@ -153,16 +166,16 @@ const Products = () => {
       };
 
       if (editingId) {
-        // Cập nhật sản phẩm
+        // Update product
         await adminService.updateProduct(editingId, productData);
         
-        // Cập nhật từng biến thể
+        // Update each variant
         for (const variant of formattedVariants) {
           if (variant.id) {
-            // Cập nhật biến thể đã tồn tại
+            // Update existing variant
             await adminService.updateProductVariant(variant.id, variant);
           } else {
-            // Thêm biến thể mới
+            // Add new variant
             await adminService.createProductVariant({
               ...variant,
               productId: editingId
@@ -172,11 +185,11 @@ const Products = () => {
         
         message.success('Cập nhật sản phẩm thành công');
       } else {
-        // Tạo sản phẩm mới
+        // Create new product
         const response = await adminService.createProduct(productData);
         const newProductId = response.data.id;
         
-        // Tạo các biến thể cho sản phẩm mới
+        // Create variants for the new product
         for (const variant of formattedVariants) {
           await adminService.createProductVariant({
             ...variant,

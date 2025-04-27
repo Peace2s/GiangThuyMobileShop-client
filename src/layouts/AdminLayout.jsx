@@ -31,7 +31,7 @@ const AdminLayout = () => {
   const menuItems = [
     {
       key: '/admin/dashboard',
-      icon: <DashboardOutlined />,
+      icon: <BarChartOutlined />,
       label: 'Dashboard',
     },
     {
@@ -48,11 +48,6 @@ const AdminLayout = () => {
       key: '/admin/users',
       icon: <UserOutlined />,
       label: 'Quản lý tài khoản',
-    },
-    {
-      key: '/admin/statistics',
-      icon: <BarChartOutlined />,
-      label: 'Thống kê',
     },
   ];
 

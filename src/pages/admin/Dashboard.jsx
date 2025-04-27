@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Row, Col, Card, Statistic, Table, Spin, message } from 'antd';
+import { Line } from '@ant-design/charts';
 import {
   ShoppingCartOutlined,
   UserOutlined,
@@ -19,6 +20,7 @@ const Dashboard = () => {
   });
   const [recentOrders, setRecentOrders] = useState([]);
   const [topProducts, setTopProducts] = useState([]);
+  const [monthlyRevenue, setMonthlyRevenue] = useState([]);
 
   useEffect(() => {
     fetchDashboardData();
@@ -27,16 +29,15 @@ const Dashboard = () => {
   const fetchDashboardData = async () => {
     try {
       setLoading(true);
-      const response = await adminService.getStatistics();
+      const [statisticsResponse, monthlyRevenueResponse] = await Promise.all([
+        adminService.getStatistics(),
+        adminService.getMonthlyRevenue()
+      ]);
 
-      setStatistics({
-        totalProducts: response.data.totalProducts || 0,
-        totalOrders: response.data.totalOrders || 0,
-        totalUsers: response.data.totalUsers || 0,
-        totalRevenue: response.data.totalRevenue || 0
-      });
-      setRecentOrders(response.data.recentOrders || []);
-      setTopProducts(response.data.topProducts || []);
+      setStatistics(statisticsResponse.data);
+      setRecentOrders(statisticsResponse.data.recentOrders || []);
+      setTopProducts(statisticsResponse.data.topProducts || []);
+      setMonthlyRevenue(Array.isArray(monthlyRevenueResponse.data) ? monthlyRevenueResponse.data : []);
     } catch (error) {
       console.error('Error fetching dashboard data:', error);
       message.error('Không thể tải dữ liệu dashboard');
@@ -104,6 +105,21 @@ const Dashboard = () => {
       render: (amount) => `${parseInt(amount).toLocaleString()} VNĐ`,
     },
   ];
+
+  const config = {
+    data: monthlyRevenue || [],
+    xField: 'month',
+    yField: 'revenue',
+    point: {
+      size: 5,
+      shape: 'diamond',
+    },
+    label: {
+      style: {
+        fill: '#aaa',
+      },
+    },
+  };
 
   if (loading) {
     return (
@@ -177,6 +193,14 @@ const Dashboard = () => {
               pagination={false}
               size="small"
             />
+          </Card>
+        </Col>
+      </Row>
+
+      <Row gutter={[24, 24]} style={{ marginTop: 24 }}>
+        <Col xs={24}>
+          <Card title="Doanh thu theo tháng">
+            <Line {...config} />
           </Card>
         </Col>
       </Row>

@@ -41,10 +41,10 @@ const Footer = () => {
             <div className="footer-section">
               <h3>LIÊN HỆ</h3>
               <ul>
-                <li>CÔNG TY CỔ PHẦN XYZ</li>
+                <li>CỬA HÀNG GIANG THUY MOBILE</li>
                 <li>Hotline: 0128 922 0142</li>
-                <li>Email: contact@xyz.com</li>
-                <li>Địa chỉ: 123 ABC, Quận X, TP.Y</li>
+                <li>Email: giangthuy.mobile@gmail.com</li>
+                <li>Địa chỉ: 47 QL1A, TT. Vôi, Lạng Giang, Bắc Giang, Việt Nam</li>
               </ul>
             </div>
           </div>
@@ -52,7 +52,7 @@ const Footer = () => {
   
         <div className="footer-bottom">
           <div className="container">
-            <p>© All rights reserved. Host by XYZ Media</p>
+            <p>© All rights reserved. Host by Giang Thuy Mobile</p>
           </div>
         </div>
       </footer>

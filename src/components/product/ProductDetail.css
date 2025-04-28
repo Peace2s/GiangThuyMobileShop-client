@@ -150,21 +150,31 @@
 }
 
 .specifications {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 16px;
-  padding: 24px;
+  padding: 20px;
   background: #f8f8f8;
   border-radius: 8px;
 }
 
 .spec-item {
-  display: flex;
-  gap: 8px;
+  display: table-row;
+  margin-bottom: 12px;
 }
 
 .spec-item .ant-typography {
-  font-size: 14px;
+  display: table-cell;
+  padding: 8px 12px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.spec-item .ant-typography:first-child {
+  width: 120px;
+  font-weight: 500;
+  color: #666;
+  white-space: nowrap;
+}
+
+.spec-item .ant-typography:last-child {
+  color: #333;
 }
 
 /* Responsive Design */

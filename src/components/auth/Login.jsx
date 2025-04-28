@@ -89,7 +89,8 @@ const Login = () => {
           >
             <Input 
               prefix={<UserOutlined />} 
-              placeholder="Email" 
+              placeholder="Email"
+              autoComplete="username"
             />
           </Form.Item>
 
@@ -109,6 +110,7 @@ const Login = () => {
             <Input.Password
               prefix={<LockOutlined />}
               placeholder="Mật khẩu"
+              autoComplete="current-password"
             />
           </Form.Item>
 

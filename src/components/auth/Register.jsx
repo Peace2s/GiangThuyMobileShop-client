@@ -91,6 +91,7 @@ const Register = () => {
             <Input
               prefix={<MailOutlined />}
               placeholder="Email"
+              autoComplete="new-username"
             />
           </Form.Item>
 
@@ -142,6 +143,7 @@ const Register = () => {
             <Input.Password
               prefix={<LockOutlined />}
               placeholder="Mật khẩu"
+              autoComplete="new-password"
             />
           </Form.Item>
 
@@ -166,6 +168,7 @@ const Register = () => {
             <Input.Password
               prefix={<LockOutlined />}
               placeholder="Xác nhận mật khẩu"
+              autoComplete="new-password"
             />
           </Form.Item>
 

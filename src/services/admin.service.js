@@ -1,6 +1,5 @@
 import axios from 'axios';
-
-const API_URL = 'https://giangthuymobile-server-production.up.railway.app/api' ;
+import API_URL from '../config/api';
 
 const adminApi = axios.create({
   baseURL: API_URL,

@@ -1,7 +1,6 @@
 import axios from 'axios';
 import Cookies from 'js-cookie';
-
-const API_URL = 'https://giangthuymobile-server-production.up.railway.app/api';
+import API_URL from '../config/api';
 
 const api = axios.create({
   baseURL: API_URL,

@@ -23,7 +23,8 @@ const Checkout = () => {
       form.setFieldsValue({
         email: user.email,
         phone: user.phone || '',
-        fullName: user.fullName || ''
+        fullName: user.fullName || '',
+        address: user.address || ''
       });
     }
   }, [user, form]);

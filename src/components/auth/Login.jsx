@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
-import { Form, Input, Button, Card, Typography, message, Divider } from 'antd';
-import { UserOutlined, LockOutlined, HomeOutlined } from '@ant-design/icons';
-import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { useAuth } from '../../contexts/AuthContext';
-import { useCart } from '../../contexts/CartContext';
-import './Login.css';
+import React, { useState } from "react";
+import { Form, Input, Button, Card, Typography, message, Divider } from "antd";
+import { UserOutlined, LockOutlined, HomeOutlined } from "@ant-design/icons";
+import { Link, useNavigate, useLocation } from "react-router-dom";
+import { useAuth } from "../../contexts/AuthContext";
+import { useCart } from "../../contexts/CartContext";
+import "./Login.css";
 
 const { Title, Text } = Typography;
 
@@ -14,32 +14,25 @@ const Login = () => {
   const location = useLocation();
   const [loading, setLoading] = useState(false);
   const { login } = useAuth();
-  const { mergeCartWithServer } = useCart();
 
   const onFinish = async (values) => {
     try {
       setLoading(true);
       const result = await login(values);
-      
+
       if (result.success) {
-        try {
-          await mergeCartWithServer();
-          message.success('Đăng nhập thành công!');
-          const from = location.state?.from || '/';
-          navigate(from);
-        } catch (mergeError) {
-          console.error('Error merging cart:', mergeError);
-          message.success('Đăng nhập thành công!');
-          const from = location.state?.from || '/';
-          navigate(from);
-        }
+        message.success("Đăng nhập thành công!");
+        const from = location.state?.from || "/";
+        navigate(from);
       } else {
         message.error(result.message);
         return;
       }
     } catch (error) {
-      console.error('Login error:', error);
-      message.error(error.response?.data?.message || 'Đăng nhập thất bại. Vui lòng thử lại.');
+      console.error("Login error:", error);
+      message.error(
+        error.response?.data?.message || "Đăng nhập thất bại. Vui lòng thử lại."
+      );
       return;
     } finally {
       setLoading(false);
@@ -47,13 +40,13 @@ const Login = () => {
   };
 
   const goToHome = () => {
-    navigate('/');
+    navigate("/");
   };
 
   return (
     <div className="login-container">
-      <Button 
-        icon={<HomeOutlined />} 
+      <Button
+        icon={<HomeOutlined />}
         onClick={goToHome}
         type="dashed"
         className="home-button"
@@ -65,7 +58,7 @@ const Login = () => {
         <Title level={2} className="login-title">
           Đăng nhập
         </Title>
-        
+
         <Form
           form={form}
           name="login"
@@ -79,16 +72,16 @@ const Login = () => {
             rules={[
               {
                 required: true,
-                message: 'Vui lòng nhập email!',
+                message: "Vui lòng nhập email!",
               },
               {
-                type: 'email',
-                message: 'Email không hợp lệ!',
+                type: "email",
+                message: "Email không hợp lệ!",
               },
             ]}
           >
-            <Input 
-              prefix={<UserOutlined />} 
+            <Input
+              prefix={<UserOutlined />}
               placeholder="Email"
               autoComplete="username"
             />
@@ -99,11 +92,11 @@ const Login = () => {
             rules={[
               {
                 required: true,
-                message: 'Vui lòng nhập mật khẩu!',
+                message: "Vui lòng nhập mật khẩu!",
               },
               {
                 min: 6,
-                message: 'Mật khẩu phải có ít nhất 6 ký tự!',
+                message: "Mật khẩu phải có ít nhất 6 ký tự!",
               },
             ]}
           >
@@ -142,4 +135,4 @@ const Login = () => {
   );
 };
 
-export default Login; 
+export default Login;

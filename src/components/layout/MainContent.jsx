@@ -344,7 +344,7 @@ const MainContent = () => {
 
   return (
     <div className="main-content">
-      {!searchQuery && <Banner />}
+      {!searchQuery && !branch && !minPrice && !maxPrice && <Banner />}
       {loading ? (
         <div>Loading...</div>
       ) : searchQuery ? (

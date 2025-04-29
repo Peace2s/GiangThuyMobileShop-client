@@ -90,7 +90,17 @@ export const AuthProvider = ({ children }) => {
     login,
     register,
     logout,
-    isAuthenticated: !!user
+    isAuthenticated: !!user,
+    updateUser: (newUserData) => {
+      // Cập nhật state
+      setUser(newUserData);
+      // Cập nhật cookie
+      Cookies.set('user', JSON.stringify(newUserData), { 
+        expires: 1, // 1 ngày
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'strict'
+      });
+    }
   };
 
   return (

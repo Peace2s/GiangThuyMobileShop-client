@@ -17,7 +17,8 @@ const Profile = () => {
     if (user) {
       form.setFieldsValue({
         fullName: user.fullName,
-        phone: user.phone
+        phone: user.phone,
+        address: user.address
       });
     }
   }, [user, form]);
@@ -25,14 +26,43 @@ const Profile = () => {
   const onFinishProfile = async (values) => {
     try {
       setLoading(true);
-      const response = await authService.updateProfile(values);
+      console.log('Submitting profile update:', values);
+
+      // Kiểm tra dữ liệu đầu vào
+      if (!values.fullName || !values.phone) {
+        message.error('Vui lòng điền đầy đủ thông tin');
+        return;
+      }
+
+      // Kiểm tra định dạng số điện thoại
+      const phoneRegex = /^[0-9]{10}$/;
+      if (!phoneRegex.test(values.phone)) {
+        message.error('Số điện thoại không hợp lệ');
+        return;
+      }
+
+      const response = await authService.updateProfile({
+        fullName: values.fullName,
+        phone: values.phone,
+        address: values.address || null
+      });
       
+      console.log('Update profile response:', response);
+
       if (response.data.success) {
         updateUser(response.data.user);
         message.success('Cập nhật thông tin thành công');
+      } else {
+        message.error(response.data.message || 'Cập nhật thông tin thất bại');
       }
     } catch (error) {
-      message.error(error.response?.data?.message || 'Có lỗi xảy ra');
+      console.error('Update profile error:', error);
+      console.error('Error response:', error.response);
+      message.error(
+        error.response?.data?.message || 
+        error.message || 
+        'Có lỗi xảy ra khi cập nhật thông tin'
+      );
     } finally {
       setLoading(false);
     }
@@ -98,6 +128,13 @@ const Profile = () => {
                 ]}
               >
                 <Input prefix={<PhoneOutlined />} />
+              </Form.Item>
+
+              <Form.Item
+                name="address"
+                label="Địa chỉ"
+              >
+                <Input.TextArea rows={4} />
               </Form.Item>
 
               <Form.Item>

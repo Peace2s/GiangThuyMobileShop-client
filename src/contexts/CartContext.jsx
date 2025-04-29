@@ -74,16 +74,15 @@ export const CartProvider = ({ children }) => {
 
   const addToCart = async (productData) => {
     try {
+      const response = await cartService.addToCart({
+        productId: productData.productId,
+        variantId: productData.variantId,
+        quantity: productData.quantity
+      });
+
       if (user) {
-        // Nếu đã đăng nhập, gọi API
-        await cartService.addToCart({
-          productId: productData.productId,
-          variantId: productData.variantId,
-          quantity: productData.quantity
-        });
-        await fetchCartFromServer(); // Refresh cart from server
+        await fetchCartFromServer();
       } else {
-        // Nếu chưa đăng nhập, chỉ cập nhật localStorage
         setCartItems(prevItems => {
           const existingItem = prevItems.find(
             item => item.productId === productData.productId && item.variantId === productData.variantId
@@ -97,9 +96,8 @@ export const CartProvider = ({ children }) => {
             );
           }
 
-          return [...prevItems, { 
-            productId: productData.productId,
-            variantId: productData.variantId,
+          return [...prevItems, {
+            ...response.data.product,
             quantity: productData.quantity
           }];
         });
@@ -175,65 +173,6 @@ export const CartProvider = ({ children }) => {
     }
   };
 
-  // Hàm merge giỏ hàng local vào server khi user đăng nhập
-  const mergeCartWithServer = async () => {
-    try {
-      const localCart = JSON.parse(localStorage.getItem(CART_STORAGE_KEY) || '[]');
-      if (localCart.length > 0) {
-        // Đợi một chút để đảm bảo token đã được set
-        await new Promise(resolve => setTimeout(resolve, 100));
-        
-        // Xóa giỏ hàng hiện tại trên server
-        await cartService.clearCart();
-        
-        // Thêm từng sản phẩm từ giỏ hàng local vào server
-        for (const item of localCart) {
-          await cartService.addToCart({
-            productId: item.productId || item.id,
-            quantity: item.quantity
-          });
-        }
-        
-        // Xóa giỏ hàng local và cập nhật state
-        localStorage.removeItem(CART_STORAGE_KEY);
-        setCartItems([]); // Reset cart items state
-        
-        // Cập nhật lại state từ server
-        const response = await cartService.getCart();
-        if (response.data && response.data.CartItems) {
-          const cartData = response.data.CartItems.map(item => ({
-            id: item.id,
-            productId: item.productId,
-            name: item.product?.name || '',
-            image: item.product?.image || '',
-            price: item.price,
-            quantity: item.quantity,
-            stock_quantity: item.product?.stock_quantity || 0
-          }));
-          setCartItems(cartData);
-        }
-      } else {
-        // Nếu không có giỏ hàng local, vẫn cập nhật từ server
-        const response = await cartService.getCart();
-        if (response.data && response.data.CartItems) {
-          const cartData = response.data.CartItems.map(item => ({
-            id: item.id,
-            productId: item.productId,
-            name: item.product?.name || '',
-            image: item.product?.image || '',
-            price: item.price,
-            quantity: item.quantity,
-            stock_quantity: item.product?.stock_quantity || 0
-          }));
-          setCartItems(cartData);
-        }
-      }
-    } catch (error) {
-      console.error('Error merging cart:', error);
-      throw error;
-    }
-  };
-
   const getCartTotal = () => {
     if (!Array.isArray(cartItems)) return 0;
     return cartItems.reduce((total, item) => {
@@ -256,7 +195,6 @@ export const CartProvider = ({ children }) => {
     clearCart,
     getCartTotal,
     getCartCount,
-    mergeCartWithServer
   };
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;

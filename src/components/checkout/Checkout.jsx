@@ -45,6 +45,12 @@ const Checkout = () => {
         totalAmount: getCartTotal()
       };
 
+      if (values.paymentMethod === 'vnpay') {
+        const response = await orderService.createPaymentUrl(orderData);
+        window.location.href = response.data.paymentUrl;
+        return;
+      }
+
       await orderService.createOrder(orderData);
       await clearCart();
       message.success('Đặt hàng thành công!');
@@ -151,7 +157,7 @@ const Checkout = () => {
               >
                 <Select>
                   <Select.Option value="cod">Thanh toán khi nhận hàng (COD)</Select.Option>
-                  <Select.Option value="bank">Chuyển khoản ngân hàng</Select.Option>
+                  <Select.Option value="vnpay">Thanh toán qua VNPay</Select.Option>
                 </Select>
               </Form.Item>
 

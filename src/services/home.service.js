@@ -96,6 +96,7 @@ export const orderService = {
   getUserOrders: () => api.get('/orders'),
   getOrderDetails: (orderId) => api.get(`/orders/${orderId}`),
   cancelOrder: (orderId) => api.put(`/orders/${orderId}/cancel`),
+  createPaymentUrl: (orderData) => api.post('/payment/create-payment-url', orderData),
 };
 
 export default api; 

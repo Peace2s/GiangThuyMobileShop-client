@@ -212,7 +212,7 @@ const Orders = () => {
         </Col>
         <Col span={8}>
           <Statistic 
-            title="Tổng doanh thu" 
+            title="Tổng giá trị đơn hàng" 
             value={statistics.totalRevenue || 0} 
             formatter={value => `${value.toLocaleString()} VNĐ`}
           />

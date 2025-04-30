@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect, useRef } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useCart } from '../../contexts/CartContext';
 import { useAuth } from '../../contexts/AuthContext';
 import { orderService } from '../../services/home.service';
@@ -13,10 +13,12 @@ const { TextArea } = Input;
 
 const Checkout = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { cartItems, clearCart, getCartTotal } = useCart();
   const { user } = useAuth();
   const [loading, setLoading] = useState(false);
   const [form] = Form.useForm();
+  const modalShownRef = useRef(false);
 
   useEffect(() => {
     if (user) {
@@ -28,6 +30,25 @@ const Checkout = () => {
       });
     }
   }, [user, form]);
+
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const status = params.get('status');
+    const messageText = params.get('message');
+
+    if (status && messageText && !modalShownRef.current) {
+      modalShownRef.current = true;
+      
+      if (status === 'success') {
+        message.success(messageText);
+        clearCart();
+        navigate('/orders');
+      } else {
+        message.error(messageText);
+        navigate('/checkout');
+      }
+    }
+  }, [location, clearCart, navigate]);
 
   const handleSubmit = async (values) => {
     try {

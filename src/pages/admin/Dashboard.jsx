@@ -103,7 +103,7 @@ const Dashboard = () => {
       dataIndex: 'revenue',
       key: 'revenue',
       render: (amount) => `${parseInt(amount).toLocaleString()} VNĐ`,
-    },
+    },   
   ];
 
   const config = {

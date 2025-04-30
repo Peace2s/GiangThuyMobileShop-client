@@ -166,10 +166,8 @@ export const CartProvider = ({ children }) => {
         setCartItems([]);
         localStorage.removeItem(CART_STORAGE_KEY); // Xóa giỏ hàng khỏi localStorage
       }
-      message.success('Đã xóa giỏ hàng');
     } catch (error) {
       console.error('Error clearing cart:', error);
-      message.error('Không thể xóa giỏ hàng');
     }
   };
 

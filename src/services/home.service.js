@@ -97,6 +97,8 @@ export const orderService = {
   getOrderDetails: (orderId) => api.get(`/orders/${orderId}`),
   cancelOrder: (orderId) => api.put(`/orders/${orderId}/cancel`),
   createPaymentUrl: (orderData) => api.post('/payment/create-payment-url', orderData),
+  cancelSepayOrder: (orderId) => api.post(`/payment/cancel-sepay-order/${orderId}`),
+  checkSepayPaymentStatus: (orderId) => api.get(`/payment/check-sepay-status/${orderId}`)
 };
 
 export default api; 

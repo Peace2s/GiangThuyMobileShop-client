@@ -20,21 +20,47 @@ const Products = () => {
   const [variants, setVariants] = useState([]);
   const [activeTab, setActiveTab] = useState('1');
   const [uploadingVariants, setUploadingVariants] = useState({});
+  const [search, setSearch] = useState('');
+  const [brandFilter, setBrandFilter] = useState(undefined);
+  const [pagination, setPagination] = useState({ current: 1, pageSize: 10, total: 0 });
 
   useEffect(() => {
     fetchProducts();
-  }, []);
+  }, [pagination.current, pagination.pageSize, search, brandFilter]);
 
   const fetchProducts = async () => {
     try {
       setLoading(true);
-      const response = await adminService.getProducts();
-      setProducts(response.data);
+      const response = await adminService.getProducts({
+        page: pagination.current,
+        limit: pagination.pageSize,
+        search,
+        brand: brandFilter
+      });
+      setProducts(response.data.products || response.data.data || []);
+      setPagination(prev => ({
+        ...prev,
+        total: response.data.total || (response.data.data ? response.data.data.length : 0)
+      }));
     } catch (error) {
       message.error('Không thể tải danh sách sản phẩm');
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleTableChange = (pagination) => {
+    setPagination(prev => ({ ...prev, current: pagination.current, pageSize: pagination.pageSize }));
+  };
+
+  const handleSearch = (e) => {
+    setSearch(e.target.value);
+    setPagination(prev => ({ ...prev, current: 1 }));
+  };
+
+  const handleBrandFilter = (value) => {
+    setBrandFilter(value);
+    setPagination(prev => ({ ...prev, current: 1 }));
   };
 
   const handleCreate = () => {
@@ -266,13 +292,34 @@ const Products = () => {
     <div className="products-container">
       <div className="products-header">
         <h1>Quản lý sản phẩm</h1>
-        <Button
-          type="primary"
-          icon={<PlusOutlined />}
-          onClick={handleCreate}
-        >
-          Thêm sản phẩm
-        </Button>
+        <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
+          <Input.Search
+            placeholder="Tìm kiếm theo tên sản phẩm"
+            allowClear
+            onChange={handleSearch}
+            style={{ width: 220 }}
+          />
+          <Select
+            placeholder="Lọc theo thương hiệu"
+            style={{ width: 180 }}
+            onChange={handleBrandFilter}
+            allowClear
+            value={brandFilter}
+          >
+            <Option value="apple">Apple</Option>
+            <Option value="samsung">Samsung</Option>
+            <Option value="xiaomi">Xiaomi</Option>
+            <Option value="oppo">OPPO</Option>
+            <Option value="vivo">Vivo</Option>
+          </Select>
+          <Button
+            type="primary"
+            icon={<PlusOutlined />}
+            onClick={handleCreate}
+          >
+            Thêm sản phẩm
+          </Button>
+        </div>
       </div>
 
       <Table
@@ -280,7 +327,8 @@ const Products = () => {
         dataSource={products}
         rowKey="id"
         loading={loading}
-        pagination={{ pageSize: 10 }}
+        pagination={pagination}
+        onChange={handleTableChange}
       />
 
       <Modal

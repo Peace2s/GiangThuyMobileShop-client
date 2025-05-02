@@ -1,104 +1,136 @@
-.footer {
-    background-color: #1a237e;
-    color: #fff;
-    padding: 40px 0 0;
+/* Footer Custom CSS */
+.footer-custom {
+  background: rgb(26, 77, 162);
+  background-size: cover;
+  color: #fff;
+  position: relative;
+  font-family: Arial, sans-serif;
+  padding-top: 32px;
+}
+
+.footer-main {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 24px 16px 24px;
+  gap: 32px;
+}
+
+.footer-col {
+  flex: 1;
+  min-width: 220px;
+}
+
+.logo-col {
+  display: flex;
+  align-items: flex-start;
+}
+.footer-logo-slogan {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+.footer-logo {
+  width: 80px;
+  height: 80px;
+  object-fit: contain;
+  margin-bottom: 8px;
+}
+.slogan-main {
+  color: #2ecc40;
+  font-size: 20px;
+  font-weight: bold;
+  text-shadow: 1px 1px 2px #000;
+}
+.slogan-sub {
+  color: #ff6600;
+  font-size: 15px;
+  font-style: italic;
+}
+
+.info-col .footer-title {
+  font-size: 17px;
+  font-weight: bold;
+  margin-bottom: 8px;
+  color: #fff;
+}
+.info-col div {
+  margin-bottom: 4px;
+  font-size: 15px;
+}
+.info-col a {
+  color: #fff;
+  font-size: 18px;
+  margin-right: 8px;
+  transition: color 0.2s;
+}
+.info-col a:hover {
+  color: #ff6600;
+}
+
+.map-col iframe {
+  border-radius: 10px;
+  border: 2px solid #fff;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}
+
+.subscribe-col .footer-title {
+  font-size: 17px;
+  font-weight: bold;
+  margin-bottom: 8px;
+  color: #fff;
+}
+.footer-desc {
+  font-size: 14px;
+  margin-bottom: 10px;
+  color: #eee;
+}
+.footer-form {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.footer-input {
+  padding: 7px 10px;
+  border-radius: 4px;
+  border: none;
+  outline: none;
+  font-size: 14px;
+  min-width: 120px;
+}
+.footer-btn {
+  background: #e53935;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  padding: 7px 18px;
+  font-size: 15px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.footer-btn:hover {
+  background: #1c8bb7;
+}
+
+@media (max-width: 992px) {
+  .footer-main {
+    flex-direction: column;
+    gap: 18px;
+    align-items: stretch;
   }
-  
-  .container {
-    max-width: auto;
-    margin: 0 auto;
-    padding: 0 15px;
+  .footer-col {
+    min-width: 0;
   }
-  
-  .footer-sections {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 30px;
-    margin-bottom: 30px;
-  }
-  
-  .footer-section h3 {
-    font-size: 16px;
-    font-weight: bold;
-    margin-bottom: 20px;
-    color: #fff;
-  }
-  
-  .footer-section ul {
-    list-style: none;
-    padding: 0;
-  }
-  
-  .footer-section ul li {
-    margin-bottom: 10px;
-  }
-  
-  .footer-section ul li a {
-    color: #fff;
-    text-decoration: none;
-    font-size: 14px;
-    transition: color 0.3s;
-  }
-  
-  .footer-section ul li a:hover {
-    color: #ffd700;
-  }
-  
-  .footer-payment,
-  .footer-shipping {
-    margin-bottom: 30px;
-  }
-  
-  .footer-payment h3,
-  .footer-shipping h3 {
-    font-size: 16px;
-    font-weight: bold;
-    margin-bottom: 20px;
-    color: #fff;
-  }
-  
-  .payment-methods,
-  .shipping-methods {
-    display: flex;
-    gap: 15px;
-    flex-wrap: wrap;
-  }
-  
-  .payment-methods img,
-  .shipping-methods img {
-    height: 30px;
-    object-fit: contain;
-    background-color: #fff;
-    padding: 5px;
-    border-radius: 4px;
-  }
-  
-  .footer-bottom {
-    background-color: #0d1757;
-    padding: 15px 0;
+  .footer-bottom-custom {
+    flex-direction: column;
+    gap: 4px;
     text-align: center;
-    margin-top: 20px;
   }
-  
-  .footer-bottom p {
-    font-size: 14px;
-    color: #fff;
-    margin: 0;
+  .footer-gotop {
+    position: static;
+    margin: 8px auto 0 auto;
   }
-  
-  @media (max-width: 992px) {
-    .footer-sections {
-      grid-template-columns: repeat(2, 1fr);
-    }
-  }
-  
-  @media (max-width: 576px) {
-    .footer-sections {
-      grid-template-columns: 1fr;
-    }
-    
-    .payment-methods,
-    .shipping-methods {
-      justify-content: center;
-    }
-  }
+}

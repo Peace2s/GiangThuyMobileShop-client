@@ -37,7 +37,7 @@ export const adminService = {
   login: (data) => adminApi.post('/auth/login', data),
 
   // Products
-  getProducts: (params) => adminApi.get('/products', { params }),
+  getProducts: (params) => adminApi.get('/products/admin/all', { params }),
   getProductById: (id) => adminApi.get(`/products/${id}`),
   createProduct: (data) => adminApi.post('/products', data),
   updateProduct: (id, data) => adminApi.put(`/products/${id}`, data),
@@ -47,7 +47,6 @@ export const adminService = {
   getOrders: (params) => adminApi.get('/orders/admin/all', { params }),
   getOrderById: (id) => adminApi.get(`/orders/${id}`),
   updateOrderStatus: (id, data) => adminApi.put(`/orders/admin/${id}/status`, data),
-  getOrderStatistics: (params) => adminApi.get('/orders/admin/statistics', { params }),
 
   // Users
   getUsers: (params) => adminApi.get('/users', { params }),

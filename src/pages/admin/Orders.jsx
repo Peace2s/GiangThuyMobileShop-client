@@ -31,20 +31,21 @@ const Orders = () => {
 
   useEffect(() => {
     fetchOrders();
-    fetchStatistics();
   }, [pagination.current, pagination.pageSize, filters]);
 
   const fetchOrders = async () => {
     try {
       setLoading(true);
       const { current, pageSize } = pagination;
-      const { status, search } = filters;
+      const { status, search, startDate, endDate } = filters;
       
       const response = await adminService.getOrders({
         page: current,
         limit: pageSize,
         status,
-        search
+        search,
+        startDate: startDate?.format('YYYY-MM-DD'),
+        endDate: endDate?.format('YYYY-MM-DD')
       });
       
       setOrders(response.data.orders);
@@ -59,45 +60,11 @@ const Orders = () => {
     }
   };
 
-  const fetchStatistics = async () => {
-    try {
-      const { startDate, endDate } = filters;
-      const response = await adminService.getOrderStatistics({
-        startDate: startDate?.format('YYYY-MM-DD'),
-        endDate: endDate?.format('YYYY-MM-DD')
-      });
-      
-      // Validate response data
-      if (response.data) {
-        setStatistics({
-          totalOrders: response.data.totalOrders || 0,
-          totalRevenue: response.data.totalRevenue || 0,
-          statusCounts: response.data.orders || []
-        });
-      } else {
-        setStatistics({
-          totalOrders: 0,
-          totalRevenue: 0,
-          statusCounts: []
-        });
-      }
-    } catch (error) {
-      console.error('Error fetching statistics:', error);
-      message.error('Không thể tải thống kê');
-      setStatistics({
-        totalOrders: 0,
-        totalRevenue: 0,
-        statusCounts: []
-      });
-    }
-  };
-
   const handleStatusChange = async (orderId, status) => {
     try {
       await adminService.updateOrderStatus(orderId, { status });
       message.success('Cập nhật trạng thái thành công');
       fetchOrders();
-      fetchStatistics();
     } catch (error) {
       message.error('Cập nhật trạng thái thất bại');
     }
@@ -205,25 +172,6 @@ const Orders = () => {
       <div className="orders-header">
         <h1>Quản lý đơn hàng</h1>
       </div>
-
-      <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>
-        <Col span={8}>
-          <Statistic title="Tổng số đơn hàng" value={statistics.totalOrders || 0} />
-        </Col>
-        <Col span={8}>
-          <Statistic 
-            title="Tổng giá trị đơn hàng" 
-            value={statistics.totalRevenue || 0} 
-            formatter={value => `${value.toLocaleString()} VNĐ`}
-          />
-        </Col>
-        <Col span={8}>
-          <Statistic 
-            title="Đơn hàng đã giao" 
-            value={statistics.statusCounts?.find(s => s.status === 'delivered')?.count || 0} 
-          />
-        </Col>
-      </Row>
 
       <Space style={{ marginBottom: 16 }}>
         <Search

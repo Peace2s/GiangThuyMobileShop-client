@@ -7,7 +7,7 @@ const BranchMenu = () => {
   const navigate = useNavigate()
   const location = useLocation()
   const searchParams = new URLSearchParams(location.search)
-  const currentBranch = searchParams.get('branch') || 'all'
+  const currentBranch = searchParams.get('branch') || ''
 
   const brands = [
     { key: 'all', label: 'Tất cả sản phẩm' },

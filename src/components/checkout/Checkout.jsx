@@ -4,8 +4,10 @@ import { useCart } from '../../contexts/CartContext';
 import { useAuth } from '../../contexts/AuthContext';
 import { orderService } from '../../services/home.service';
 import { message } from 'antd';
-import { Form, Input, Select, Button, Card, Typography, Divider, Space } from 'antd';
+import { Form, Input, Select, Button, Card, Typography, Divider, Space, Modal } from 'antd';
 import { ShoppingOutlined } from '@ant-design/icons';
+import { io } from 'socket.io-client';
+import API_URL from '../../config/api';
 import './Checkout.css';
 
 const { Title, Text } = Typography;
@@ -19,6 +21,11 @@ const Checkout = () => {
   const [loading, setLoading] = useState(false);
   const [form] = Form.useForm();
   const modalShownRef = useRef(false);
+  const [qrModalVisible, setQrModalVisible] = useState(false);
+  const [qrUrl, setQrUrl] = useState('');
+  const [currentOrderId, setCurrentOrderId] = useState(null);
+  const [paymentStatus, setPaymentStatus] = useState('pending');
+  const socketRef = useRef(null);
 
   useEffect(() => {
     if (user) {
@@ -50,6 +57,44 @@ const Checkout = () => {
     }
   }, [location, clearCart, navigate]);
 
+  useEffect(() => {
+    if (qrModalVisible && currentOrderId) {
+      // Connect to Socket.IO server
+      socketRef.current = io(API_URL.replace('/api', ''), {
+        withCredentials: true,
+        transports: ['websocket', 'polling'],
+        reconnection: true,
+        reconnectionAttempts: 5,
+        reconnectionDelay: 1000
+      });
+
+      // Join order room
+      socketRef.current.emit('joinOrderRoom', currentOrderId);
+
+      // Listen for payment status updates
+      socketRef.current.on('paymentStatusUpdate', (data) => {
+        console.log('Received payment status update:', data);
+        setPaymentStatus(data.status);
+
+        if (data.status === 'paid') {
+          setQrModalVisible(false);
+          clearCart();
+          message.success(data.message);
+          navigate('/orders');
+        } else if (data.status === 'failed') {
+          setQrModalVisible(false);
+          message.error(data.message);
+        }
+      });
+
+      return () => {
+        if (socketRef.current) {
+          socketRef.current.disconnect();
+        }
+      };
+    }
+  }, [qrModalVisible, currentOrderId, clearCart, navigate]);
+
   const handleSubmit = async (values) => {
     try {
       setLoading(true);
@@ -72,6 +117,17 @@ const Checkout = () => {
         return;
       }
 
+      if (values.paymentMethod === 'qr_sepay') {
+        const response = await orderService.createOrder(orderData);
+        console.log('Created order:', response.data);
+        const orderId = response.data.orderId;
+        setCurrentOrderId(orderId);
+        const qrUrl = `https://qr.sepay.vn/img?acc=0941076269&bank=VPBank&amount=2000&des=Thanh toan don hang ${orderId}`;
+        setQrUrl(qrUrl);
+        setQrModalVisible(true);
+        return;
+      }
+
       await orderService.createOrder(orderData);
       await clearCart();
       message.success('Đặt hàng thành công!');
@@ -85,6 +141,26 @@ const Checkout = () => {
       }
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleQrModalCancel = async () => {
+    try {
+      if (socketRef.current) {
+        socketRef.current.disconnect();
+      }
+      
+      if (currentOrderId) {
+        const response = await orderService.cancelSepayOrder(currentOrderId);
+        console.log('Cancel response:', response);
+        message.info('Đã hủy thanh toán QR');
+      }
+      setQrModalVisible(false);
+      setCurrentOrderId(null);
+      setPaymentStatus('pending');
+    } catch (error) {
+      console.error('Error canceling order:', error);
+      message.error('Có lỗi xảy ra khi hủy thanh toán');
     }
   };
 
@@ -124,7 +200,7 @@ const Checkout = () => {
       <Title level={2}>Thanh toán</Title>
       <div className="checkout-content">
         <div className="checkout-form">
-          <Card title="Thông tin giao hàng">
+          <Card title="Thông tin giao hàng" style={{ height: '100%' }}>
             <Form
               form={form}
               layout="vertical"
@@ -132,6 +208,7 @@ const Checkout = () => {
               initialValues={{
                 paymentMethod: 'cod'
               }}
+              style={{ maxHeight: 'none', overflow: 'visible' }}
             >
               <Form.Item
                 name="fullName"
@@ -179,6 +256,7 @@ const Checkout = () => {
                 <Select>
                   <Select.Option value="cod">Thanh toán khi nhận hàng (COD)</Select.Option>
                   <Select.Option value="vnpay">Thanh toán qua VNPay</Select.Option>
+                  <Select.Option value="qr_sepay">Thanh toán qua QR SEpay</Select.Option>
                 </Select>
               </Form.Item>
 
@@ -210,12 +288,20 @@ const Checkout = () => {
                 <div key={item.id} className="order-item">
                   <img src={item.image} alt={item.name} className="item-image" />
                   <div className="item-info">
-                    <Text strong>{item.name}</Text>
-                    <Text type="secondary">
+                    <div style={{ marginBottom: '8px' }}>
+                      <Text strong style={{ fontSize: '16px', color: '#1890ff' }}>
+                        {item.product?.name}
+                      </Text>
+                    </div>
+                    <Text type="secondary" style={{ display: 'block', marginBottom: '4px' }}>
+                      {item.productVariant?.color && `Màu: ${item.productVariant.color}`}
+                      {item.productVariant?.storage && ` - Dung lượng: ${item.productVariant.storage}`}
+                    </Text>
+                    <Text type="secondary" style={{ display: 'block' }}>
                       {Number(item.price).toLocaleString()}đ x {item.quantity}
                     </Text>
                   </div>
-                  <Text strong>
+                  <Text strong style={{ fontSize: '16px', color: '#ff4d4f' }}>
                     {(item.price * item.quantity).toLocaleString()}đ
                   </Text>
                 </div>
@@ -225,23 +311,42 @@ const Checkout = () => {
             <div className="order-total">
               <Space direction="vertical" style={{ width: '100%' }}>
                 <div className="total-row">
-                  <Text>Tạm tính:</Text>
+                  <Text>Tổng tiền hàng:</Text>
                   <Text>{getCartTotal().toLocaleString()}đ</Text>
-                </div>
-                <div className="total-row">
-                  <Text>Phí vận chuyển:</Text>
-                  <Text>0đ</Text>
                 </div>
                 <Divider />
                 <div className="total-row">
-                  <Text strong>Tổng cộng:</Text>
-                  <Text strong>{getCartTotal().toLocaleString()}đ</Text>
+                  <Text strong>Tổng thanh toán:</Text>
+                  <Text strong type="danger" style={{ fontSize: '18px' }}>
+                    {getCartTotal().toLocaleString()}đ
+                  </Text>
                 </div>
               </Space>
             </div>
           </Card>
         </div>
       </div>
+
+      <Modal
+        title="Quét mã QR để thanh toán"
+        open={qrModalVisible}
+        onCancel={handleQrModalCancel}
+        footer={null}
+        width={400}
+        maskClosable={false}
+        closable={true}
+      >
+        <div style={{ textAlign: 'center' }}>
+          <img src={qrUrl} alt="QR Code" style={{ width: '100%', maxWidth: '300px' }} />
+          <p style={{ marginTop: '16px' }}>
+            Vui lòng quét mã QR bằng ứng dụng ngân hàng của bạn để thanh toán.
+            Sau khi thanh toán thành công, đơn hàng sẽ được xử lý tự động.
+          </p>
+          <p style={{ marginTop: '8px', color: paymentStatus === 'paid' ? '#52c41a' : '#faad14' }}>
+            Trạng thái: {paymentStatus === 'paid' ? 'Đã thanh toán' : 'Đang chờ thanh toán...'}
+          </p>
+        </div>
+      </Modal>
     </div>
   );
 };

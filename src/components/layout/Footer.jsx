@@ -1,62 +1,43 @@
 import './Footer.css'
 
 const Footer = () => {
-    return (
-      <footer className="footer">
-        <div className="footer-content container">
-          <div className="footer-sections">
-            <div className="footer-section">
-              <h3>TIN TỨC</h3>
-              <ul>
-                <li><a href="#">Giới thiệu</a></li>
-                <li><a href="#">Tin khuyến mãi</a></li>
-                <li><a href="#">Tin tuyển dụng</a></li>
-                <li><a href="#">Quản hệ cổ đông</a></li>
-                <li><a href="#">Chính sách bảo mật</a></li>
-              </ul>
-            </div>
-  
-            <div className="footer-section">
-              <h3>HỖ TRỢ MUA HÀNG</h3>
-              <ul>
-                <li><a href="#">Hỗ trợ mua hàng trực tuyến</a></li>
-                <li><a href="#">Hướng dẫn mua hàng trực tuyến</a></li>
-                <li><a href="#">Phương thức thanh toán</a></li>
-                <li><a href="#">Phí vận chuyển</a></li>
-                <li><a href="#">Chính sách bảo hành</a></li>
-              </ul>
-            </div>
-  
-            <div className="footer-section">
-              <h3>CHÍNH SÁCH CHUNG</h3>
-              <ul>
-                <li><a href="#">Chính sách quy định chung</a></li>
-                <li><a href="#">Chính sách vận chuyển</a></li>
-                <li><a href="#">Chính sách bảo hành</a></li>
-                <li><a href="#">Chính sách đổi trả hàng</a></li>
-                <li><a href="#">Quyền lợi khách hàng</a></li>
-              </ul>
-            </div>
-  
-            <div className="footer-section">
-              <h3>LIÊN HỆ</h3>
-              <ul>
-                <li>CỬA HÀNG GIANG THUY MOBILE</li>
-                <li>Hotline: 0128 922 0142</li>
-                <li>Email: giangthuy.mobile@gmail.com</li>
-                <li>Địa chỉ: 47 QL1A, TT. Vôi, Lạng Giang, Bắc Giang, Việt Nam</li>
-              </ul>
-            </div>
+  return (
+    <footer className="footer-custom">
+      <div className="footer-main">
+        <div className="footer-col info-col">
+          <div className="footer-title">CỬA HÀNG GIANG THUY MOBILE</div>
+          <div>Địa chỉ: 47 QL1A, TT. Vôi, Lạng Giang, Bắc Giang, Việt Nam</div>
+          <div>Hotline: 0128 922 0142</div>
+          <div>Email: giangthuy.mobile@gmail.com</div>
+          <div style={{marginTop: 8}}>
+            <a href="https://facebook.com" target="_blank" rel="noopener noreferrer"><i className="fa fa-facebook"></i></a>
+            <a href="mailto:giangthuy.mobile@gmail.com" style={{marginLeft: 10}}><i className="fa fa-envelope"></i></a>
           </div>
         </div>
-  
-        <div className="footer-bottom">
-          <div className="container">
-            <p>© All rights reserved. Host by Giang Thuy Mobile</p>
-          </div>
+        <div className="footer-col map-col">
+          <iframe
+            title="map"
+            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3724.005019688799!2d106.244123!3d21.338123!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3135d3e2b2b2b2b2%3A0x1234567890abcdef!2zNDcgUUwxQSwgVFRQLiBWw7RpLCBM4bqhbmcgR2lhbmcsIELhuq9jIEdpYW5nLCBWaeG7h3QgTmFt!5e0!3m2!1svi!2s!4v1680000000000!5m2!1svi!2s"
+            width="220"
+            height="120"
+            style={{ border: 0, borderRadius: 10 }}
+            allowFullScreen=""
+            loading="lazy"
+            referrerPolicy="no-referrer-when-downgrade"
+          ></iframe>
         </div>
-      </footer>
-    )
-  }
-  
-  export default Footer
+        <div className="footer-col subscribe-col">
+          <div className="footer-title">ĐĂNG KÝ NHẬN THÔNG TIN</div>
+          <div className="footer-desc">Nhập họ tên và email, chúng tôi sẽ gửi thông tin khuyến mãi và tin tức mới nhất cho bạn.</div>
+          <form className="footer-form">
+            <input type="text" placeholder="Họ và tên" className="footer-input" />
+            <input type="email" placeholder="Email" className="footer-input" />
+            <button type="submit" className="footer-btn">Đăng ký</button>
+          </form>
+        </div>
+      </div>
+    </footer>
+  )
+}
+
+export default Footer

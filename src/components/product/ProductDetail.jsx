@@ -7,7 +7,6 @@ import { useCart } from '../../contexts/CartContext'
 import './ProductDetail.css'
 
 const { Title, Text } = Typography
-const { TabPane } = Tabs
 
 // Hàm định dạng số với dấu chấm phân cách hàng nghìn
 const formatPrice = (price) => {
@@ -279,47 +278,58 @@ const ProductDetail = () => {
       </Row>
 
       <div className="product-tabs">
-        <Tabs defaultActiveKey="specs">
-          <TabPane tab="Thông số kỹ thuật" key="specs">
-            <div className="specifications">
-              {product.screen && (
-                <div className="spec-item">
-                  <Text strong>Màn hình:</Text>
-                  <Text>{product.screen}</Text>
+        <Tabs
+          defaultActiveKey="specs"
+          items={[
+            {
+              key: 'specs',
+              label: 'Thông số kỹ thuật',
+              children: (
+                <div className="specifications">
+                  {product.screen && (
+                    <div className="spec-item">
+                      <Text strong>Màn hình:</Text>
+                      <Text>{product.screen}</Text>
+                    </div>
+                  )}
+                  {product.processor && (
+                    <div className="spec-item">
+                      <Text strong>Chip:</Text>
+                      <Text>{product.processor}</Text>
+                    </div>
+                  )}
+                  {product.ram && (
+                    <div className="spec-item">
+                      <Text strong>RAM:</Text>
+                      <Text>{product.ram}</Text>
+                    </div>
+                  )}
+                  {product.camera && (
+                    <div className="spec-item">
+                      <Text strong>Camera:</Text>
+                      <Text>{product.camera}</Text>
+                    </div>
+                  )}
+                  {product.battery && (
+                    <div className="spec-item">
+                      <Text strong>Pin:</Text>
+                      <Text>{product.battery}</Text>
+                    </div>
+                  )}
                 </div>
-              )}
-              {product.processor && (
-                <div className="spec-item">
-                  <Text strong>Chip:</Text>
-                  <Text>{product.processor}</Text>
+              )
+            },
+            {
+              key: 'description',
+              label: 'Mô tả sản phẩm',
+              children: (
+                <div className="product-description">
+                  <Text>{product.description}</Text>
                 </div>
-              )}
-              {product.ram && (
-                <div className="spec-item">
-                  <Text strong>RAM:</Text>
-                  <Text>{product.ram}</Text>
-                </div>
-              )}
-              {product.camera && (
-                <div className="spec-item">
-                  <Text strong>Camera:</Text>
-                  <Text>{product.camera}</Text>
-                </div>
-              )}
-              {product.battery && (
-                <div className="spec-item">
-                  <Text strong>Pin:</Text>
-                  <Text>{product.battery}</Text>
-                </div>
-              )}
-            </div>
-          </TabPane>
-          <TabPane tab="Mô tả sản phẩm" key="description">
-            <div className="product-description">
-              <Text>{product.description}</Text>
-            </div>
-          </TabPane>
-        </Tabs>
+              )
+            }
+          ]}
+        />
       </div>
     </div>
   )

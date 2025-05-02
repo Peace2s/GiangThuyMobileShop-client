@@ -15,7 +15,6 @@ const BranchMenu = () => {
     { key: 'samsung', label: 'Samsung' },
     { key: 'xiaomi', label: 'Xiaomi' },
     { key: 'oppo', label: 'Oppo' },
-    { key: 'oneplus', label: 'OnePlus' },
   ]
 
   const handleBrandClick = ({ key }) => {

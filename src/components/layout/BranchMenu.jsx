@@ -19,7 +19,7 @@ const BranchMenu = () => {
 
   const handleBrandClick = ({ key }) => {
     const params = new URLSearchParams(location.search)
-    params.set('branch', key)
+    params.set('branch', key) 
     navigate(`/?${params.toString()}`)
   }
 

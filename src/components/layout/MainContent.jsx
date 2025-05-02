@@ -1,4 +1,4 @@
-import { Typography, Button, Row, Col, Card, Tag, Tooltip, message, Space, Select, InputNumber } from 'antd'
+import { Typography, Button, Row, Col, Card, Tag, Tooltip, message, Space, Select, InputNumber, Pagination } from 'antd'
 import { RightOutlined, MobileOutlined, CameraOutlined, ThunderboltOutlined, DesktopOutlined, FireOutlined, ShoppingCartOutlined } from '@ant-design/icons'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { productService } from '../../services/home.service'
@@ -34,62 +34,62 @@ const MainContent = () => {
     brand: null
   })
   const { addToCart } = useCart()
+  const [pagination, setPagination] = useState({ current: 1, pageSize: 9, total: 0 });
 
   useEffect(() => {
     const fetchProducts = async () => {
       try {
         setLoading(true)
         let response;
-
+        let pageParams = { page: pagination.current, limit: pagination.pageSize };
         if (searchQuery) {
-          // Nếu có từ khóa tìm kiếm, kết hợp với các bộ lọc hiện tại
           response = await productService.searchProducts({
             q: searchQuery,
             brand: branch !== 'all' ? branch : undefined,
             minPrice,
-            maxPrice
+            maxPrice,
+            page: pagination.current,
+            limit: pagination.pageSize
           });
           if (response.data.success) {
-            // Lọc bỏ sản phẩm không có biến thể hoặc không có giá
             const validProducts = response.data.data.filter(product => 
               product.productVariants?.length > 0 && 
               product.productVariants.some(variant => variant.price)
             );
             setProducts(validProducts);
+            setPagination(prev => ({ ...prev, total: response.data.total || 0 }));
           }
         } else if (branch && branch !== 'all') {
-          // Fetch products by brand and price range
           const minPriceValue = minPrice === null ? 0 : minPrice;
           const maxPriceValue = maxPrice === null ? Number.MAX_SAFE_INTEGER : maxPrice;
-          response = await productService.getProductsByBrandAndPrice(branch, minPriceValue, maxPriceValue)
-          const validProducts = response.data.filter(product => 
+          response = await productService.getProductsByBrandAndPrice(branch, minPriceValue, maxPriceValue, pageParams)
+          const validProducts = response.data.data.filter(product => 
             product.productVariants?.length > 0 && 
             product.productVariants.some(variant => variant.price)
           );
           setProducts(validProducts)
+          setPagination(prev => ({ ...prev, total: response.data.total || 0 }));
         } else if (minPrice !== null || maxPrice !== null) {
-          // Fetch products by price range
-          response = await productService.getProductsByPrice(minPrice, maxPrice)
-          const validProducts = response.data.filter(product => 
+          response = await productService.getProductsByPrice(minPrice, maxPrice, pageParams)
+          const validProducts = response.data.data.filter(product => 
             product.productVariants?.length > 0 && 
             product.productVariants.some(variant => variant.price)
           );
           setProducts(validProducts)
+          setPagination(prev => ({ ...prev, total: response.data.total || 0 }));
         } else if (branch === 'all') {
-          // Fetch all products
-          response = await productService.getAllProducts()
-          const validProducts = response.data.filter(product => 
+          response = await productService.getAllProducts(pageParams)
+          const validProducts = response.data.data.filter(product => 
             product.productVariants?.length > 0 && 
             product.productVariants.some(variant => variant.price)
           );
           setProducts(validProducts)
+          setPagination(prev => ({ ...prev, total: response.data.total || 0 }));
         } else {
-          // Fetch featured and new products for homepage
           const [featuredRes, newRes] = await Promise.all([
             productService.getFeaturedProducts(),
             productService.getNewProducts()
           ])
-          // Lọc sản phẩm có biến thể và có giá
           const validFeatured = featuredRes.data.filter(product => 
             product.productVariants?.length > 0 && 
             product.productVariants.some(variant => variant.price)
@@ -108,9 +108,8 @@ const MainContent = () => {
         setLoading(false)
       }
     }
-
     fetchProducts()
-  }, [branch, minPrice, maxPrice, searchQuery])
+  }, [branch, minPrice, maxPrice, searchQuery, pagination.current, pagination.pageSize])
 
   const handleFilterChange = (type, value) => {
     setFilters(prev => ({
@@ -308,6 +307,13 @@ const MainContent = () => {
           </Col>
         )}
       </Row>
+      <Pagination
+        current={pagination.current}
+        pageSize={pagination.pageSize}
+        total={pagination.total}
+        onChange={(page, pageSize) => setPagination(prev => ({ ...prev, current: page, pageSize }))}
+        style={{ marginTop: 24, textAlign: 'center' }}
+      />
     </div>
   )
 
@@ -316,7 +322,7 @@ const MainContent = () => {
       <div className="section-header">
         <Title level={3}>Kết quả tìm kiếm cho "{searchQuery}"</Title>
         {products && products.length > 0 ? (
-          <Text className="search-count">Tìm thấy {products.length} sản phẩm</Text>
+          <Text className="search-count">Tìm thấy {pagination.total} sản phẩm</Text>
         ) : null}
         {(branch !== 'all' || minPrice || maxPrice) && (
           <div className="applied-filters">
@@ -327,7 +333,6 @@ const MainContent = () => {
           </div>
         )}
       </div>
-
       <Row gutter={[24, 24]}>
         {products && products.length > 0 ? (
           products.map(renderProductCard)
@@ -339,6 +344,13 @@ const MainContent = () => {
           </Col>
         )}
       </Row>
+      <Pagination
+        current={pagination.current}
+        pageSize={pagination.pageSize}
+        total={pagination.total}
+        onChange={(page, pageSize) => setPagination(prev => ({ ...prev, current: page, pageSize }))}
+        style={{ marginTop: 24, textAlign: 'center' }}
+      />
     </div>
   )
 

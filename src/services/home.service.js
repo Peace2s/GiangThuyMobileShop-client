@@ -38,24 +38,23 @@ api.interceptors.response.use(
 
 // Service cho sản phẩm
 export const productService = {
-  getAllProducts: () => api.get('/products'),
+  getAllProducts: (params = {}) => api.get('/products', { params }),
   getProductById: (id) => api.get(`/products/${id}`),
-  getProductsByBrand: (brand) => api.get(`/products/brand/${brand}`),
-  getProductsByBrandAndPrice: (brand, minPrice, maxPrice) => 
-    api.get(`/products/brand/${brand}?minPrice=${minPrice}&maxPrice=${maxPrice}`),
+  getProductsByBrand: (brand, params = {}) => api.get(`/products/brand/${brand}`, { params }),
+  getProductsByBrandAndPrice: (brand, minPrice, maxPrice, params = {}) => 
+    api.get(`/products/brand/${brand}?minPrice=${minPrice}&maxPrice=${maxPrice}`, { params }),
   getFeaturedProducts: () => api.get('/products/featured'),
   getNewProducts: () => api.get('/products/new'),
-  getProductsByPrice: (minPrice, maxPrice) => api.get(`/products?minPrice=${minPrice}&maxPrice=${maxPrice}`),
+  getProductsByPrice: (minPrice, maxPrice, params = {}) => api.get(`/products?minPrice=${minPrice}&maxPrice=${maxPrice}`, { params }),
   searchProducts: (params) => {
-    const { q, minPrice, maxPrice, brand } = params;
-    let url = '/products/search?';
+    const { q, minPrice, maxPrice, brand, page, limit } = params;
     const queryParams = new URLSearchParams();
-    
     if (minPrice) queryParams.append('minPrice', minPrice);
     if (maxPrice) queryParams.append('maxPrice', maxPrice);
     if (brand) queryParams.append('brand', brand);
     if (q) queryParams.append('q', q);
-    
+    if (page) queryParams.append('page', page);
+    if (limit) queryParams.append('limit', limit);
     return api.get(`/products/search?${queryParams.toString()}`);
   },
 };

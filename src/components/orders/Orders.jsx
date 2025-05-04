@@ -76,8 +76,8 @@ const Orders = () => {
   const getPaymentMethodText = (method) => {
     const methods = {
       cod: 'Thanh toán khi nhận hàng',
-      bank: 'Chuyển khoản ngân hàng',
-      momo: 'Ví điện tử MoMo'
+      vnpay: 'Thanh toán qua VNPay',
+      qr_sepay: 'Thanh toán qua QR'
     };
     return methods[method] || method;
   };

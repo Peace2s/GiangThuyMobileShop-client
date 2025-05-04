@@ -19,6 +19,7 @@ const Orders = () => {
   });
   const [filters, setFilters] = useState({
     status: undefined,
+    paymentStatus: undefined,
     search: '',
     startDate: null,
     endDate: null
@@ -89,6 +90,11 @@ const Orders = () => {
     setPagination(prev => ({ ...prev, current: 1 }));
   };
 
+  const handlePaymentStatusFilter = (value) => {
+    setFilters(prev => ({ ...prev, paymentStatus: value }));
+    setPagination(prev => ({ ...prev, current: 1 }));
+  };
+
   const handleDateRangeChange = (dates) => {
     setFilters(prev => ({
       ...prev,
@@ -111,6 +117,41 @@ const Orders = () => {
         return 'red';
       default:
         return 'default';
+    }
+  };
+
+  const getPaymentMethodText = (method) => {
+    const methods = {
+      cod: 'Thanh toán khi nhận hàng',
+      vnpay: 'Thanh toán qua VNPay',
+      qr_sepay: 'Thanh toán qua QR'
+    };
+    return methods[method] || method;
+  };
+
+  const getPaymentStatusColor = (status) => {
+    switch (status) {
+      case 'pending':
+        return 'orange';
+      case 'paid':
+        return 'green';
+      case 'failed':
+        return 'red';
+      default:
+        return 'default';
+    }
+  };
+
+  const getPaymentStatusText = (status) => {
+    switch (status) {
+      case 'pending':
+        return 'Chờ thanh toán';
+      case 'paid':
+        return 'Đã thanh toán';
+      case 'failed':
+        return 'Thanh toán thất bại';
+      default:
+        return status;
     }
   };
 
@@ -139,7 +180,23 @@ const Orders = () => {
       render: (amount) => `${parseInt(amount).toLocaleString()} VNĐ`,
     },
     {
-      title: 'Trạng thái',
+      title: 'Phương thức thanh toán',
+      dataIndex: 'paymentMethod',
+      key: 'paymentMethod',
+      render: (method) => getPaymentMethodText(method)
+    },
+    {
+      title: 'Trạng thái thanh toán',
+      dataIndex: 'paymentStatus',
+      key: 'paymentStatus',
+      render: (status) => (
+        <Tag color={getPaymentStatusColor(status)}>
+          {getPaymentStatusText(status)}
+        </Tag>
+      )
+    },
+    {
+      title: 'Trạng thái đơn hàng',
       dataIndex: 'status',
       key: 'status',
       render: (status, record) => (
@@ -180,7 +237,7 @@ const Orders = () => {
           style={{ width: 300 }}
         />
         <Select
-          placeholder="Lọc theo trạng thái"
+          placeholder="Lọc theo trạng thái đơn hàng"
           style={{ width: 150 }}
           onChange={handleStatusFilter}
           allowClear
@@ -211,66 +268,89 @@ const Orders = () => {
         width={800}
       >
         {selectedOrder && (
-          <Descriptions bordered column={2}>
-            <Descriptions.Item label="Mã đơn hàng" span={1}>{selectedOrder.id}</Descriptions.Item>
-            <Descriptions.Item label="Ngày đặt" span={1}>
-              {new Date(selectedOrder.createdAt).toLocaleString()}
-            </Descriptions.Item>
-            <Descriptions.Item label="Khách hàng" span={1}>{selectedOrder.user?.full_name}</Descriptions.Item>
-            <Descriptions.Item label="Email" span={1}>{selectedOrder.user?.email}</Descriptions.Item>
-            <Descriptions.Item label="Số điện thoại" span={1}>{selectedOrder.user?.phone}</Descriptions.Item>
-            <Descriptions.Item label="Địa chỉ" span={1}>{selectedOrder.shippingAddress}</Descriptions.Item>
-            <Descriptions.Item label="Phương thức thanh toán" span={1}>
-              {selectedOrder.paymentMethod === 'cod' ? 'Thanh toán khi nhận hàng' : 'Chuyển khoản'}
-            </Descriptions.Item>
-            <Descriptions.Item label="Trạng thái" span={1}>
-              <Tag color={getStatusColor(selectedOrder.status)}>
-                {selectedOrder.status === 'pending' && 'Chờ xử lý'}
-                {selectedOrder.status === 'processing' && 'Đang xử lý'}
-                {selectedOrder.status === 'shipped' && 'Đang giao'}
-                {selectedOrder.status === 'delivered' && 'Đã giao'}
-                {selectedOrder.status === 'cancelled' && 'Đã hủy'}
-              </Tag>
-            </Descriptions.Item>
-            <Descriptions.Item label="Sản phẩm" span={2}>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                {selectedOrder.OrderItems?.map((item) => (
-                  <div key={item.id} style={{ 
-                    padding: '12px', 
-                    border: '1px solid #f0f0f0', 
-                    borderRadius: '4px',
-                    backgroundColor: '#fafafa'
-                  }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
+          <div>
+            <Descriptions bordered column={2}>
+              <Descriptions.Item label="Mã đơn hàng" span={1}>{selectedOrder.id}</Descriptions.Item>
+              <Descriptions.Item label="Ngày đặt" span={1}>
+                {new Date(selectedOrder.createdAt).toLocaleString()}
+              </Descriptions.Item>
+              <Descriptions.Item label="Khách hàng" span={1}>{selectedOrder.user?.full_name}</Descriptions.Item>
+              <Descriptions.Item label="Email" span={1}>{selectedOrder.user?.email}</Descriptions.Item>
+              <Descriptions.Item label="Số điện thoại" span={1}>{selectedOrder.user?.phone}</Descriptions.Item>
+              <Descriptions.Item label="Địa chỉ" span={1}>{selectedOrder.shippingAddress}</Descriptions.Item>
+              <Descriptions.Item label="Phương thức thanh toán" span={1}>
+                {getPaymentMethodText(selectedOrder.paymentMethod)}
+              </Descriptions.Item>
+              <Descriptions.Item label="Trạng thái thanh toán" span={1}>
+                <Tag color={getPaymentStatusColor(selectedOrder.paymentStatus)}>
+                  {getPaymentStatusText(selectedOrder.paymentStatus)}
+                </Tag>
+              </Descriptions.Item>
+              <Descriptions.Item label="Trạng thái đơn hàng" span={1}>
+                <Tag color={getStatusColor(selectedOrder.status)}>
+                  {selectedOrder.status === 'pending' && 'Chờ xử lý'}
+                  {selectedOrder.status === 'processing' && 'Đang xử lý'}
+                  {selectedOrder.status === 'shipped' && 'Đang giao'}
+                  {selectedOrder.status === 'delivered' && 'Đã giao'}
+                  {selectedOrder.status === 'cancelled' && 'Đã hủy'}
+                </Tag>
+              </Descriptions.Item>
+            </Descriptions>
+
+            <div style={{ marginTop: '24px' }}>
+              <h3 style={{ marginBottom: '16px' }}>Danh sách sản phẩm</h3>
+              <Table
+                dataSource={selectedOrder.OrderItems}
+                pagination={false}
+                columns={[
+                  {
+                    title: 'Sản phẩm',
+                    dataIndex: 'product',
+                    key: 'product',
+                    render: (_, record) => (
                       <div>
-                        <div style={{ fontWeight: 500 }}>{item.product?.name}</div>
+                        <div style={{ fontWeight: 500 }}>{record.product?.name}</div>
                         <div style={{ color: '#666', marginTop: '4px' }}>
-                          {item.productVariant?.color && `Màu: ${item.productVariant.color}`}
-                          {item.productVariant?.storage && ` - Dung lượng: ${item.productVariant.storage}`}
+                          {record.productVariant?.color && `Màu: ${record.productVariant.color}`}
+                          {record.productVariant?.storage && ` - Dung lượng: ${record.productVariant.storage}`}
                         </div>
                       </div>
-                      <div style={{ textAlign: 'right' }}>
-                        <div>{parseInt(item.price).toLocaleString()} VNĐ</div>
-                        <div style={{ color: '#666' }}>x {item.quantity}</div>
-                      </div>
-                    </div>
-                    <div style={{ 
-                      textAlign: 'right', 
-                      fontWeight: 500, 
-                      color: '#1890ff',
-                      borderTop: '1px solid #f0f0f0',
-                      paddingTop: '8px'
-                    }}>
-                      Thành tiền: {(parseInt(item.price) * item.quantity).toLocaleString()} VNĐ
-                    </div>
-                  </div>
-                ))}
+                    ),
+                  },
+                  {
+                    title: 'Đơn giá',
+                    dataIndex: 'price',
+                    key: 'price',
+                    align: 'right',
+                    render: (price) => `${parseInt(price).toLocaleString()} VNĐ`,
+                  },
+                  {
+                    title: 'Số lượng',
+                    dataIndex: 'quantity',
+                    key: 'quantity',
+                    align: 'center',
+                  },
+                  {
+                    title: 'Thành tiền',
+                    key: 'total',
+                    align: 'right',
+                    render: (_, record) => `${(parseInt(record.price) * record.quantity).toLocaleString()} VNĐ`,
+                  },
+                ]}
+              />
+              <div style={{ 
+                textAlign: 'right', 
+                marginTop: '16px', 
+                padding: '16px',
+                backgroundColor: '#fafafa',
+                borderRadius: '4px'
+              }}>
+                <span style={{ fontWeight: 500, fontSize: '16px' }}>
+                  Tổng tiền: {parseInt(selectedOrder.totalAmount).toLocaleString()} VNĐ
+                </span>
               </div>
-            </Descriptions.Item>
-            <Descriptions.Item label="Tổng tiền" span={2}>
-              {parseInt(selectedOrder.totalAmount).toLocaleString()} VNĐ
-            </Descriptions.Item>
-          </Descriptions>
+            </div>
+          </div>
         )}
       </Modal>
     </div>

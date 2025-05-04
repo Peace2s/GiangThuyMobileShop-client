@@ -286,7 +286,7 @@ const Checkout = () => {
             <div className="order-items">
               {cartItems.map((item) => (
                 <div key={item.id} className="order-item">
-                  <img src={item.image} alt={item.name} className="item-image" />
+                  <img src={item.product?.image} alt={item.product?.name} className="item-image" />
                   <div className="item-info">
                     <div style={{ marginBottom: '8px' }}>
                       <Text strong style={{ fontSize: '16px', color: '#1890ff' }}>

@@ -20,12 +20,12 @@ import 'react-toastify/dist/ReactToastify.css'
 import './App.css'
 import { ConfigProvider } from 'antd'
 import viVN from 'antd/locale/vi_VN'
-import AdminLayout from './layouts/AdminLayout'
-import AdminLogin from './pages/admin/Login'
-import Dashboard from './pages/admin/Dashboard'
-import Products from './pages/admin/Products'
-import AdminOrders from './pages/admin/Orders'
-import Users from './pages/admin/Users'
+import AdminLayout from './components/layout/AdminLayout'
+import AdminLogin from './components/admin/Login'
+import Dashboard from './components/admin/Dashboard'
+import Products from './components/admin/Products'
+import AdminOrders from './components/admin/Orders'
+import Users from './components/admin/Users'
 
 // Wrapper component to handle layout
 const AppLayout = () => {

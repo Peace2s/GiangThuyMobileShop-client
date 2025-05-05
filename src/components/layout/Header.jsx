@@ -1,7 +1,6 @@
-import React from 'react'
-import { useState } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import { useNavigate, useLocation, Link } from 'react-router-dom'
-import { Layout, Input, Button, Menu, Space, Typography, Row, Col, Badge, Avatar, Tooltip, Dropdown, message } from 'antd'
+import { Layout, Input, Button, Menu, Space, Typography, Row, Col, Badge, Avatar, Tooltip, Dropdown, message, AutoComplete } from 'antd'
 import { SearchOutlined, PhoneOutlined, ShoppingCartOutlined, UserOutlined, HeartOutlined, MenuOutlined, LogoutOutlined } from '@ant-design/icons'
 import './Header.css'
 import logo from '../../assets/images/logo.png'
@@ -17,6 +16,9 @@ const Header = () => {
   const { getCartCount } = useCart()
   const { user, logout, isAuthenticated } = useAuth()
   const [cartItems, setCartItems] = useState(0)
+  const [searchValue, setSearchValue] = useState('')
+  const [suggestions, setSuggestions] = useState([])
+  const [loading, setLoading] = useState(false)
   const navigate = useNavigate()
   const location = useLocation()
   const isHomePage = location.pathname === '/'
@@ -32,16 +34,65 @@ const Header = () => {
   }
 
   const handleSearch = (value) => {
-    if (!value.trim()) return;
-    
     const searchParams = new URLSearchParams(location.search);
-    searchParams.set('q', value);
+    
+    if (!value.trim()) {
+      searchParams.delete('q');
+    } else {
+      searchParams.set('q', value);
+    }
+
+    if (!searchParams.has('branch')) {
+      searchParams.set('branch', 'all');
+    }
     
     if (location.pathname === '/') {
       navigate(`/?${searchParams.toString()}`);
     } else {
       navigate(`/?${searchParams.toString()}`);
     }
+  };
+
+  const fetchSuggestions = async (value) => {
+    if (!value.trim()) {
+      setSuggestions([]);
+      return;
+    }
+
+    try {
+      setLoading(true);
+      const response = await productService.searchProducts({ q: value, limit: 5 });
+      const products = response.data.data || [];
+      setSuggestions(products.map(product => ({
+        value: product.name,
+        label: (
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <img 
+              src={product.image} 
+              alt={product.name} 
+              style={{ width: '30px', height: '30px', objectFit: 'cover' }} 
+            />
+            <span>{product.name}</span>
+          </div>
+        )
+      })));
+    } catch (error) {
+      console.error('Error fetching suggestions:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const debouncedFetchSuggestions = useCallback(
+    debounce((value) => {
+      fetchSuggestions(value);
+    }, 500),
+    []
+  );
+
+  const handleSearchChange = (value) => {
+    setSearchValue(value);
+    debouncedFetchSuggestions(value);
   };
 
   const userMenu = {
@@ -77,13 +128,25 @@ const Header = () => {
         </Col>
         
         <Col flex="auto" className="search-box">
-          <Search
-            placeholder="Bạn cần tìm gì?"
-            onSearch={handleSearch}
-            enterButton={<SearchOutlined />}
-            size="large"
-            className="search-input"
-          />
+          <AutoComplete
+            options={suggestions}
+            value={searchValue}
+            onChange={handleSearchChange}
+            onSelect={(value) => {
+              setSearchValue(value);
+              handleSearch(value);
+            }}
+            style={{ width: '100%' }}
+            notFoundContent={loading ? "Đang tìm kiếm..." : "Không tìm thấy kết quả"}
+          >
+            <Input.Search
+              placeholder="Bạn cần tìm gì?"
+              onSearch={handleSearch}
+              enterButton={<SearchOutlined />}
+              size="large"
+              className="search-input"
+            />
+          </AutoComplete>
         </Col>
 
         <Col className="nav-actions">
@@ -134,6 +197,19 @@ const Header = () => {
       </Row>
     </AntHeader>
   )
+}
+
+// Hàm debounce
+function debounce(func, wait) {
+  let timeout;
+  return function executedFunction(...args) {
+    const later = () => {
+      clearTimeout(timeout);
+      func(...args);
+    };
+    clearTimeout(timeout);
+    timeout = setTimeout(later, wait);
+  };
 }
 
 export default Header

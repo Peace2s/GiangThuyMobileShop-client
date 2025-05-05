@@ -51,7 +51,7 @@ const Products = () => {
   useEffect(() => {
     fetchBrands();
     fetchProducts();
-  }, [pagination.current, pagination.pageSize, search, brandFilter]);
+  }, [pagination.current, pagination.pageSize, brandFilter]);
 
   const fetchBrands = async () => {
     try {
@@ -93,14 +93,18 @@ const Products = () => {
     }));
   };
 
-  const handleSearch = (e) => {
-    setSearch(e.target.value);
-    setPagination((prev) => ({ ...prev, current: 1 }));
+  const handleSearch = (value) => {
+    setSearch(value);
+    setPagination(prev => ({ ...prev, current: 1 }));
   };
 
   const handleBrandFilter = (value) => {
     setBrandFilter(value);
-    setPagination((prev) => ({ ...prev, current: 1 }));
+    setPagination(prev => ({ ...prev, current: 1 }));
+  };
+
+  const handleSearchSubmit = () => {
+    fetchProducts();
   };
 
   const handleCreate = () => {
@@ -288,6 +292,11 @@ const Products = () => {
 
   const columns = [
     {
+      title: 'Mã sản phẩm',
+      dataIndex: 'id',
+      key: 'id',
+    },
+    {
       title: "Hình ảnh",
       dataIndex: "image",
       key: "image",
@@ -352,7 +361,8 @@ const Products = () => {
           <Input.Search
             placeholder="Tìm kiếm theo tên sản phẩm"
             allowClear
-            onChange={handleSearch}
+            onChange={(e) => handleSearch(e.target.value)}
+            onSearch={handleSearchSubmit}
             style={{ width: 220 }}
           />
           <Select

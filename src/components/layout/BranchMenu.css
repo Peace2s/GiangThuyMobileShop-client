@@ -2,12 +2,21 @@
   background-color: white;
   padding: 0;
   border: none;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
   position: relative;
+  width: 1200px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.brands-filter-container {
+  background-color: white;
+  padding: 0;
+  border: none;
 }
 
 .brands-list {
   background: transparent;
+  background-color: white;
   border-bottom: none;
   display: flex;
   justify-content: center;

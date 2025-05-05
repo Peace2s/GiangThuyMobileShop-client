@@ -71,6 +71,11 @@ const Brands = () => {
 
   const columns = [
     {
+      title: 'Mã thương hiệu',
+      dataIndex: 'id',
+      key: 'id',
+    },
+    {
       title: 'Tên thương hiệu',
       dataIndex: 'name',
       key: 'name',

@@ -48,8 +48,8 @@ const Checkout = () => {
       
       if (status === 'success') {
         message.success(messageText);
-        clearCart();
         navigate('/orders');
+        clearCart();
       } else {
         message.error(messageText);
         navigate('/checkout');

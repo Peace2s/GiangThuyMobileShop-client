@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Table, Button, Space, Modal, Form, Input, InputNumber, Upload, message, Image, Select, Card, Tabs } from 'antd';
 import { PlusOutlined, EditOutlined, DeleteOutlined, LoadingOutlined } from '@ant-design/icons';
@@ -265,8 +264,12 @@ const Products = () => {
     },
     {
       title: 'Thương hiệu',
-      dataIndex: 'brand',
-      key: 'brand',
+      dataIndex: 'brandId',
+      key: 'brandId',
+      render: (brandId) => {
+        const brand = brands.find(b => b.id === brandId);
+        return brand ? brand.name : 'Không xác định';
+      }
     },
     {
       title: 'Số phiên bản',

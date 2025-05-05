@@ -35,17 +35,17 @@ const AdminLayout = () => {
     {
       key: '/admin/dashboard',
       icon: <BarChartOutlined />,
-      label: 'Dashboard',
-    },
-    {
-      key: '/admin/products',
-      icon: <ShoppingOutlined />,
-      label: 'Quản lý sản phẩm',
+      label: 'Thống kê',
     },
     {
       key: '/admin/brands',
       icon: <ShopOutlined />,
       label: 'Thương hiệu',
+    },
+    {
+      key: '/admin/products',
+      icon: <ShoppingOutlined />,
+      label: 'Quản lý sản phẩm',
     },
     {
       key: '/admin/orders',

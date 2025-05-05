@@ -210,11 +210,9 @@ const Orders = () => {
           <Descriptions.Item label="Địa chỉ giao hàng">
             {order.shippingAddress}
           </Descriptions.Item>
-          {order.note && (
             <Descriptions.Item label="Ghi chú">
               {order.note}
             </Descriptions.Item>
-          )}
         </Descriptions>
 
         <Divider orientation="left">Sản phẩm</Divider>

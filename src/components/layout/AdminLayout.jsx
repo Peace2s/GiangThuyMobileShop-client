@@ -8,10 +8,13 @@ import {
   BarChartOutlined,
   LogoutOutlined,
   MenuFoldOutlined,
-  MenuUnfoldOutlined
+  MenuUnfoldOutlined,
+  OrderedListOutlined,
+  ShopOutlined
 } from '@ant-design/icons';
 import { Outlet, useNavigate, useLocation } from 'react-router-dom';
 import './AdminLayout.css';
+import { Link } from 'react-router-dom';
 
 const { Header, Sider, Content } = Layout;
 
@@ -40,8 +43,13 @@ const AdminLayout = () => {
       label: 'Quản lý sản phẩm',
     },
     {
+      key: '/admin/brands',
+      icon: <ShopOutlined />,
+      label: 'Thương hiệu',
+    },
+    {
       key: '/admin/orders',
-      icon: <FileTextOutlined />,
+      icon: <OrderedListOutlined />,
       label: 'Quản lý đơn hàng',
     },
     {
@@ -72,7 +80,17 @@ const AdminLayout = () => {
           selectedKeys={[location.pathname]}
           items={menuItems}
           onClick={({ key }) => navigate(key)}
-        />
+        >
+          <Menu.Item key="/admin/products" icon={<ShoppingOutlined />}>
+            <Link to="/admin/products">Sản phẩm</Link>
+          </Menu.Item>
+          <Menu.Item key="/admin/brands" icon={<ShopOutlined />}>
+            <Link to="/admin/brands">Thương hiệu</Link>
+          </Menu.Item>
+          <Menu.Item key="/admin/orders" icon={<OrderedListOutlined />}>
+            <Link to="/admin/orders">Đơn hàng</Link>
+          </Menu.Item>
+        </Menu>
       </Sider>
       <Layout>
         <Header

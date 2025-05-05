@@ -63,4 +63,11 @@ export const adminService = {
   createProductVariant: (data) => adminApi.post('/variants', data),
   updateProductVariant: (id, data) => adminApi.put(`/variants/${id}`, data),
   deleteProductVariant: (id) => adminApi.delete(`/variants/${id}`),
+
+  // Brand services
+  getAllBrands: () => adminApi.get('/brands'),
+  getBrandById: (id) => adminApi.get(`/brands/${id}`),
+  createBrand: (data) => adminApi.post('/brands', data),
+  updateBrand: (id, data) => adminApi.put(`/brands/${id}`, data),
+  deleteBrand: (id) => adminApi.delete(`/brands/${id}`)
 }; 

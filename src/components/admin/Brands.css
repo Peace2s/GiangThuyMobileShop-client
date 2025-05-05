@@ -1,0 +1,76 @@
+.brands-container {
+  padding: 24px;
+}
+
+.brands-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.brands-header h1 {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 600;
+  color: #1a1a1a;
+}
+
+.brands-container .ant-table {
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.brands-container .ant-table-thead > tr > th {
+  background: #f5f5f5;
+  font-weight: 600;
+  color: #1a1a1a;
+}
+
+.brands-container .ant-table-tbody > tr:hover > td {
+  background: #fafafa;
+}
+
+.brands-container .ant-btn {
+  border-radius: 4px;
+}
+
+.brands-container .ant-btn-primary {
+  background: #1890ff;
+  border-color: #1890ff;
+}
+
+.brands-container .ant-btn-danger {
+  background: #ff4d4f;
+  border-color: #ff4d4f;
+}
+
+.brands-container .ant-modal-content {
+  border-radius: 8px;
+}
+
+.brands-container .ant-form-item-label > label {
+  font-weight: 500;
+}
+
+.brands-container .ant-input {
+  border-radius: 4px;
+}
+
+.brands-container .ant-space {
+  gap: 8px !important;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .brands-header {
+    flex-direction: column;
+    gap: 16px;
+    align-items: flex-start;
+  }
+  
+  .brands-container {
+    padding: 16px;
+  }
+} 

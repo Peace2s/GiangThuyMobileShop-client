@@ -13,7 +13,6 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Kiểm tra xem người dùng đã đăng nhập chưa khi tải trang
     const checkAuth = () => {
       const storedUser = Cookies.get('user');
       if (storedUser) {
@@ -29,19 +28,17 @@ export const AuthProvider = ({ children }) => {
     try {
       const response = await authService.login(credentials);
       if (response.data) {
-        // Lưu token và thông tin người dùng vào cookies
         Cookies.set('token', response.data.token, { 
-          expires: 1, // 1 ngày
+          expires: 1,
           secure: process.env.NODE_ENV === 'production',
           sameSite: 'strict'
         });
         Cookies.set('user', JSON.stringify(response.data.user), { 
-          expires: 1, // 1 ngày
+          expires: 1,
           secure: process.env.NODE_ENV === 'production',
           sameSite: 'strict'
         });
         
-        // Cập nhật state
         setUser(response.data.user);
         
         return { 
@@ -76,11 +73,9 @@ export const AuthProvider = ({ children }) => {
   };
 
   const logout = () => {
-    // Xóa token và thông tin người dùng khỏi cookies
     Cookies.remove('token');
     Cookies.remove('user');
     
-    // Cập nhật state
     setUser(null);
   };
 
@@ -92,11 +87,9 @@ export const AuthProvider = ({ children }) => {
     logout,
     isAuthenticated: !!user,
     updateUser: (newUserData) => {
-      // Cập nhật state
       setUser(newUserData);
-      // Cập nhật cookie
       Cookies.set('user', JSON.stringify(newUserData), { 
-        expires: 1, // 1 ngày
+        expires: 1,
         secure: process.env.NODE_ENV === 'production',
         sameSite: 'strict'
       });

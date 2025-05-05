@@ -26,8 +26,8 @@ import Dashboard from './components/admin/Dashboard'
 import Products from './components/admin/Products'
 import AdminOrders from './components/admin/Orders'
 import Users from './components/admin/Users'
+import Brands from './components/admin/Brands'
 
-// Wrapper component to handle layout
 const AppLayout = () => {
   const [searchTerm, setSearchTerm] = useState('')
   const location = useLocation()
@@ -84,7 +84,6 @@ const AppLayout = () => {
   )
 }
 
-// Protected Route component
 const ProtectedRoute = ({ children }) => {
   const isAuthenticated = localStorage.getItem('adminToken')
   return isAuthenticated ? children : <Navigate to="/admin/login" />
@@ -112,6 +111,7 @@ const App = () => {
                 <Route path="products" element={<Products />} />
                 <Route path="orders" element={<AdminOrders />} />
                 <Route path="users" element={<Users />} />
+                <Route path="brands" element={<Brands />} />
               </Route>
 
               {/* Client Routes */}

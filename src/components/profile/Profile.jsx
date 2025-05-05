@@ -28,13 +28,11 @@ const Profile = () => {
       setLoading(true);
       console.log('Submitting profile update:', values);
 
-      // Kiểm tra dữ liệu đầu vào
       if (!values.fullName || !values.phone) {
         message.error('Vui lòng điền đầy đủ thông tin');
         return;
       }
 
-      // Kiểm tra định dạng số điện thoại
       const phoneRegex = /^[0-9]{10}$/;
       if (!phoneRegex.test(values.phone)) {
         message.error('Số điện thoại không hợp lệ');

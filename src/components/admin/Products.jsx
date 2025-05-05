@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Table, Button, Space, Modal, Form, Input, InputNumber, Upload, message, Image, Select, Card, Tabs } from 'antd';
 import { PlusOutlined, EditOutlined, DeleteOutlined, LoadingOutlined } from '@ant-design/icons';
@@ -22,11 +23,22 @@ const Products = () => {
   const [uploadingVariants, setUploadingVariants] = useState({});
   const [search, setSearch] = useState('');
   const [brandFilter, setBrandFilter] = useState(undefined);
+  const [brands, setBrands] = useState([]);
   const [pagination, setPagination] = useState({ current: 1, pageSize: 10, total: 0 });
 
   useEffect(() => {
+    fetchBrands();
     fetchProducts();
   }, [pagination.current, pagination.pageSize, search, brandFilter]);
+
+  const fetchBrands = async () => {
+    try {
+      const response = await adminService.getAllBrands();
+      setBrands(response.data);
+    } catch (error) {
+      message.error('Không thể tải danh sách thương hiệu');
+    }
+  };
 
   const fetchProducts = async () => {
     try {
@@ -74,14 +86,13 @@ const Products = () => {
   const handleEdit = async (record) => {
     try {
       setEditingId(record.id);
-      // Lấy thông tin chi tiết sản phẩm
       const response = await adminService.getProductById(record.id);
       const productData = response.data;
       
       form.setFieldsValue({
         name: productData.name,
         description: productData.description,
-        brand: productData.brand,
+        brandId: productData.brandId,
         screen: productData.screen,
         processor: productData.processor,
         ram: productData.ram,
@@ -168,7 +179,6 @@ const Products = () => {
         return;
       }
 
-      // Validate that all fields except image are filled
       for (const variant of variants) {
         if (!variant.color || !variant.storage || variant.price === undefined || variant.stock_quantity === undefined || !variant.status) {
           message.error('Tất cả các trường của phiên bản phải được điền đầy đủ.');
@@ -176,7 +186,6 @@ const Products = () => {
         }
       }
 
-      // Prepare variant data
       const formattedVariants = variants.map(variant => ({
         ...variant,
         price: Number(variant.price),
@@ -306,11 +315,9 @@ const Products = () => {
             allowClear
             value={brandFilter}
           >
-            <Option value="apple">Apple</Option>
-            <Option value="samsung">Samsung</Option>
-            <Option value="xiaomi">Xiaomi</Option>
-            <Option value="oppo">OPPO</Option>
-            <Option value="vivo">Vivo</Option>
+            {brands.map(brand => (
+              <Option key={brand.id} value={brand.id}>{brand.name}</Option>
+            ))}
           </Select>
           <Button
             type="primary"
@@ -354,16 +361,14 @@ const Products = () => {
               </Form.Item>
 
               <Form.Item
-                name="brand"
+                name="brandId"
                 label="Thương hiệu"
                 rules={[{ required: true, message: 'Vui lòng chọn thương hiệu' }]}
               >
                 <Select>
-                  <Option value="apple">Apple</Option>
-                  <Option value="samsung">Samsung</Option>
-                  <Option value="xiaomi">Xiaomi</Option>
-                  <Option value="oppo">OPPO</Option>
-                  <Option value="vivo">Vivo</Option>
+                  {brands.map(brand => (
+                    <Option key={brand.id} value={brand.id}>{brand.name}</Option>
+                  ))}
                 </Select>
               </Form.Item>
 

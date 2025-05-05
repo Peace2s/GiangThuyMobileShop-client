@@ -22,12 +22,10 @@ api.interceptors.request.use(
   }
 );
 
-// Xử lý lỗi 401 (Unauthorized)
 api.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response && error.response.status === 401) {
-      // Xóa token và thông tin user khi token hết hạn
       Cookies.remove('token');
       Cookies.remove('user');
       window.location.href = '/login';
@@ -98,6 +96,12 @@ export const orderService = {
   createPaymentUrl: (orderData) => api.post('/payment/create-payment-url', orderData),
   cancelSepayOrder: (orderId) => api.post(`/payment/cancel-sepay-order/${orderId}`),
   checkSepayPaymentStatus: (orderId) => api.get(`/payment/check-sepay-status/${orderId}`)
+};
+
+// Brand services
+export const brandService = {
+  getAllBrands: () => api.get('/brands'),
+  getBrandById: (id) => api.get(`/brands/${id}`)
 };
 
 export default api; 

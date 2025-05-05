@@ -128,7 +128,7 @@ const MainContent = () => {
   }
 
   const handleProductClick = (product) => {
-    // Tìm biến thể phù hợp với khoảng giá đã lọc
+    // find matching variant
     const matchingVariant = product.productVariants?.find(variant => {
       const price = variant.discount_price || variant.price;
       return (!minPrice || price >= minPrice) && (!maxPrice || price <= maxPrice);
@@ -145,7 +145,7 @@ const MainContent = () => {
 
   const handleAddToCart = (e, product) => {
     e.stopPropagation();
-    // Lấy biến thể đầu tiên của sản phẩm
+    // get first variant of product
     const firstVariant = product.productVariants?.[0];
     if (!firstVariant) {
       message.error('Sản phẩm chưa có biến thể');
@@ -202,7 +202,7 @@ const MainContent = () => {
   }
 
   const renderProductCard = (product) => {
-    // Lấy biến thể đầu tiên có giá
+    // get first variant with price
     const firstVariant = product.productVariants?.find(variant => variant.price);
     if (!firstVariant) return null;
 

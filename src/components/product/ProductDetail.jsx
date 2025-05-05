@@ -8,7 +8,6 @@ import './ProductDetail.css'
 
 const { Title, Text } = Typography
 
-// Hàm định dạng số với dấu chấm phân cách hàng nghìn
 const formatPrice = (price) => {
   return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
 }
@@ -26,12 +25,10 @@ const ProductDetail = () => {
 
   const fromBranch = location.state?.fromBranch
 
-  // Lấy danh sách các tùy chọn từ productVariants
   const getUniqueOptions = (variants, key) => {
     return [...new Set(variants.map(v => v[key]))];
   };
 
-  // Lấy danh sách các màu sắc tương ứng với dung lượng đã chọn
   const getColorsByStorage = (storage) => {
     if (!product?.productVariants) return [];
     return [...new Set(product.productVariants
@@ -40,24 +37,20 @@ const ProductDetail = () => {
     )];
   };
 
-  // Tìm biến thể phù hợp nhất với các lựa chọn hiện tại
   const findBestMatchingVariant = (newValue, key) => {
     if (!product?.productVariants) return null;
 
-    // Tạo object chứa các lựa chọn hiện tại
     const currentSelections = {
       color: selectedColor,
       storage: selectedStorage,
       [key]: newValue
     };
 
-    // Tìm biến thể khớp hoàn toàn
     let matchingVariant = product.productVariants.find(v => 
       v.color === currentSelections.color && 
       v.storage === currentSelections.storage
     );
 
-    // Nếu không tìm thấy, lấy biến thể đầu tiên có giá trị mới
     if (!matchingVariant) {
       matchingVariant = product.productVariants.find(v => v[key] === newValue);
     }
@@ -65,23 +58,18 @@ const ProductDetail = () => {
     return matchingVariant;
   };
 
-  // Xử lý khi thay đổi dung lượng
   const handleStorageChange = (storage) => {
     setSelectedStorage(storage);
-    // Lấy danh sách màu sắc tương ứng với dung lượng mới
     const availableColors = getColorsByStorage(storage);
-    // Nếu màu hiện tại không có trong danh sách màu mới, chọn màu đầu tiên
     if (!availableColors.includes(selectedColor)) {
       setSelectedColor(availableColors[0] || '');
     }
   };
 
-  // Xử lý khi thay đổi màu sắc
   const handleColorChange = (color) => {
     setSelectedColor(color);
   };
 
-  // Tìm biến thể phù hợp với các lựa chọn
   const findMatchingVariant = () => {
     if (!product?.productVariants) return null;
     return product.productVariants.find(v => 
@@ -108,13 +96,11 @@ const ProductDetail = () => {
         if (response.data) {
           setProduct(response.data)
           
-          // Kiểm tra xem có biến thể đã được lọc từ trang trước không
           const selectedVariantFromState = location.state?.selectedVariant
           if (selectedVariantFromState) {
             setSelectedColor(selectedVariantFromState.color)
             setSelectedStorage(selectedVariantFromState.storage)
           } else if (response.data.productVariants?.length > 0) {
-            // Nếu không có biến thể đã lọc, chọn biến thể đầu tiên
             const firstVariant = response.data.productVariants[0]
             setSelectedColor(firstVariant.color)
             setSelectedStorage(firstVariant.storage)

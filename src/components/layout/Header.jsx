@@ -34,15 +34,12 @@ const Header = () => {
   const handleSearch = (value) => {
     if (!value.trim()) return;
     
-    // Thêm query parameter vào URL hiện tại
     const searchParams = new URLSearchParams(location.search);
     searchParams.set('q', value);
     
-    // Nếu đang ở trang chủ, chỉ cần thêm query parameter
     if (location.pathname === '/') {
       navigate(`/?${searchParams.toString()}`);
     } else {
-      // Nếu đang ở trang khác, chuyển về trang chủ với query parameter
       navigate(`/?${searchParams.toString()}`);
     }
   };

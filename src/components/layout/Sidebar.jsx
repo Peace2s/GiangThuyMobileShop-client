@@ -11,13 +11,11 @@ const Sidebar = () => {
   const [selectedPriceRange, setSelectedPriceRange] = useState(null)
   const [form] = Form.useForm()
   
-  // Lấy tham số từ URL
   const searchParams = new URLSearchParams(location.search)
   const branch = searchParams.get('branch') || 'all'
   const minPrice = searchParams.get('minPrice')
   const maxPrice = searchParams.get('maxPrice')
 
-  // Khởi tạo giá trị form từ URL
   useEffect(() => {
     if (minPrice || maxPrice) {
       form.setFieldsValue({
@@ -25,7 +23,6 @@ const Sidebar = () => {
         maxPrice: maxPrice || ''
       })
       
-      // Tìm và đặt radio button tương ứng
       const matchingRange = priceRanges.find(range => 
         (range.min === (minPrice ? parseInt(minPrice) : 0)) && 
         (range.max === (maxPrice ? parseInt(maxPrice) : null))
@@ -34,10 +31,10 @@ const Sidebar = () => {
       if (matchingRange) {
         setSelectedPriceRange(matchingRange)
       } else {
-        setSelectedPriceRange(null) // Tùy chỉnh
+        setSelectedPriceRange(null)
       }
     } else {
-      setSelectedPriceRange(priceRanges[0]) // Mặc định là "Tất cả"
+      setSelectedPriceRange(priceRanges[0])
     }
   }, [minPrice, maxPrice])
 
@@ -55,13 +52,11 @@ const Sidebar = () => {
     const selectedRange = priceRanges.find(range => range.id === e.target.value)
     setSelectedPriceRange(selectedRange)
     
-    // Cập nhật form
     form.setFieldsValue({
       minPrice: selectedRange?.min || '',
       maxPrice: selectedRange?.max || ''
     })
     
-    // Cập nhật URL
     updateUrlWithPriceFilter(selectedRange?.min, selectedRange?.max)
   }
 
@@ -73,15 +68,12 @@ const Sidebar = () => {
   const updateUrlWithPriceFilter = (minPrice, maxPrice) => {
     const newSearchParams = new URLSearchParams(location.search)
     
-    // Giữ lại tham số branch nếu có
     if (branch && branch !== 'all') {
       newSearchParams.set('branch', branch)
     } else {
-      // Nếu không có branch, chuyển về trang tất cả sản phẩm
       newSearchParams.set('branch', 'all')
     }
     
-    // Thêm tham số giá
     if (minPrice) {
       newSearchParams.set('minPrice', minPrice)
     } else {
@@ -94,7 +86,6 @@ const Sidebar = () => {
       newSearchParams.delete('maxPrice')
     }
     
-    // Cập nhật URL
     navigate(`${location.pathname}?${newSearchParams.toString()}`)
   }
 

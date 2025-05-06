@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Radio, Input, Button, Space, Typography, Form, Card } from 'antd'
 import { useNavigate, useLocation } from 'react-router-dom'
+import { NumericFormat } from 'react-number-format'
 import './Sidebar.css'
 
 const { Title } = Typography
@@ -40,12 +41,11 @@ const Sidebar = () => {
 
   const priceRanges = [
     { id: 1, label: 'Tất cả', value: null, min: null, max: null },
-    { id: 2, label: 'Dưới 2 triệu', min: 0, max: 2000000 },
-    { id: 3, label: 'Từ 2 - 4 triệu', min: 2000000, max: 4000000 },
-    { id: 4, label: 'Từ 4 - 7 triệu', min: 4000000, max: 7000000 },
-    { id: 5, label: 'Từ 7 - 13 triệu', min: 7000000, max: 13000000 },
-    { id: 6, label: 'Từ 13 - 20 triệu', min: 13000000, max: 20000000 },
-    { id: 7, label: 'Trên 20 triệu', min: 20000000, max: null }
+    { id: 2, label: 'Dưới 5 triệu', min: 0, max: 5000000 },
+    { id: 3, label: 'Từ 5 - 10 triệu', min: 5000000, max: 10000000 },
+    { id: 4, label: 'Từ 10 - 15 triệu', min: 10000000, max: 15000000 },
+    { id: 5, label: 'Từ 15 - 20 triệu', min: 15000000, max: 20000000 },
+    { id: 6, label: 'Trên 20 triệu', min: 20000000, max: null }
   ]
 
   const handlePriceRangeChange = (e) => {
@@ -62,7 +62,9 @@ const Sidebar = () => {
 
   const handleCustomPriceSubmit = (values) => {
     const { minPrice, maxPrice } = values
-    updateUrlWithPriceFilter(minPrice, maxPrice)
+    const minPriceNum = minPrice ? parseInt(minPrice.replace(/[^\d]/g, '')) : null
+    const maxPriceNum = maxPrice ? parseInt(maxPrice.replace(/[^\d]/g, '')) : null
+    updateUrlWithPriceFilter(minPriceNum, maxPriceNum)
   }
   
   const updateUrlWithPriceFilter = (minPrice, maxPrice) => {
@@ -118,17 +120,23 @@ const Sidebar = () => {
           >
             <div className="price-inputs">
               <Form.Item name="minPrice" noStyle>
-                <Input
-                  type="number"
-                  placeholder="13000000"
+                <NumericFormat
+                  customInput={Input}
+                  thousandSeparator="."
+                  decimalSeparator=","
+                  suffix=" ₫"
+                  placeholder="13.000.000 ₫"
                   min={0}
                 />
               </Form.Item>
               <span>~</span>
               <Form.Item name="maxPrice" noStyle>
-                <Input
-                  type="number"
-                  placeholder="20000000"
+                <NumericFormat
+                  customInput={Input}
+                  thousandSeparator="."
+                  decimalSeparator=","
+                  suffix=" ₫"
+                  placeholder="20.000.000 ₫"
                   min={0}
                 />
               </Form.Item>

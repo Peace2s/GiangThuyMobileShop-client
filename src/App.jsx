@@ -1,49 +1,60 @@
-import { useState } from 'react'
-import { BrowserRouter as Router, Routes, Route, useLocation, Navigate } from 'react-router-dom'
-import Header from './components/layout/Header'
-import Sidebar from './components/layout/Sidebar'
-import MainContent from './components/layout/MainContent'
-import Footer from './components/layout/Footer'
-import Login from './components/auth/Login'
-import Register from './components/auth/Register'
-import ForgotPassword from './components/forgotpass/ForgotPassword'
-import Profile from './components/profile/Profile'
-import ProductDetail from './components/product/ProductDetail'
-import Cart from './components/cart/Cart'
-import Checkout from './components/checkout/Checkout'
-import BranchMenu from './components/layout/BranchMenu'
-import Orders from './components/orders/Orders'
-import { CartProvider } from './contexts/CartContext'
-import { AuthProvider } from './contexts/AuthContext'
-import { ToastContainer } from 'react-toastify'
-import 'react-toastify/dist/ReactToastify.css'
-import './App.css'
-import { ConfigProvider } from 'antd'
-import viVN from 'antd/locale/vi_VN'
-import AdminLayout from './components/layout/AdminLayout'
-import AdminLogin from './components/admin/Login'
-import Dashboard from './components/admin/Dashboard'
-import Products from './components/admin/Products'
-import AdminOrders from './components/admin/Orders'
-import Users from './components/admin/Users'
-import Brands from './components/admin/Brands'
+import { useState } from "react";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  useLocation,
+  Navigate,
+} from "react-router-dom";
+import Header from "./components/layout/Header";
+import Sidebar from "./components/layout/Sidebar";
+import MainContent from "./components/layout/MainContent";
+import Footer from "./components/layout/Footer";
+import Login from "./components/auth/Login";
+import Register from "./components/auth/Register";
+import ForgotPassword from "./components/forgotpass/ForgotPassword";
+import Profile from "./components/profile/Profile";
+import ProductDetail from "./components/product/ProductDetail";
+import Cart from "./components/cart/Cart";
+import Checkout from "./components/checkout/Checkout";
+import BranchMenu from "./components/layout/BranchMenu";
+import Orders from "./components/orders/Orders";
+import { CartProvider } from "./contexts/CartContext";
+import { AuthProvider } from "./contexts/AuthContext";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import "./App.css";
+import { ConfigProvider } from "antd";
+import viVN from "antd/locale/vi_VN";
+import AdminLayout from "./components/layout/AdminLayout";
+import AdminLogin from "./components/admin/Login";
+import Dashboard from "./components/admin/Dashboard";
+import Products from "./components/admin/Products";
+import AdminOrders from "./components/admin/Orders";
+import Users from "./components/admin/Users";
+import Brands from "./components/admin/Brands";
+import Chatbot from "./components/chatbot/Chatbot";
 
 const AppLayout = () => {
-  const [searchTerm, setSearchTerm] = useState('')
-  const location = useLocation()
-  const isLoginPage = location.pathname === '/login'
-  const isRegisterPage = location.pathname === '/register'
-  const isForgotPasswordPage = location.pathname === '/forgot-password'
-  const isProfilePage = location.pathname === '/profile'
-  const isProductDetail = location.pathname.startsWith('/product/') && location.pathname !== '/product'
-  const isCartPage = location.pathname === '/cart'
-  const isCheckoutPage = location.pathname === '/checkout'
-  const isOrdersPage = location.pathname === '/orders'
-  const isHomePage = location.pathname === '/'
+  const [searchTerm, setSearchTerm] = useState("");
+  const location = useLocation();
+  const isLoginPage = location.pathname === "/login";
+  const isRegisterPage = location.pathname === "/register";
+  const isForgotPasswordPage = location.pathname === "/forgot-password";
+  const isProfilePage = location.pathname === "/profile";
+  const isProductDetail =
+    location.pathname.startsWith("/product/") &&
+    location.pathname !== "/product";
+  const isCartPage = location.pathname === "/cart";
+  const isCheckoutPage = location.pathname === "/checkout";
+  const isOrdersPage = location.pathname === "/orders";
+  const isHomePage = location.pathname === "/";
 
   return (
     <div className="app">
-      {!isLoginPage && !isRegisterPage && !isForgotPasswordPage && <Header searchTerm={searchTerm} setSearchTerm={setSearchTerm} />}
+      {!isLoginPage && !isRegisterPage && !isForgotPasswordPage && (
+        <Header searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
+      )}
       {isHomePage && <BranchMenu />}
       <div className="main-content">
         <Routes>
@@ -54,40 +65,60 @@ const AppLayout = () => {
           <Route path="/cart" element={<Cart />} />
           <Route path="/checkout" element={<Checkout />} />
           <Route path="/orders" element={<Orders />} />
-          <Route path="/product/:id" element={
-            <div className="container-fluid">
-              <ProductDetail />
-            </div>
-          } />
-          <Route path="/product" element={
-            <div className="main-container">
-              <Sidebar />
-              <MainContent showAllProducts={true} />
-            </div>
-          } />
-          <Route path="/products" element={
-            <div className="main-container">
-              <Sidebar />
-              <MainContent />
-            </div>
-          } />
-          <Route path="/" element={
-            <div className="main-container">
-              <Sidebar />
-              <MainContent />
-            </div>
-          } />
+          <Route
+            path="/product/:id"
+            element={
+              <div className="container-fluid">
+                <ProductDetail />
+              </div>
+            }
+          />
+          <Route
+            path="/product"
+            element={
+              <div className="main-container">
+                <Sidebar />
+                <MainContent showAllProducts={true} />
+              </div>
+            }
+          />
+          <Route
+            path="/products"
+            element={
+              <div className="main-container">
+                <Sidebar />
+                <MainContent />
+              </div>
+            }
+          />
+          <Route
+            path="/"
+            element={
+              <div className="main-container">
+                <Sidebar />
+                <MainContent />
+              </div>
+            }
+          />
         </Routes>
       </div>
-      {!isLoginPage && !isRegisterPage && !isForgotPasswordPage && !isProfilePage && !isProductDetail && !isCartPage && !isCheckoutPage && !isOrdersPage && <Footer />}
+      {!isLoginPage &&
+        !isRegisterPage &&
+        !isForgotPasswordPage &&
+        !isProfilePage &&
+        !isProductDetail &&
+        !isCartPage &&
+        !isCheckoutPage &&
+        !isOrdersPage && <Footer />}
+      {!isLoginPage && !isRegisterPage && !isForgotPasswordPage && <Chatbot />}
     </div>
-  )
-}
+  );
+};
 
 const ProtectedRoute = ({ children }) => {
-  const isAuthenticated = localStorage.getItem('adminToken')
-  return isAuthenticated ? children : <Navigate to="/admin/login" />
-}
+  const isAuthenticated = localStorage.getItem("adminToken");
+  return isAuthenticated ? children : <Navigate to="/admin/login" />;
+};
 
 const App = () => {
   return (
@@ -122,7 +153,8 @@ const App = () => {
         </CartProvider>
       </AuthProvider>
     </ConfigProvider>
-  )
-}
+  );
+};
 
-export default App
+export default App;
+

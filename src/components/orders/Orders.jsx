@@ -1,8 +1,20 @@
-import React, { useState, useEffect } from 'react';
-import { Table, Tag, Button, Space, Typography, Card, message, Image, Modal, Descriptions, Divider } from 'antd';
-import { orderService } from '../../services/home.service';
-import { formatCurrency } from '../../utils/format';
-import './Orders.css';
+import React, { useState, useEffect } from "react";
+import {
+  Table,
+  Tag,
+  Button,
+  Space,
+  Typography,
+  Card,
+  message,
+  Image,
+  Modal,
+  Descriptions,
+  Divider,
+} from "antd";
+import { orderService } from "../../services/home.service";
+import { formatCurrency } from "../../utils/format";
+import "./Orders.css";
 
 const { Title, Text } = Typography;
 
@@ -22,7 +34,7 @@ const Orders = () => {
       const response = await orderService.getUserOrders();
       setOrders(response.data);
     } catch (error) {
-      message.error('Không thể tải danh sách đơn hàng');
+      message.error("Không thể tải danh sách đơn hàng");
     } finally {
       setLoading(false);
     }
@@ -32,10 +44,10 @@ const Orders = () => {
     try {
       setCancellingOrderId(orderId);
       await orderService.cancelOrder(orderId);
-      message.success('Hủy đơn hàng thành công');
+      message.success("Hủy đơn hàng thành công");
       fetchOrders(); // Refresh danh sách
     } catch (error) {
-      message.error(error.response?.data?.message || 'Không thể hủy đơn hàng');
+      message.error(error.response?.data?.message || "Không thể hủy đơn hàng");
     } finally {
       setCancellingOrderId(null);
     }
@@ -53,49 +65,49 @@ const Orders = () => {
 
   const getStatusColor = (status) => {
     const colors = {
-      pending: 'gold',
-      processing: 'blue',
-      shipped: 'cyan',
-      delivered: 'green',
-      cancelled: 'red'
+      pending: "gold",
+      processing: "blue",
+      shipped: "cyan",
+      delivered: "green",
+      cancelled: "red",
     };
-    return colors[status] || 'default';
+    return colors[status] || "default";
   };
 
   const getStatusText = (status) => {
     const statusText = {
-      pending: 'Chờ xử lý',
-      processing: 'Đang xử lý',
-      shipped: 'Đang giao',
-      delivered: 'Đã giao',
-      cancelled: 'Đã hủy'
+      pending: "Chờ xử lý",
+      processing: "Đang xử lý",
+      shipped: "Đang giao",
+      delivered: "Đã giao",
+      cancelled: "Đã hủy",
     };
     return statusText[status] || status;
   };
 
   const getPaymentMethodText = (method) => {
     const methods = {
-      cod: 'Thanh toán khi nhận hàng',
-      vnpay: 'Thanh toán qua VNPay',
-      qr_sepay: 'Thanh toán qua QR'
+      cod: "Thanh toán khi nhận hàng",
+      vnpay: "Thanh toán qua VNPay",
+      qr_sepay: "Thanh toán qua QR",
     };
     return methods[method] || method;
   };
 
   const renderOrderItems = (items) => {
     if (!items || !Array.isArray(items)) return null;
-    
+
     return (
       <ul className="order-items-list">
         {items.map((item, index) => {
           if (!item || !item.product) {
             return <li key={index}>Sản phẩm không xác định</li>;
           }
-          
+
           return (
             <li key={index} className="order-item">
-              <Image 
-                src={item.product.image} 
+              <Image
+                src={item.product.image}
                 alt={item.product.name}
                 width={50}
                 height={50}
@@ -120,13 +132,13 @@ const Orders = () => {
 
     const productColumns = [
       {
-        title: 'Sản phẩm',
-        dataIndex: 'product',
-        key: 'product',
+        title: "Sản phẩm",
+        dataIndex: "product",
+        key: "product",
         render: (_, record) => (
           <div className="product-info">
-            <Image 
-              src={record.product.image} 
+            <Image
+              src={record.product.image}
               alt={record.product.name}
               width={50}
               height={50}
@@ -137,50 +149,48 @@ const Orders = () => {
         ),
       },
       {
-        title: 'Dung lượng',
-        dataIndex: 'storage',
-        key: 'storage',
+        title: "Dung lượng",
+        dataIndex: "storage",
+        key: "storage",
         width: 120,
-        align: 'center',
-        render: (_, record) => (
+        align: "center",
+        render: (_, record) =>
           record.productVariant ? (
             <Text>{record.productVariant.storage}</Text>
-          ) : null
-        ),
+          ) : null,
       },
       {
-        title: 'Màu sắc',
-        dataIndex: 'color',
-        key: 'color',
+        title: "Màu sắc",
+        dataIndex: "color",
+        key: "color",
         width: 120,
-        align: 'center',
-        render: (_, record) => (
+        align: "center",
+        render: (_, record) =>
           record.productVariant ? (
             <Text>{record.productVariant.color}</Text>
-          ) : null
-        ),
+          ) : null,
       },
       {
-        title: 'Số lượng',
-        dataIndex: 'quantity',
-        key: 'quantity',
+        title: "Số lượng",
+        dataIndex: "quantity",
+        key: "quantity",
         width: 100,
-        align: 'center',
+        align: "center",
       },
       {
-        title: 'Đơn giá',
-        dataIndex: 'price',
-        key: 'price',
+        title: "Đơn giá",
+        dataIndex: "price",
+        key: "price",
         width: 150,
-        align: 'right',
+        align: "right",
         render: (price) => formatCurrency(price),
       },
       {
-        title: 'Thành tiền',
-        dataIndex: 'totalPrice',
-        key: 'totalPrice',
+        title: "Thành tiền",
+        dataIndex: "totalPrice",
+        key: "totalPrice",
         width: 150,
-        align: 'right',
+        align: "right",
         render: (price) => formatCurrency(price),
       },
     ];
@@ -188,11 +198,9 @@ const Orders = () => {
     return (
       <div className="order-details">
         <Descriptions bordered column={1}>
-          <Descriptions.Item label="Mã đơn hàng">
-            #{order.id}
-          </Descriptions.Item>
+          <Descriptions.Item label="Mã đơn hàng">#{order.id}</Descriptions.Item>
           <Descriptions.Item label="Ngày đặt">
-            {new Date(order.createdAt).toLocaleString('vi-VN')}
+            {new Date(order.createdAt).toLocaleString("vi-VN")}
           </Descriptions.Item>
           <Descriptions.Item label="Trạng thái">
             <Tag color={getStatusColor(order.status)}>
@@ -203,16 +211,16 @@ const Orders = () => {
             {getPaymentMethodText(order.paymentMethod)}
           </Descriptions.Item>
           <Descriptions.Item label="Trạng thái thanh toán">
-            <Tag color={order.paymentStatus === 'paid' ? 'green' : 'gold'}>
-              {order.paymentStatus === 'paid' ? 'Đã thanh toán' : 'Chưa thanh toán'}
+            <Tag color={order.paymentStatus === "paid" ? "green" : "gold"}>
+              {order.paymentStatus === "paid"
+                ? "Đã thanh toán"
+                : "Chưa thanh toán"}
             </Tag>
           </Descriptions.Item>
           <Descriptions.Item label="Địa chỉ giao hàng">
             {order.shippingAddress}
           </Descriptions.Item>
-            <Descriptions.Item label="Ghi chú">
-              {order.note}
-            </Descriptions.Item>
+          <Descriptions.Item label="Ghi chú">{order.note}</Descriptions.Item>
         </Descriptions>
 
         <Divider orientation="left">Sản phẩm</Divider>
@@ -224,7 +232,7 @@ const Orders = () => {
         />
 
         <Divider />
-        <div className="order-total" style={{ textAlign: 'right' }}>
+        <div className="order-total" style={{ textAlign: "right" }}>
           <Text strong>Tổng cộng: {formatCurrency(order.totalAmount)}</Text>
         </div>
       </div>
@@ -233,74 +241,70 @@ const Orders = () => {
 
   const columns = [
     {
-      title: 'Mã đơn hàng',
-      dataIndex: 'id',
-      key: 'id',
+      title: "Mã đơn hàng",
+      dataIndex: "id",
+      key: "id",
       width: 120,
-      render: (id) => <span>#{id}</span>
+      render: (id) => <span>#{id}</span>,
     },
     {
-      title: 'Ngày đặt',
-      dataIndex: 'createdAt',
-      key: 'createdAt',
+      title: "Ngày đặt",
+      dataIndex: "createdAt",
+      key: "createdAt",
       width: 150,
-      render: (date) => new Date(date).toLocaleDateString('vi-VN', {
-        year: 'numeric',
-        month: '2-digit',
-        day: '2-digit',
-        hour: '2-digit',
-        minute: '2-digit'
-      })
+      render: (date) =>
+        new Date(date).toLocaleDateString("vi-VN", {
+          year: "numeric",
+          month: "2-digit",
+          day: "2-digit",
+          hour: "2-digit",
+          minute: "2-digit",
+        }),
     },
     {
-      title: 'Sản phẩm',
-      dataIndex: 'OrderItems',
-      key: 'products',
-      render: renderOrderItems
+      title: "Sản phẩm",
+      dataIndex: "OrderItems",
+      key: "products",
+      render: renderOrderItems,
     },
     {
-      title: 'Tổng tiền',
-      dataIndex: 'totalAmount',
-      key: 'totalAmount',
+      title: "Tổng tiền",
+      dataIndex: "totalAmount",
+      key: "totalAmount",
       width: 150,
-      render: (amount) => formatCurrency(amount || 0)
+      render: (amount) => formatCurrency(amount || 0),
     },
     {
-      title: 'Trạng thái',
-      dataIndex: 'status',
-      key: 'status',
+      title: "Trạng thái",
+      dataIndex: "status",
+      key: "status",
       width: 150,
       render: (status) => (
-        <Tag color={getStatusColor(status)}>
-          {getStatusText(status)}
-        </Tag>
-      )
+        <Tag color={getStatusColor(status)}>{getStatusText(status)}</Tag>
+      ),
     },
     {
-      title: 'Thao tác',
-      key: 'action',
+      title: "Thao tác",
+      key: "action",
       width: 150,
       render: (_, record) => (
         <Space>
-          {record.status === 'pending' && (
-            <Button 
-              type="text" 
-              danger 
+          {record.status === "pending" && (
+            <Button
+              type="text"
+              danger
               onClick={() => handleCancelOrder(record.id)}
               loading={cancellingOrderId === record.id}
             >
               Hủy đơn
             </Button>
           )}
-          <Button 
-            type="link" 
-            onClick={() => showOrderDetails(record)}
-          >
+          <Button type="link" onClick={() => showOrderDetails(record)}>
             Chi tiết
           </Button>
         </Space>
-      )
-    }
+      ),
+    },
   ];
 
   return (
@@ -314,8 +318,8 @@ const Orders = () => {
           loading={loading}
           pagination={{
             pageSize: 10,
-            position: ['bottomCenter'],
-            showSizeChanger: false
+            position: ["bottomCenter"],
+            showSizeChanger: false,
           }}
         />
       </Card>
@@ -333,4 +337,5 @@ const Orders = () => {
   );
 };
 
-export default Orders; 
+export default Orders;
+

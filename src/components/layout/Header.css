@@ -400,7 +400,7 @@
 .user-name {
   color: white;
   font-size: 14px;
-  max-width: 150px;
+  max-width: 200px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;

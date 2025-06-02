@@ -32,6 +32,11 @@ const Products = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
+  const [deleteModalVisible, setDeleteModalVisible] = useState(false);
+  const [deleteVariantModalVisible, setDeleteVariantModalVisible] =
+    useState(false);
+  const [deleteId, setDeleteId] = useState(null);
+  const [deleteVariantId, setDeleteVariantId] = useState(null);
   const [form] = Form.useForm();
   const [editingId, setEditingId] = useState(null);
   const [imageUrl, setImageUrl] = useState("");
@@ -95,12 +100,12 @@ const Products = () => {
 
   const handleSearch = (value) => {
     setSearch(value);
-    setPagination(prev => ({ ...prev, current: 1 }));
+    setPagination((prev) => ({ ...prev, current: 1 }));
   };
 
   const handleBrandFilter = (value) => {
     setBrandFilter(value);
-    setPagination(prev => ({ ...prev, current: 1 }));
+    setPagination((prev) => ({ ...prev, current: 1 }));
   };
 
   const handleSearchSubmit = () => {
@@ -142,12 +147,20 @@ const Products = () => {
   };
 
   const handleDelete = async (id) => {
+    setDeleteId(id);
+    setDeleteModalVisible(true);
+  };
+
+  const confirmDelete = async () => {
     try {
-      await adminService.deleteProduct(id);
+      await adminService.deleteProduct(deleteId);
       message.success("Xóa sản phẩm thành công");
       fetchProducts();
     } catch (error) {
       message.error("Không thể xóa sản phẩm");
+    } finally {
+      setDeleteModalVisible(false);
+      setDeleteId(null);
     }
   };
 
@@ -188,8 +201,19 @@ const Products = () => {
   };
 
   const handleRemoveVariant = (index) => {
-    const newVariants = variants.filter((_, i) => i !== index);
-    setVariants(newVariants);
+    const variant = variants[index];
+    if (variants.length <= 1) {
+      message.warning("Không thể xóa phiên bản cuối cùng của sản phẩm");
+      return;
+    }
+
+    if (variant.id) {
+      setDeleteVariantId(variant.id);
+      setDeleteVariantModalVisible(true);
+    } else {
+      const newVariants = variants.filter((_, i) => i !== index);
+      setVariants(newVariants);
+    }
   };
 
   const handleVariantImageUpload = async (file, index) => {
@@ -290,11 +314,33 @@ const Products = () => {
     }
   };
 
+  const confirmDeleteVariant = async () => {
+    if (variants.length <= 1) {
+      message.warning("Không thể xóa phiên bản cuối cùng của sản phẩm");
+      setDeleteVariantModalVisible(false);
+      setDeleteVariantId(null);
+      return;
+    }
+
+    try {
+      await adminService.deleteProductVariant(deleteVariantId);
+      message.success("Xóa phiên bản thành công");
+      // Cập nhật lại danh sách variants sau khi xóa
+      const newVariants = variants.filter((v) => v.id !== deleteVariantId);
+      setVariants(newVariants);
+    } catch (error) {
+      message.error("Không thể xóa phiên bản");
+    } finally {
+      setDeleteVariantModalVisible(false);
+      setDeleteVariantId(null);
+    }
+  };
+
   const columns = [
     {
-      title: 'Mã sản phẩm',
-      dataIndex: 'id',
-      key: 'id',
+      title: "Mã sản phẩm",
+      dataIndex: "id",
+      key: "id",
     },
     {
       title: "Hình ảnh",
@@ -672,8 +718,37 @@ const Products = () => {
           </Form.Item>
         </Form>
       </Modal>
+
+      <Modal
+        title="Xác nhận xóa"
+        open={deleteModalVisible}
+        onOk={confirmDelete}
+        onCancel={() => {
+          setDeleteModalVisible(false);
+          setDeleteId(null);
+        }}
+        okText="Xóa"
+        cancelText="Hủy"
+      >
+        <p>Bạn có chắc chắn muốn xóa sản phẩm này không?</p>
+      </Modal>
+
+      <Modal
+        title="Xác nhận xóa phiên bản"
+        open={deleteVariantModalVisible}
+        onOk={confirmDeleteVariant}
+        onCancel={() => {
+          setDeleteVariantModalVisible(false);
+          setDeleteVariantId(null);
+        }}
+        okText="Xóa"
+        cancelText="Hủy"
+      >
+        <p>Bạn có chắc chắn muốn xóa phiên bản này không?</p>
+      </Modal>
     </div>
   );
 };
 
 export default Products;
+

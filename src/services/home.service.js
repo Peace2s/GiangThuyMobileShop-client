@@ -39,7 +39,7 @@ export const productService = {
   getAllProducts: (params = {}) => api.get('/products', { params }),
   getProductById: (id) => api.get(`/products/${id}`),
   getProductsByBrand: (brand, params = {}) => api.get(`/products/brand/${brand}`, { params }),
-  getProductsByBrandAndPrice: (brand, minPrice, maxPrice, params = {}) => 
+  getProductsByBrandAndPrice: (brand, minPrice, maxPrice, params = {}) =>
     api.get(`/products/brand/${brand}?minPrice=${minPrice}&maxPrice=${maxPrice}`, { params }),
   getFeaturedProducts: () => api.get('/products/featured'),
   getNewProducts: () => api.get('/products/new'),

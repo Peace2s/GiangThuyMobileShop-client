@@ -116,8 +116,7 @@ const Profile = () => {
                 label="Số điện thoại"
                 rules={[
                   {
-                    required: true,
-                    message: 'Vui lòng nhập số điện thoại!',
+                    required: false,
                   },
                   {
                     pattern: /^[0-9]{10}$/,

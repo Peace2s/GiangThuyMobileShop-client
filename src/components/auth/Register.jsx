@@ -99,8 +99,7 @@ const Register = () => {
             name="phone"
             rules={[
               {
-                required: true,
-                message: 'Vui lòng nhập số điện thoại!',
+                required: false,
               },
               {
                 pattern: /^[0-9]{10}$/,

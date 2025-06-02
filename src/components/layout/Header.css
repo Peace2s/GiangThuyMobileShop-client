@@ -128,7 +128,9 @@
   background-color: #e6f7ff !important;
 }
 
-.ant-select-item-option-selected:not(.ant-select-item-option-disabled) .ant-select-item-option-content span {
+.ant-select-item-option-selected:not(.ant-select-item-option-disabled)
+  .ant-select-item-option-content
+  span {
   color: #1890ff !important;
 }
 
@@ -291,22 +293,93 @@
 }
 
 /* Responsive adjustments */
-@media (max-width: 992px) {
+@media (max-width: 1200px) {
   .container-fluid {
     width: 95%;
-    padding: 8px 12px;
   }
-  
+
   .search-box {
     margin: 0 20px;
   }
-  
+}
+
+@media (max-width: 992px) {
+  .container-fluid {
+    padding: 8px 12px;
+  }
+
+  .search-box {
+    margin: 0 15px;
+  }
+
   .action-text {
     display: none;
   }
-  
+
   .action-item {
     padding: 8px;
+  }
+
+  .user-name {
+    display: none;
+  }
+
+  .btn-login,
+  .btn-register {
+    padding: 4px 12px;
+    font-size: 13px;
+  }
+}
+
+@media (max-width: 768px) {
+  .container-fluid {
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .search-box {
+    order: 3;
+    margin: 0 0 15px 0;
+    max-width: 100%;
+    width: 100%;
+  }
+
+  .nav-actions {
+    margin-left: 0;
+  }
+
+  .logo-img {
+    height: 32px;
+  }
+
+  .btn-login,
+  .btn-register {
+    padding: 4px 10px;
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .container-fluid {
+    padding: 8px;
+  }
+
+  .nav-actions {
+    gap: 8px;
+  }
+
+  .action-item {
+    padding: 6px;
+  }
+
+  .action-icon {
+    font-size: 18px;
+  }
+
+  .btn-login,
+  .btn-register {
+    padding: 3px 8px;
+    font-size: 11px;
   }
 }
 
@@ -327,10 +400,10 @@
 .user-name {
   color: white;
   font-size: 14px;
-  max-width: none;
-  white-space: normal;
-  overflow: visible;
-  text-overflow: unset;
+  max-width: 150px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .ant-dropdown-menu {
@@ -351,3 +424,4 @@
 .ant-select-dropdown {
   margin-top: 40px !important;
 }
+

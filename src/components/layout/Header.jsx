@@ -1,7 +1,7 @@
-import React, { useState, useEffect, useCallback } from 'react'
+import React, { useState, useCallback } from 'react'
 import { useNavigate, useLocation, Link } from 'react-router-dom'
-import { Layout, Input, Button, Menu, Space, Typography, Row, Col, Badge, Avatar, Tooltip, Dropdown, message, AutoComplete } from 'antd'
-import { SearchOutlined, PhoneOutlined, ShoppingCartOutlined, UserOutlined, HeartOutlined, MenuOutlined, LogoutOutlined } from '@ant-design/icons'
+import { Layout, Input, Button, Space, Typography, Row, Col, Badge, Avatar, Tooltip, Dropdown, AutoComplete } from 'antd'
+import { SearchOutlined, ShoppingCartOutlined, UserOutlined, LogoutOutlined } from '@ant-design/icons'
 import './Header.css'
 import logo from '../../assets/images/logo.png'
 import { useCart } from '../../contexts/CartContext'
@@ -15,14 +15,11 @@ const { Text } = Typography
 const Header = () => {
   const { getCartCount } = useCart()
   const { user, logout, isAuthenticated } = useAuth()
-  const [cartItems, setCartItems] = useState(0)
   const [searchValue, setSearchValue] = useState('')
   const [suggestions, setSuggestions] = useState([])
   const [loading, setLoading] = useState(false)
   const navigate = useNavigate()
   const location = useLocation()
-  const isHomePage = location.pathname === '/'
-  const isProductDetailPage = location.pathname.startsWith('/product/')
 
   const handleCartClick = () => {
     navigate('/cart')

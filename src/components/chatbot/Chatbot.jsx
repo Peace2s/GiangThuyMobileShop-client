@@ -1,5 +1,4 @@
 import React, { useEffect } from "react";
-import "./Chatbot.css";
 
 const Chatbot = () => {
   useEffect(() => {
@@ -42,4 +41,3 @@ const Chatbot = () => {
 };
 
 export default Chatbot;
-

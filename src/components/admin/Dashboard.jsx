@@ -209,6 +209,17 @@ const Dashboard = () => {
     }
   };
 
+  const handleGroupByChange = (value) => {
+    setGroupBy(value);
+    
+    if (value === 'year' && dateRange[0] && dateRange[1]) {
+      setDateRange([
+        dayjs(dateRange[0].format('YYYY-01-01')),
+        dayjs(dateRange[1].format('YYYY-12-31'))
+      ]);
+    }
+  };
+
   if (loading) {
     return (
       <div className="dashboard-loading">
@@ -270,10 +281,11 @@ const Dashboard = () => {
                   onChange={(dates) => setDateRange(dates)}
                   value={dateRange}
                   allowClear={false}
+                  picker={groupBy === 'year' ? 'year' : 'date'}
                 />
                 <Select 
                   value={groupBy} 
-                  onChange={setGroupBy}
+                  onChange={handleGroupByChange}
                   style={{ width: 120 }}
                 >
                   <Option value="day">Theo ngày</Option>

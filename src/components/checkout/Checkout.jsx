@@ -121,6 +121,7 @@ const Checkout = () => {
         const response = await orderService.createOrder(orderData);
         console.log('Created order:', response.data);
         const orderId = response.data.orderId;
+        //const amount = response.data.totalAmount;
         setCurrentOrderId(orderId);
         const qrUrl = `https://qr.sepay.vn/img?acc=0941076269&bank=VPBank&amount=2000&des=Thanh toan don hang ${orderId}`;
         setQrUrl(qrUrl);

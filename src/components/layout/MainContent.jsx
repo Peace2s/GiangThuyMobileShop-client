@@ -35,6 +35,9 @@ const MainContent = () => {
   })
   const { addToCart } = useCart()
   const [pagination, setPagination] = useState({ current: 1, pageSize: 9, total: 0 });
+  useEffect(() => {
+    setPagination(prev => ({ ...prev, current: 1 }));
+  }, [branch, minPrice, maxPrice, searchQuery]);
 
   useEffect(() => {
     const fetchProducts = async () => {

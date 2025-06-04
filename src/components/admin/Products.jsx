@@ -656,7 +656,7 @@ const Products = () => {
                       />
                     </Form.Item>
 
-                    <Form.Item label="Trạng thái" required>
+                    {/* <Form.Item label="Trạng thái" required>
                       <Select
                         value={variant.status}
                         onChange={(value) =>
@@ -666,7 +666,7 @@ const Products = () => {
                         <Option value="in_stock">Còn hàng</Option>
                         <Option value="out_of_stock">Hết hàng</Option>
                       </Select>
-                    </Form.Item>
+                    </Form.Item> */}
 
                     <Form.Item label="Hình ảnh">
                       <Upload

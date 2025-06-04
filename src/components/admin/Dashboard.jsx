@@ -209,6 +209,17 @@ const Dashboard = () => {
     }
   };
 
+  const handleDateRangeChange = (dates) => {
+    if (groupBy === 'year' && dates) {
+      setDateRange([
+        dayjs(dates[0].format('YYYY-01-01')),
+        dayjs(dates[1].format('YYYY-12-31'))
+      ]);
+    } else {
+      setDateRange(dates);
+    }
+  };
+
   const handleGroupByChange = (value) => {
     setGroupBy(value);
     
@@ -278,10 +289,11 @@ const Dashboard = () => {
             extra={
               <Space>
                 <RangePicker
-                  onChange={(dates) => setDateRange(dates)}
+                  onChange={handleDateRangeChange}
                   value={dateRange}
                   allowClear={false}
                   picker={groupBy === 'year' ? 'year' : 'date'}
+                  format={groupBy === 'year' ? 'YYYY' : 'DD/MM/YYYY'}
                 />
                 <Select 
                   value={groupBy} 

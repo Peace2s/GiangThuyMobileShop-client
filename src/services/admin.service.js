@@ -59,6 +59,15 @@ export const adminService = {
   getRevenueByMonth: (year) => adminApi.get(`/statistics/revenue/${year}`),
   getTopProducts: (limit) => adminApi.get(`/statistics/top-products/${limit}`),
   getMonthlyRevenue: () => adminApi.get('/statistics/monthly-revenue'),
+  getRevenueByDateRange: (startDate, endDate, groupBy) => {
+    return adminApi.get(`/statistics/revenue-by-date-range`, {
+      params: {
+        startDate,
+        endDate,
+        groupBy
+      }
+    });
+  },
 
   createProductVariant: (data) => adminApi.post('/variants', data),
   updateProductVariant: (id, data) => adminApi.put(`/variants/${id}`, data),

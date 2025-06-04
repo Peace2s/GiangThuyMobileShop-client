@@ -1,7 +1,7 @@
 import { Typography, Button, Row, Col, Card, Tag, Tooltip, message, Space, Select, InputNumber, Pagination } from 'antd'
 import { RightOutlined, MobileOutlined, CameraOutlined, ThunderboltOutlined, DesktopOutlined, FireOutlined, ShoppingCartOutlined } from '@ant-design/icons'
 import { useNavigate, useLocation } from 'react-router-dom'
-import { productService } from '../../services/home.service'
+import { productService, brandService } from '../../services/home.service'
 import { useCart } from '../../contexts/CartContext'
 import './MainContent.css'
 import Banner from './Banner'
@@ -27,6 +27,7 @@ const MainContent = () => {
   const [products, setProducts] = useState([])
   const [featuredProducts, setFeaturedProducts] = useState([])
   const [newProducts, setNewProducts] = useState([])
+  const [brands, setBrands] = useState([])
   const [loading, setLoading] = useState(true)
   const [filters, setFilters] = useState({
     minPrice: null,
@@ -38,6 +39,21 @@ const MainContent = () => {
   useEffect(() => {
     setPagination(prev => ({ ...prev, current: 1 }));
   }, [branch, minPrice, maxPrice, searchQuery]);
+
+  useEffect(() => {
+    const fetchBrands = async () => {
+      try {
+        const response = await brandService.getAllBrands();
+        console.log('Brands API response:', response);
+        setBrands(response.data);
+        console.log('Brands state:', response.data);
+      } catch (error) {
+        console.error('Error fetching brands:', error);
+        message.error('Không thể tải danh sách thương hiệu');
+      }
+    };
+    fetchBrands();
+  }, []);
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -123,12 +139,15 @@ const MainContent = () => {
 
   const branchNames = {
     'all': 'Tất cả sản phẩm',
-    'apple': 'Apple',
-    'samsung': 'Samsung',
-    'oppo': 'Oppo',
-    'xiaomi': 'Xiaomi',
-    'oneplus': 'OnePlus'
+    ...brands.reduce((acc, brand) => {
+      console.log('Processing brand:', brand);
+      return {
+        ...acc,
+        [brand.id]: brand.name
+      };
+    }, {})
   }
+  console.log('Final branchNames:', branchNames);
 
   const handleProductClick = (product) => {
     // find matching variant
@@ -324,9 +343,9 @@ const MainContent = () => {
     <div className="search-results">
       <div className="section-header">
         <Title level={3}>Kết quả tìm kiếm cho "{searchQuery}"</Title>
-        {products && products.length > 0 ? (
+        {/* {products && products.length > 0 ? (
           <Text className="search-count">Tìm thấy {pagination.total} sản phẩm</Text>
-        ) : null}
+        ) : null} */}
         {(branch !== 'all' || minPrice || maxPrice) && (
           <div className="applied-filters">
             <Text type="secondary">

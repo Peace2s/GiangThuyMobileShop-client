@@ -1,6 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import { Row, Col, Card, Statistic, Table, Spin, message } from 'antd';
-import { Line } from '@ant-design/charts';
+import { Row, Col, Card, Statistic, Table, Spin, message, DatePicker, Select, Space } from 'antd';
+import { Line } from 'react-chartjs-2';
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend
+} from 'chart.js';
 import {
   ShoppingCartOutlined,
   UserOutlined,
@@ -9,6 +19,20 @@ import {
 } from '@ant-design/icons';
 import { adminService } from '../../services/admin.service';
 import './Dashboard.css';
+import dayjs from 'dayjs';
+
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend
+);
+
+const { RangePicker } = DatePicker;
+const { Option } = Select;
 
 const Dashboard = () => {
   const [loading, setLoading] = useState(true);
@@ -21,10 +45,32 @@ const Dashboard = () => {
   const [recentOrders, setRecentOrders] = useState([]);
   const [topProducts, setTopProducts] = useState([]);
   const [monthlyRevenue, setMonthlyRevenue] = useState([]);
+  const [dateRange, setDateRange] = useState(() => {
+    const currentYear = new Date().getFullYear();
+    return [
+      dayjs(`${currentYear}-01-01`),
+      dayjs(`${currentYear}-12-31`)
+    ];
+  });
+  const [groupBy, setGroupBy] = useState('month');
+  const [revenueData, setRevenueData] = useState({
+    data: [],
+    totalRevenue: 0,
+    startDate: null,
+    endDate: null,
+    groupBy: 'day'
+  });
 
   useEffect(() => {
     fetchDashboardData();
+    fetchRevenueData();
   }, []);
+
+  useEffect(() => {
+    if (dateRange[0] && dateRange[1]) {
+      fetchRevenueData();
+    }
+  }, [dateRange, groupBy]);
 
   const fetchDashboardData = async () => {
     try {
@@ -43,6 +89,19 @@ const Dashboard = () => {
       message.error('Không thể tải dữ liệu dashboard');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchRevenueData = async () => {
+    try {
+      const startDate = dateRange[0].format('YYYY-MM-DD');
+      const endDate = dateRange[1].format('YYYY-MM-DD');
+      
+      const response = await adminService.getRevenueByDateRange(startDate, endDate, groupBy);
+      setRevenueData(response.data);
+    } catch (error) {
+      console.error('Error fetching revenue data:', error);
+      message.error('Không thể tải dữ liệu doanh thu');
     }
   };
 
@@ -106,19 +165,48 @@ const Dashboard = () => {
     },   
   ];
 
-  const config = {
-    data: monthlyRevenue || [],
-    xField: 'month',
-    yField: 'revenue',
-    point: {
-      size: 5,
-      shape: 'diamond',
-    },
-    label: {
-      style: {
-        fill: '#aaa',
+  const chartData = {
+    labels: revenueData.data.map(item => item.date),
+    datasets: [
+      {
+        label: 'Doanh thu',
+        data: revenueData.data.map(item => item.revenue),
+        borderColor: '#1890ff',
+        backgroundColor: 'rgba(24, 144, 255, 0.1)',
+        tension: 0.4,
+        fill: true
+      }
+    ]
+  };
+
+  const chartOptions = {
+    responsive: true,
+    plugins: {
+      legend: {
+        position: 'top',
       },
+      title: {
+        display: true,
+        text: 'Biểu đồ doanh thu'
+      },
+      tooltip: {
+        callbacks: {
+          label: function(context) {
+            return `Doanh thu: ${parseInt(context.raw).toLocaleString()} VNĐ`;
+          }
+        }
+      }
     },
+    scales: {
+      y: {
+        beginAtZero: true,
+        ticks: {
+          callback: function(value) {
+            return `${parseInt(value).toLocaleString()} VNĐ`;
+          }
+        }
+      }
+    }
   };
 
   if (loading) {
@@ -173,6 +261,42 @@ const Dashboard = () => {
       </Row>
 
       <Row gutter={[24, 24]} style={{ marginTop: 24 }}>
+        <Col xs={24}>
+          <Card 
+            title="Thống kê doanh thu"
+            extra={
+              <Space>
+                <RangePicker
+                  onChange={(dates) => setDateRange(dates)}
+                  value={dateRange}
+                  allowClear={false}
+                />
+                <Select 
+                  value={groupBy} 
+                  onChange={setGroupBy}
+                  style={{ width: 120 }}
+                >
+                  <Option value="day">Theo ngày</Option>
+                  <Option value="month">Theo tháng</Option>
+                  <Option value="year">Theo năm</Option>
+                </Select>
+              </Space>
+            }
+          >
+            <div style={{ marginBottom: 16 }}>
+              <Statistic
+                title="Tổng doanh thu trong khoảng thời gian"
+                value={revenueData.totalRevenue}
+                prefix={<DollarOutlined />}
+                formatter={(value) => `${parseInt(value).toLocaleString()} VNĐ`}
+              />
+            </div>
+            <Line data={chartData} options={chartOptions} />
+          </Card>
+        </Col>
+      </Row>
+
+      <Row gutter={[24, 24]} style={{ marginTop: 24 }}>
         <Col xs={24} lg={12}>
           <Card title="Đơn hàng gần đây">
             <Table
@@ -193,14 +317,6 @@ const Dashboard = () => {
               pagination={false}
               size="small"
             />
-          </Card>
-        </Col>
-      </Row>
-
-      <Row gutter={[24, 24]} style={{ marginTop: 24 }}>
-        <Col xs={24}>
-          <Card title="Doanh thu theo tháng">
-            <Line {...config} />
           </Card>
         </Col>
       </Row>
